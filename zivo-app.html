@@ -1,561 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ZIVO</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00b4ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ZIVO">
+<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #050a14;
-    --bg2: #0a1628;
-    --blue: #00b4ff;
-    --blue2: #0066cc;
-    --blue-glow: rgba(0,180,255,0.3);
-    --white: #e8f4ff;
-    --gray: #3a5a7a;
-    --danger: #ff4466;
-    --success: #00ffaa;
-    --card: rgba(10,22,40,0.8);
+    --bg: #050a14; --bg2: #0a1628; --blue: #00b4ff; --blue2: #0066cc;
+    --blue-glow: rgba(0,180,255,0.3); --white: #e8f4ff; --gray: #3a5a7a;
+    --danger: #ff4466; --success: #00ffaa; --card: rgba(10,22,40,0.8);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: 'Exo 2', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated background grid */
+  body { background: var(--bg); color: var(--white); font-family: 'Exo 2', sans-serif; min-height: 100vh; overflow-x: hidden; }
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    content: ''; position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
   }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 420px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Header */
-  .header {
-    padding: 20px 24px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(0,180,255,0.1);
-  }
-
-  .logo {
-    font-size: 28px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: var(--white);
-    text-shadow: 0 0 20px var(--blue), 0 0 40px var(--blue2);
-  }
-
+  .app { position: relative; z-index: 1; max-width: 420px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+  .header { padding: 20px 24px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,180,255,0.1); }
+  .logo { font-size: 28px; font-weight: 900; letter-spacing: 4px; color: var(--white); text-shadow: 0 0 20px var(--blue), 0 0 40px var(--blue2); }
   .logo span { color: var(--blue); }
-
-  .status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 8px var(--success);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    color: var(--success);
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  /* Tabs */
-  .tabs {
-    display: flex;
-    padding: 12px 16px;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-
-  .tab {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: 1px solid var(--gray);
-    color: var(--gray);
-    background: transparent;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-
-  .tab.active {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: var(--bg);
-    box-shadow: 0 0 16px var(--blue-glow);
-  }
-
-  /* Pages */
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+  .header-right { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--success); font-family: 'Share Tech Mono', monospace; }
   .page { display: none; flex: 1; padding: 0 16px 100px; }
   .page.active { display: block; }
-
-  /* ZIVO Face */
-  .zivo-face-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 0;
-  }
-
-  .zivo-face {
-    width: 160px;
-    height: 160px;
-    background: linear-gradient(135deg, #0d1f3a, #1a3a5c);
-    border-radius: 32px;
-    border: 2px solid var(--blue);
-    box-shadow: 0 0 30px var(--blue-glow), inset 0 0 30px rgba(0,180,255,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .zivo-face::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,180,255,0.1), transparent);
-    animation: scan 3s infinite;
-  }
-
-  @keyframes scan {
-    0% { left: -100%; }
-    100% { left: 200%; }
-  }
-
-  .eyes {
-    display: flex;
-    gap: 28px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .eye {
-    width: 32px;
-    height: 32px;
-    background: var(--blue);
-    border-radius: 8px;
-    box-shadow: 0 0 20px var(--blue);
-    animation: blink 4s infinite;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .eye::after {
-    content: '';
-    position: absolute;
-    top: 4px; left: 4px;
-    width: 10px; height: 10px;
-    background: rgba(255,255,255,0.6);
-    border-radius: 3px;
-  }
-
-  @keyframes blink {
-    0%, 90%, 100% { transform: scaleY(1); }
-    95% { transform: scaleY(0.1); }
-  }
-
-  .zivo-name {
-    margin-top: 14px;
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: 6px;
-    color: var(--blue);
-    text-shadow: 0 0 16px var(--blue-glow);
-  }
-
-  .zivo-mood {
-    margin-top: 4px;
-    font-size: 11px;
-    font-family: 'Share Tech Mono', monospace;
-    color: var(--gray);
-    letter-spacing: 2px;
-  }
-
-  /* Stats row */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin: 16px 0;
-  }
-
-  .stat-card {
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.15);
-    border-radius: 16px;
-    padding: 14px 10px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-  }
-
-  .stat-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--blue);
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .stat-label {
-    font-size: 9px;
-    color: var(--gray);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-top: 3px;
-  }
-
-  /* Battery bar */
-  .battery-card {
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.15);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 12px;
-    backdrop-filter: blur(10px);
-  }
-
-  .battery-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .battery-title {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--gray);
-  }
-
-  .battery-percent {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 18px;
-    color: var(--success);
-  }
-
-  .battery-bar {
-    height: 8px;
-    background: rgba(0,180,255,0.1);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .battery-fill {
-    height: 100%;
-    width: 78%;
-    background: linear-gradient(90deg, var(--blue2), var(--blue));
-    border-radius: 4px;
-    box-shadow: 0 0 8px var(--blue-glow);
-    animation: charge 3s ease-in-out infinite alternate;
-  }
-
-  @keyframes charge {
-    from { opacity: 0.8; }
-    to { opacity: 1; }
-  }
-
-  /* Controls page */
-  .section-title {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gray);
-    margin: 20px 0 12px;
-  }
-
-  .dpad {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    gap: 8px;
-    width: 200px;
-    margin: 0 auto 24px;
-  }
-
-  .dpad-btn {
-    height: 56px;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-  }
-
-  .dpad-btn:active, .dpad-btn.pressed {
-    background: var(--blue);
-    box-shadow: 0 0 20px var(--blue-glow);
-    transform: scale(0.95);
-  }
-
-  .dpad-center {
-    background: rgba(0,180,255,0.1);
-    border-color: var(--blue);
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--blue);
-    letter-spacing: 1px;
-  }
-
+  .zivo-face-container { display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .zivo-face { width: 160px; height: 160px; background: linear-gradient(135deg, #0d1f3a, #1a3a5c); border-radius: 32px; border: 2px solid var(--blue); box-shadow: 0 0 30px var(--blue-glow), inset 0 0 30px rgba(0,180,255,0.05); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .zivo-face::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,180,255,0.1), transparent); animation: scan 3s infinite; }
+  @keyframes scan { 0% { left: -100%; } 100% { left: 200%; } }
+  .eyes { display: flex; gap: 28px; position: relative; z-index: 1; }
+  .eye { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; box-shadow: 0 0 20px var(--blue); animation: blink 4s infinite; position: relative; overflow: hidden; }
+  .eye::after { content: ''; position: absolute; top: 4px; left: 4px; width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 3px; }
+  @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+  .zivo-name { margin-top: 14px; font-size: 22px; font-weight: 900; letter-spacing: 6px; color: var(--blue); text-shadow: 0 0 16px var(--blue-glow); }
+  .zivo-mood { margin-top: 4px; font-size: 11px; font-family: 'Share Tech Mono', monospace; color: var(--gray); letter-spacing: 2px; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .stat-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 16px; padding: 14px 10px; text-align: center; backdrop-filter: blur(10px); }
+  .stat-value { font-size: 20px; font-weight: 700; color: var(--blue); font-family: 'Share Tech Mono', monospace; }
+  .stat-label { font-size: 9px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+  .battery-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 16px; padding: 16px; margin-bottom: 12px; backdrop-filter: blur(10px); }
+  .battery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .battery-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .battery-percent { font-family: 'Share Tech Mono', monospace; font-size: 18px; color: var(--success); }
+  .battery-bar { height: 8px; background: rgba(0,180,255,0.1); border-radius: 4px; overflow: hidden; }
+  .battery-fill { height: 100%; width: 78%; background: linear-gradient(90deg, var(--blue2), var(--blue)); border-radius: 4px; box-shadow: 0 0 8px var(--blue-glow); }
+  .section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray); margin: 20px 0 12px; }
+  .dpad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 200px; margin: 0 auto 24px; }
+  .dpad-btn { height: 56px; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .dpad-btn:active, .dpad-btn.pressed { background: var(--blue); box-shadow: 0 0 20px var(--blue-glow); transform: scale(0.95); }
+  .dpad-center { background: rgba(0,180,255,0.1); border-color: var(--blue); font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 1px; }
   .dpad-empty { background: transparent; border: none; }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .action-btn {
-    padding: 16px;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.2);
-    border-radius: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .action-btn { padding: 16px; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
   .action-btn:active { transform: scale(0.97); border-color: var(--blue); }
-
   .action-icon { font-size: 24px; margin-bottom: 6px; }
   .action-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
-
-  /* Settings page */
-  .lang-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .lang-btn {
-    padding: 14px;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.15);
-    border-radius: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .lang-btn.active {
-    border-color: var(--blue);
-    background: rgba(0,180,255,0.1);
-    box-shadow: 0 0 12px var(--blue-glow);
-  }
-
+  .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .lang-btn { padding: 14px; background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .lang-btn.active { border-color: var(--blue); background: rgba(0,180,255,0.1); box-shadow: 0 0 12px var(--blue-glow); }
   .lang-flag { font-size: 26px; }
   .lang-name { font-size: 11px; color: var(--gray); margin-top: 4px; letter-spacing: 1px; }
-
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.15);
-    border-radius: 14px;
-    margin-bottom: 10px;
-  }
-
-  .toggle-info { }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; margin-bottom: 10px; }
   .toggle-label { font-size: 14px; font-weight: 600; }
   .toggle-desc { font-size: 11px; color: var(--gray); margin-top: 2px; }
-
-  .toggle {
-    width: 48px; height: 26px;
-    background: var(--gray);
-    border-radius: 13px;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
+  .toggle { width: 48px; height: 26px; background: var(--gray); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
   .toggle.on { background: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
-
-  .toggle::after {
-    content: '';
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 20px; height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.2s;
-  }
-
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.2s; }
   .toggle.on::after { transform: translateX(22px); }
-
-  /* Boundary page */
-  .boundary-map {
-    width: 100%;
-    aspect-ratio: 1;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.2);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-
-  .boundary-map::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,180,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,180,255,0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-
-  .boundary-zone {
-    position: absolute;
-    inset: 30px;
-    border: 2px dashed var(--blue);
-    border-radius: 12px;
-    box-shadow: 0 0 20px var(--blue-glow), inset 0 0 20px rgba(0,180,255,0.05);
-  }
-
-  .zivo-dot {
-    position: absolute;
-    width: 20px; height: 20px;
-    background: var(--blue);
-    border-radius: 6px;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 16px var(--blue);
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-    50% { transform: translate(-50%, -50%) translateY(-6px); }
-  }
-
-  .corner-handle {
-    position: absolute;
-    width: 14px; height: 14px;
-    background: var(--blue);
-    border-radius: 3px;
-    box-shadow: 0 0 8px var(--blue);
-  }
-
-  .boundary-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .info-card {
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.15);
-    border-radius: 14px;
-    padding: 14px;
-  }
-
+  .boundary-map { width: 100%; aspect-ratio: 1; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 20px; position: relative; overflow: hidden; margin-bottom: 16px; }
+  .boundary-map::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,180,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,180,255,0.05) 1px, transparent 1px); background-size: 30px 30px; }
+  .boundary-zone { position: absolute; inset: 30px; border: 2px dashed var(--blue); border-radius: 12px; box-shadow: 0 0 20px var(--blue-glow), inset 0 0 20px rgba(0,180,255,0.05); }
+  .zivo-dot { position: absolute; width: 20px; height: 20px; background: var(--blue); border-radius: 6px; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 16px var(--blue); animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-6px); } }
+  .corner-handle { position: absolute; width: 14px; height: 14px; background: var(--blue); border-radius: 3px; box-shadow: 0 0 8px var(--blue); }
+  .boundary-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; padding: 14px; }
   .info-card-label { font-size: 10px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; }
   .info-card-value { font-size: 18px; font-weight: 700; color: var(--blue); font-family: 'Share Tech Mono', monospace; margin-top: 4px; }
-
-  /* Bottom nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 420px;
-    background: rgba(5,10,20,0.95);
-    border-top: 1px solid rgba(0,180,255,0.15);
-    display: flex;
-    padding: 10px 0 20px;
-    backdrop-filter: blur(20px);
-    z-index: 100;
-  }
-
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    padding: 6px 0;
-    transition: all 0.2s;
-  }
-
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: rgba(5,10,20,0.95); border-top: 1px solid rgba(0,180,255,0.15); display: flex; padding: 10px 0 20px; backdrop-filter: blur(20px); z-index: 100; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 0; transition: all 0.2s; }
   .nav-icon { font-size: 22px; filter: grayscale(1) opacity(0.4); transition: all 0.2s; }
   .nav-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
-
   .nav-item.active .nav-icon { filter: none; }
   .nav-item.active .nav-label { color: var(--blue); }
-
-  /* Log */
-  .log-entry {
-    display: flex;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--card);
-    border: 1px solid rgba(0,180,255,0.1);
-    border-radius: 12px;
-    margin-bottom: 8px;
-    align-items: flex-start;
-  }
-
-  .log-time {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--gray);
-    white-space: nowrap;
-    padding-top: 2px;
-  }
-
+  .log-entry { display: flex; gap: 10px; padding: 10px 14px; background: var(--card); border: 1px solid rgba(0,180,255,0.1); border-radius: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .log-time { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--gray); white-space: nowrap; padding-top: 2px; }
   .log-text { font-size: 13px; line-height: 1.4; }
   .log-text.info { color: var(--blue); }
   .log-text.warn { color: #ffaa00; }
@@ -567,93 +104,105 @@
   <div class="header">
     <div class="logo">ZI<span>V</span>O</div>
     <div class="header-right">
-      <div class="status-dot"></div>
-      ONLINE
+      <div class="status-dot" id="status-dot" style="background:var(--gray);box-shadow:none;animation:none;"></div>
+      <span id="status-text" style="color:var(--gray)"></span>
     </div>
   </div>
 
-  <!-- Pages -->
-  <div id="page-home" class="page active">
-    <div class="zivo-face-container">
-      <div class="zivo-face">
-        <div class="eyes">
-          <div class="eye"></div>
-          <div class="eye"></div>
-        </div>
+  <!-- Лицо ZIVO — всегда видно на всех страницах -->
+  <div class="zivo-face-container">
+    <div class="zivo-face" id="zivo-face">
+      <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+    </div>
+    <div class="zivo-name">ZIVO</div>
+    <div class="zivo-mood" id="mood-text"></div>
+  </div>
+
+  <!-- Офлайн баннер — только когда не подключён -->
+  <div id="offline-banner" style="text-align:center;padding:16px 20px;color:var(--gray);">
+    <div style="font-size:40px;margin-bottom:10px;">📡</div>
+    <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px;" data-t="not_connected"></div>
+    <div style="font-size:11px;opacity:0.6;margin-bottom:20px;" data-t="not_connected_desc"></div>
+
+    <!-- Поле ввода серийного номера -->
+    <div style="background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;padding:18px;text-align:left;">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:8px;" data-t="serial_label"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="serial-input" type="text" maxlength="12"
+          style="flex:1;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.3);border-radius:10px;padding:12px 14px;color:var(--white);font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:3px;outline:none;text-transform:uppercase;width:100%;"
+          placeholder="ZIVO-XXXXXX"
+          oninput="this.value=this.value.toUpperCase()"
+        />
       </div>
-      <div class="zivo-name">ZIVO</div>
-      <div class="zivo-mood" id="mood-text">READY • LISTENING</div>
+      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;" data-t="serial_wrong"></div>
+      <button onclick="tryConnect()" id="connect-btn"
+        style="width:100%;margin-top:14px;padding:13px;background:rgba(0,180,255,0.1);border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;font-weight:700;transition:all 0.2s;"
+        onmouseover="this.style.background='rgba(0,180,255,0.2)'" onmouseout="this.style.background='rgba(0,180,255,0.1)'"
+        data-t="connect_btn">
+      </button>
     </div>
 
+    <!-- Подсказка где найти серийный номер -->
+    <div style="margin-top:14px;font-size:11px;opacity:0.5;line-height:1.6;" data-t="serial_hint"></div>
+  </div>
+
+  <!-- Страницы — показываются только когда подключён -->
+  <div id="pages-wrapper" style="display:none">
+
+  <div id="page-home" class="page active">
+    <!-- Данные -->
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-value" id="temp-val">23°</div>
-        <div class="stat-label">Temp</div>
+        <div class="stat-label" data-t="temp"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="uptime-val">2h14m</div>
-        <div class="stat-label">Uptime</div>
+        <div class="stat-value" id="uptime-val"></div>
+        <div class="stat-label" data-t="uptime"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="wifi-val">✓</div>
+        <div class="stat-value">✓</div>
         <div class="stat-label">Wi-Fi</div>
       </div>
     </div>
-
     <div class="battery-card">
       <div class="battery-header">
-        <span class="battery-title">Battery</span>
+        <span class="battery-title" data-t="battery"></span>
         <span class="battery-percent" id="batt-text">78%</span>
       </div>
-      <div class="battery-bar">
-        <div class="battery-fill" id="batt-fill"></div>
-      </div>
+      <div class="battery-bar"><div class="battery-fill" id="batt-fill"></div></div>
     </div>
-
-    <div class="section-title">Activity Log</div>
-    <div class="log-entry"><span class="log-time">14:32</span><span class="log-text ok">Woke up from charging station</span></div>
-    <div class="log-entry"><span class="log-time">14:35</span><span class="log-text info">Voice command: "Hey ZIVO, tell me a joke"</span></div>
-    <div class="log-entry"><span class="log-time">14:41</span><span class="log-text warn">Edge detected — turned right</span></div>
-    <div class="log-entry"><span class="log-time">15:10</span><span class="log-text info">Language switched to English</span></div>
+    <div class="section-title" data-t="log"></div>
+    <div class="log-entry"><span class="log-time">14:32</span><span class="log-text ok" data-t="log1"></span></div>
+    <div class="log-entry"><span class="log-time">14:35</span><span class="log-text info" data-t="log2"></span></div>
+    <div class="log-entry"><span class="log-time">14:41</span><span class="log-text warn" data-t="log3"></span></div>
+    <div class="log-entry"><span class="log-time">15:10</span><span class="log-text info" data-t="log4"></span></div>
   </div>
 
   <div id="page-control" class="page">
-    <div class="section-title">Movement</div>
+    <div class="section-title" data-t="movement"></div>
     <div class="dpad">
       <div class="dpad-btn dpad-empty"></div>
-      <div class="dpad-btn" id="btn-up" onclick="pressBtn(this)">▲</div>
+      <div class="dpad-btn" onclick="pressBtn(this)">▲</div>
       <div class="dpad-btn dpad-empty"></div>
-      <div class="dpad-btn" id="btn-left" onclick="pressBtn(this)">◄</div>
+      <div class="dpad-btn" onclick="pressBtn(this)">◄</div>
       <div class="dpad-btn dpad-center">ZIVO</div>
-      <div class="dpad-btn" id="btn-right" onclick="pressBtn(this)">►</div>
+      <div class="dpad-btn" onclick="pressBtn(this)">►</div>
       <div class="dpad-btn dpad-empty"></div>
-      <div class="dpad-btn" id="btn-down" onclick="pressBtn(this)">▼</div>
+      <div class="dpad-btn" onclick="pressBtn(this)">▼</div>
       <div class="dpad-btn dpad-empty"></div>
     </div>
-
-    <div class="section-title">Actions</div>
+    <div class="section-title" data-t="actions"></div>
     <div class="action-grid">
-      <div class="action-btn" onclick="triggerAction(this)">
-        <div class="action-icon">🎤</div>
-        <div class="action-label">Wake Up</div>
-      </div>
-      <div class="action-btn" onclick="triggerAction(this)">
-        <div class="action-icon">😴</div>
-        <div class="action-label">Sleep</div>
-      </div>
-      <div class="action-btn" onclick="triggerAction(this)">
-        <div class="action-icon">🔋</div>
-        <div class="action-label">Go Charge</div>
-      </div>
-      <div class="action-btn" onclick="triggerAction(this)">
-        <div class="action-icon">🎲</div>
-        <div class="action-label">Random Mode</div>
-      </div>
+      <div class="action-btn" onclick="triggerAction(this)"><div class="action-icon">🎤</div><div class="action-label" data-t="wakeup"></div></div>
+      <div class="action-btn" onclick="triggerAction(this)"><div class="action-icon">😴</div><div class="action-label" data-t="sleep"></div></div>
+      <div class="action-btn" onclick="triggerAction(this)"><div class="action-icon">🔋</div><div class="action-label" data-t="charge"></div></div>
+      <div class="action-btn" onclick="triggerAction(this)"><div class="action-icon">🎲</div><div class="action-label" data-t="random"></div></div>
     </div>
   </div>
 
   <div id="page-boundary" class="page">
-    <div class="section-title">Safe Zone Map</div>
+    <div class="section-title" data-t="zonemap"></div>
     <div class="boundary-map">
       <div class="boundary-zone">
         <div class="corner-handle" style="top:-7px;left:-7px"></div>
@@ -664,160 +213,328 @@
       <div class="zivo-dot"></div>
     </div>
     <div class="boundary-info">
-      <div class="info-card">
-        <div class="info-card-label">Zone Width</div>
-        <div class="info-card-value">80cm</div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Zone Depth</div>
-        <div class="info-card-value">60cm</div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Edge Alerts</div>
-        <div class="info-card-value" style="color:var(--success)">ON</div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">Falls Today</div>
-        <div class="info-card-value">0</div>
-      </div>
+      <div class="info-card"><div class="info-card-label" data-t="zonewidth"></div><div class="info-card-value">80cm</div></div>
+      <div class="info-card"><div class="info-card-label" data-t="zonedepth"></div><div class="info-card-value">60cm</div></div>
+      <div class="info-card"><div class="info-card-label" data-t="edgealerts"></div><div class="info-card-value" style="color:var(--success)" data-t="on"></div></div>
+      <div class="info-card"><div class="info-card-label" data-t="falls"></div><div class="info-card-value">0</div></div>
     </div>
   </div>
 
-  <div id="page-settings" class="page">
-    <div class="section-title">Language</div>
+  </div><!-- end pages-wrapper -->
+
+  <!-- Настройки — всегда доступны -->
+  <div id="page-settings" class="page" style="display:none">
+    <div class="section-title" data-t="language"></div>
     <div class="lang-grid">
-      <div class="lang-btn active" onclick="selectLang(this)">
-        <div class="lang-flag">🇷🇺</div>
-        <div class="lang-name">Русский</div>
-      </div>
-      <div class="lang-btn" onclick="selectLang(this)">
-        <div class="lang-flag">🇺🇸</div>
-        <div class="lang-name">English</div>
-      </div>
-      <div class="lang-btn" onclick="selectLang(this)">
-        <div class="lang-flag">🇮🇱</div>
-        <div class="lang-name">עברית</div>
-      </div>
-      <div class="lang-btn" onclick="selectLang(this)">
-        <div class="lang-flag">🇨🇳</div>
-        <div class="lang-name">中文</div>
-      </div>
-      <div class="lang-btn" onclick="selectLang(this)">
-        <div class="lang-flag">🇺🇦</div>
-        <div class="lang-name">Українська</div>
-      </div>
+      <div class="lang-btn" onclick="selectLang(this,'ru')"><div class="lang-flag">🇷🇺</div><div class="lang-name">Русский</div></div>
+      <div class="lang-btn active" onclick="selectLang(this,'en')"><div class="lang-flag">🇺🇸</div><div class="lang-name">English</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'he')"><div class="lang-flag">🇮🇱</div><div class="lang-name">עברית</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'zh')"><div class="lang-flag">🇨🇳</div><div class="lang-name">中文</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'uk')"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
     </div>
+    <div class="section-title" data-t="features"></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
 
-    <div class="section-title">Features</div>
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-label">Voice Activation</div>
-        <div class="toggle-desc">Wake up with "Hey ZIVO"</div>
-      </div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-label">Edge Protection</div>
-        <div class="toggle-desc">Stop at table edges</div>
-      </div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-label">Auto Charging</div>
-        <div class="toggle-desc">Return to base when low</div>
-      </div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-label">Random Explore</div>
-        <div class="toggle-desc">ZIVO moves on its own</div>
-      </div>
-      <div class="toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-label">Notifications</div>
-        <div class="toggle-desc">Battery, edge alerts</div>
-      </div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    <!-- Серийный номер -->
+    <div style="margin-top:20px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:16px;">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:8px;" data-t="serial_label"></div>
+      <div id="settings-serial" style="font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--blue);letter-spacing:3px;"></div>
+      <div style="font-size:11px;color:var(--gray);margin-top:6px;opacity:0.6;" data-t="serial_hint"></div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchPage('home', this)">
-      <div class="nav-icon">🤖</div>
-      <div class="nav-label">ZIVO</div>
-    </div>
-    <div class="nav-item" onclick="switchPage('control', this)">
-      <div class="nav-icon">🕹️</div>
-      <div class="nav-label">Control</div>
-    </div>
-    <div class="nav-item" onclick="switchPage('boundary', this)">
-      <div class="nav-icon">📍</div>
-      <div class="nav-label">Zone</div>
-    </div>
-    <div class="nav-item" onclick="switchPage('settings', this)">
-      <div class="nav-icon">⚙️</div>
-      <div class="nav-label">Settings</div>
-    </div>
+    <div class="nav-item active" onclick="switchPage('home',this)"><div class="nav-icon">🤖</div><div class="nav-label">ZIVO</div></div>
+    <div class="nav-item" onclick="switchPage('control',this)"><div class="nav-icon">🕹️</div><div class="nav-label" data-t="nav_control"></div></div>
+    <div class="nav-item" onclick="switchPage('boundary',this)"><div class="nav-icon">📍</div><div class="nav-label" data-t="nav_zone"></div></div>
+    <div class="nav-item" onclick="switchPage('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label" data-t="nav_settings"></div></div>
   </div>
 </div>
 
 <script>
-  function switchPage(name, el) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+const T = {
+  ru: {
+    online:'В СЕТИ', temp:'ТЕМП', uptime:'ВРЕМЯ', battery:'БАТАРЕЯ',
+    log:'ЖУРНАЛ СОБЫТИЙ',
+    log1:'Проснулся со станции зарядки',
+    log2:'Голосовая команда: "Привет ZIVO, расскажи анекдот"',
+    log3:'Обнаружен край — повернул направо',
+    log4:'Язык изменён на русский',
+    movement:'ДВИЖЕНИЕ', actions:'ДЕЙСТВИЯ',
+    wakeup:'РАЗБУДИТЬ', sleep:'СПАТЬ', charge:'НА ЗАРЯДКУ', random:'СЛУЧАЙНЫЙ',
+    zonemap:'КАРТА БЕЗОПАСНОЙ ЗОНЫ', zonewidth:'ШИРИНА ЗОНЫ', zonedepth:'ГЛУБИНА ЗОНЫ',
+    edgealerts:'ЗАЩИТА КРАЯ', on:'ВКЛ', falls:'ПАДЕНИЙ СЕГОДНЯ',
+    language:'ЯЗЫК', features:'ФУНКЦИИ',
+    voiceact:'Голосовая активация', voiceact_desc:'Активация фразой "Привет ZIVO"',
+    edgeprot:'Защита от падения', edgeprot_desc:'Останавливаться у края стола',
+    autocharge:'Авто зарядка', autocharge_desc:'Ехать на базу при низком заряде',
+    explore:'Случайные прогулки', explore_desc:'ZIVO ездит самостоятельно',
+    notifs:'Уведомления', notifs_desc:'Заряд и защита края',
+    nav_control:'УПРАВЛЕНИЕ', nav_zone:'ЗОНА', nav_settings:'НАСТРОЙКИ',
+    moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ • АКТИВЕН','ЖДУ КОМАНДЫ'],
+    upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',
+    offline:'НЕ ПОДКЛЮЧЁН', not_connected:'ZIVO не подключён', not_connected_desc:'Введи серийный номер твоего ZIVO', connect_btn:'ПОДКЛЮЧИТЬ',
+    serial_label:'СЕРИЙНЫЙ НОМЕР', serial_wrong:'Неверный серийный номер. Проверь наклейку на роботе.', serial_hint:'Серийный номер написан на наклейке\nна дне корпуса ZIVO'
+  },
+  en: {
+    online:'ONLINE', temp:'TEMP', uptime:'UPTIME', battery:'BATTERY',
+    log:'ACTIVITY LOG',
+    log1:'Woke up from charging station',
+    log2:'Voice command: "Hey ZIVO, tell me a joke"',
+    log3:'Edge detected — turned right',
+    log4:'Language switched to English',
+    movement:'MOVEMENT', actions:'ACTIONS',
+    wakeup:'WAKE UP', sleep:'SLEEP', charge:'GO CHARGE', random:'RANDOM',
+    zonemap:'SAFE ZONE MAP', zonewidth:'ZONE WIDTH', zonedepth:'ZONE DEPTH',
+    edgealerts:'EDGE ALERTS', on:'ON', falls:'FALLS TODAY',
+    language:'LANGUAGE', features:'FEATURES',
+    voiceact:'Voice Activation', voiceact_desc:'Wake up with "Hey ZIVO"',
+    edgeprot:'Edge Protection', edgeprot_desc:'Stop at table edges',
+    autocharge:'Auto Charging', autocharge_desc:'Return to base when low',
+    explore:'Random Explore', explore_desc:'ZIVO moves on its own',
+    notifs:'Notifications', notifs_desc:'Battery, edge alerts',
+    nav_control:'CONTROL', nav_zone:'ZONE', nav_settings:'SETTINGS',
+    moods:['READY • LISTENING','EXPLORING','HAPPY • ACTIVE','IDLE • WAITING'],
+    upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',
+    offline:'DISCONNECTED', not_connected:'ZIVO is not connected', not_connected_desc:'Enter your ZIVO serial number', connect_btn:'CONNECT',
+    serial_label:'SERIAL NUMBER', serial_wrong:'Wrong serial number. Check the sticker on your robot.', serial_hint:'The serial number is on the sticker\non the bottom of your ZIVO'
+  },
+  he: {
+    online:'מחובר', temp:'טמפ', uptime:'זמן', battery:'סוללה',
+    log:'יומן פעילות',
+    log1:'התעורר מתחנת הטעינה',
+    log2:'פקודה קולית: "היי ZIVO, ספר לי בדיחה"',
+    log3:'זוהה קצה — פנה ימינה',
+    log4:'השפה שונתה לעברית',
+    movement:'תנועה', actions:'פעולות',
+    wakeup:'התעורר', sleep:'שינה', charge:'לטעינה', random:'אקראי',
+    zonemap:'מפת אזור בטוח', zonewidth:'רוחב אזור', zonedepth:'עומק אזור',
+    edgealerts:'הגנת קצה', on:'פועל', falls:'נפילות היום',
+    language:'שפה', features:'תכונות',
+    voiceact:'הפעלה קולית', voiceact_desc:'הפעלה עם "היי ZIVO"',
+    edgeprot:'הגנה מנפילה', edgeprot_desc:'עצור בקצה השולחן',
+    autocharge:'טעינה אוטומטית', autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',
+    explore:'סיור אקראי', explore_desc:'ZIVO נוסע לבד',
+    notifs:'התראות', notifs_desc:'סוללה והגנת קצה',
+    nav_control:'שליטה', nav_zone:'אזור', nav_settings:'הגדרות',
+    moods:['מוכן • מקשיב','חוקר','שמח • פעיל','ממתין לפקודה'],
+    upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',
+    offline:'מנותק', not_connected:'ZIVO לא מחובר', not_connected_desc:'הזן את המספר הסידורי של ZIVO', connect_btn:'התחבר',
+    serial_label:'מספר סידורי', serial_wrong:'מספר סידורי שגוי. בדוק את המדבקה על הרובוט.', serial_hint:'המספר הסידורי נמצא על המדבקה\nבתחתית ZIVO'
+  },
+  zh: {
+    online:'在线', temp:'温度', uptime:'运行', battery:'电池',
+    log:'活动日志',
+    log1:'从充电站醒来',
+    log2:'语音命令："嘿 ZIVO，讲个笑话"',
+    log3:'检测到边缘 — 向右转',
+    log4:'语言已切换为中文',
+    movement:'移动', actions:'操作',
+    wakeup:'唤醒', sleep:'睡眠', charge:'去充电', random:'随机',
+    zonemap:'安全区域地图', zonewidth:'区域宽度', zonedepth:'区域深度',
+    edgealerts:'边缘保护', on:'开启', falls:'今日跌落',
+    language:'语言', features:'功能',
+    voiceact:'语音激活', voiceact_desc:'说"嘿 ZIVO"唤醒',
+    edgeprot:'防跌落保护', edgeprot_desc:'在桌子边缘停下',
+    autocharge:'自动充电', autocharge_desc:'电量低时返回充电',
+    explore:'随机探索', explore_desc:'ZIVO 自主移动',
+    notifs:'通知', notifs_desc:'电池和边缘警报',
+    nav_control:'控制', nav_zone:'区域', nav_settings:'设置',
+    moods:['准备好了 • 在听','探索中','开心 • 活跃','等待命令'],
+    upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',
+    offline:'未连接', not_connected:'ZIVO 未连接', not_connected_desc:'输入你的 ZIVO 序列号', connect_btn:'连接',
+    serial_label:'序列号', serial_wrong:'序列号错误，请检查机器人上的贴纸。', serial_hint:'序列号在 ZIVO 底部的贴纸上'
+  },
+  uk: {
+    online:'В МЕРЕЖІ', temp:'ТЕМП', uptime:'ЧАС', battery:'БАТАРЕЯ',
+    log:'ЖУРНАЛ ПОДІЙ',
+    log1:'Прокинувся зі станції зарядки',
+    log2:'Голосова команда: "Привіт ZIVO, розкажи анекдот"',
+    log3:'Виявлено край — повернув праворуч',
+    log4:'Мова змінена на українську',
+    movement:'РУХ', actions:'ДІЇ',
+    wakeup:'РОЗБУДИТИ', sleep:'СПАТИ', charge:'НА ЗАРЯДКУ', random:'ВИПАДКОВИЙ',
+    zonemap:'КАРТА БЕЗПЕЧНОЇ ЗОНИ', zonewidth:'ШИРИНА ЗОНИ', zonedepth:'ГЛИБИНА ЗОНИ',
+    edgealerts:'ЗАХИСТ КРАЮ', on:'УВІМКН', falls:'ПАДІНЬ СЬОГОДНІ',
+    language:'МОВА', features:'ФУНКЦІЇ',
+    voiceact:'Голосова активація', voiceact_desc:'Активація фразою "Привіт ZIVO"',
+    edgeprot:'Захист від падіння', edgeprot_desc:'Зупинятись біля краю столу',
+    autocharge:'Авто зарядка', autocharge_desc:'Їхати на базу при низькому заряді',
+    explore:'Випадкові прогулянки', explore_desc:'ZIVO їздить самостійно',
+    notifs:'Сповіщення', notifs_desc:'Заряд і захист краю',
+    nav_control:'КЕРУВАННЯ', nav_zone:'ЗОНА', nav_settings:'НАЛАШТУВАННЯ',
+    moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ • АКТИВНИЙ','ЧЕКАЮ КОМАНДИ'],
+    upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',
+    offline:'НЕ ПІДКЛЮЧЕНО', not_connected:'ZIVO не підключено', not_connected_desc:'Введи серійний номер свого ZIVO', connect_btn:'ПІДКЛЮЧИТИ',
+    serial_label:'СЕРІЙНИЙ НОМЕР', serial_wrong:'Невірний серійний номер. Перевір наклейку на роботі.', serial_hint:'Серійний номер на наклейці\nна дні корпусу ZIVO'
+  }
+};
+
+let lang = 'ru';
+let moodIdx = 0;
+let connected = false;
+
+function setConnected(val) {
+  connected = val;
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  const banner = document.getElementById('offline-banner');
+  const pages = document.getElementById('pages-wrapper');
+  const face = document.getElementById('zivo-face');
+  if (connected) {
+    dot.style.background = 'var(--success)';
+    dot.style.boxShadow = '0 0 8px var(--success)';
+    dot.style.animation = 'pulse 2s infinite';
+    txt.style.color = 'var(--success)';
+    txt.textContent = T[lang].online;
+    banner.style.display = 'none';
+    // Показываем home страницу
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    pages.style.display = 'block';
+    document.getElementById('page-home').style.display = 'block';
+    // Активируем первую кнопку навигации
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    el.classList.add('active');
+    document.querySelector('.nav-item').classList.add('active');
+    face.style.borderColor = 'var(--blue)';
+    face.style.boxShadow = '0 0 30px var(--blue-glow), inset 0 0 30px rgba(0,180,255,0.05)';
+  } else {
+    dot.style.background = 'var(--gray)';
+    dot.style.boxShadow = 'none';
+    dot.style.animation = 'none';
+    txt.style.color = 'var(--gray)';
+    txt.textContent = T[lang].offline;
+    banner.style.display = 'block';
+    pages.style.display = 'none';
+    document.getElementById('page-settings').style.display = 'none';
+    face.style.borderColor = 'var(--gray)';
+    face.style.boxShadow = 'none';
+  }
+}
+
+// Генерируем серийный номер при первом запуске и сохраняем навсегда
+function getOrCreateSerial() {
+  let serial = localStorage.getItem('zivo_serial');
+  if (!serial) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = 'ZIVO-';
+    for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    serial = s;
+    localStorage.setItem('zivo_serial', serial);
+  }
+  return serial;
+}
+
+const ZIVO_SERIAL = getOrCreateSerial();
+
+function tryConnect() {
+  const input = document.getElementById('serial-input').value.trim().toUpperCase();
+  const err = document.getElementById('serial-error');
+  const btn = document.getElementById('connect-btn');
+
+  if (!input) {
+    err.style.display = 'block';
+    return;
   }
 
-  function pressBtn(btn) {
-    btn.classList.add('pressed');
-    setTimeout(() => btn.classList.remove('pressed'), 200);
+  // Анимация загрузки
+  btn.textContent = '...';
+  btn.style.opacity = '0.6';
+  err.style.display = 'none';
+
+  setTimeout(() => {
+    if (input === ZIVO_SERIAL) {
+      setConnected(true);
+    } else {
+      btn.textContent = T[lang].connect_btn;
+      btn.style.opacity = '1';
+      err.style.display = 'block';
+      document.getElementById('serial-input').style.borderColor = 'var(--danger)';
+      setTimeout(() => {
+        document.getElementById('serial-input').style.borderColor = 'rgba(0,180,255,0.3)';
+      }, 2000);
+    }
+  }, 1200);
+}
+
+function applyLang(l) {
+  lang = l;
+  const t = T[l];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const k = el.getAttribute('data-t');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.getElementById('mood-text').textContent = t.moods[moodIdx];
+  document.body.style.direction = l === 'he' ? 'rtl' : 'ltr';
+  // Обновить статус текст при смене языка
+  const txt = document.getElementById('status-text');
+  txt.textContent = connected ? t.online : t.offline;
+}
+
+function selectLang(btn, l) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang(l);
+}
+
+function switchPage(name, el) {
+  // Скрываем все обычные страницы
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+
+  if (name === 'settings') {
+    document.getElementById('page-settings').style.display = 'block';
+  } else if (connected) {
+    document.getElementById('pages-wrapper').style.display = 'block';
+    document.getElementById('page-' + name).style.display = 'block';
   }
+}
 
-  function triggerAction(btn) {
-    btn.style.borderColor = 'var(--blue)';
-    btn.style.background = 'rgba(0,180,255,0.1)';
-    setTimeout(() => {
-      btn.style.borderColor = '';
-      btn.style.background = '';
-    }, 300);
-  }
+function pressBtn(btn) { btn.classList.add('pressed'); setTimeout(() => btn.classList.remove('pressed'), 200); }
+function triggerAction(btn) {
+  btn.style.borderColor = 'var(--blue)'; btn.style.background = 'rgba(0,180,255,0.1)';
+  setTimeout(() => { btn.style.borderColor = ''; btn.style.background = ''; }, 300);
+}
 
-  function selectLang(btn) {
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
+let secs = 2*3600 + 14*60;
+setInterval(() => {
+  secs++;
+  const h = Math.floor(secs/3600);
+  const m = Math.floor((secs%3600)/60);
+  document.getElementById('uptime-val').textContent = T[lang].upfmt(h, m);
+}, 1000);
 
-  // Animate uptime
-  let seconds = 2*3600 + 14*60;
-  setInterval(() => {
-    seconds++;
-    const h = Math.floor(seconds/3600);
-    const m = Math.floor((seconds%3600)/60);
-    document.getElementById('uptime-val').textContent = h + 'h' + String(m).padStart(2,'0') + 'm';
-  }, 1000);
+let batt = 78;
+setInterval(() => {
+  batt = Math.max(0, batt - 0.01);
+  document.getElementById('batt-text').textContent = Math.round(batt) + '%';
+  document.getElementById('batt-fill').style.width = batt + '%';
+}, 3000);
 
-  // Animate battery drain slowly
-  let batt = 78;
-  setInterval(() => {
-    batt = Math.max(0, batt - 0.01);
-    document.getElementById('batt-text').textContent = Math.round(batt) + '%';
-    document.getElementById('batt-fill').style.width = batt + '%';
-  }, 3000);
+setInterval(() => {
+  moodIdx = (moodIdx + 1) % 4;
+  document.getElementById('mood-text').textContent = T[lang].moods[moodIdx];
+}, 4000);
 
-  // Mood cycling
-  const moods = ['READY • LISTENING', 'EXPLORING MODE', 'HAPPY • ACTIVE', 'IDLE • WAITING'];
-  let moodIdx = 0;
-  setInterval(() => {
-    moodIdx = (moodIdx + 1) % moods.length;
-    document.getElementById('mood-text').textContent = moods[moodIdx];
-  }, 4000);
+applyLang('en');
+setConnected(false);
+document.getElementById('settings-serial').textContent = ZIVO_SERIAL;
+
+// Service Worker для PWA
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl);
+}
 </script>
 </body>
 </html>
