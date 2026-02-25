@@ -27,14 +27,471 @@
   .header { padding: 20px 24px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,180,255,0.1); }
   .logo { font-size: 28px; font-weight: 900; letter-spacing: 4px; color: var(--white); text-shadow: 0 0 20px var(--blue), 0 0 40px var(--blue2); }
   .logo span { color: var(--blue); }
-  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; }
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
-  .header-right { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--success); font-family: 'Share Tech Mono', monospace; }
+  .header-right { display: flex; align-items: center; gap: 10px; font-size: 11px; font-family: 'Share Tech Mono', monospace; }
   .page { display: none; flex: 1; padding: 0 16px 100px; }
-  .page.active { display: block; }
   .zivo-face-container { display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
-  .zivo-face { width: 160px; height: 160px; background: linear-gradient(135deg, #0d1f3a, #1a3a5c); border-radius: 32px; border: 2px solid var(--blue); box-shadow: 0 0 30px var(--blue-glow), inset 0 0 30px rgba(0,180,255,0.05); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .zivo-face { width: 160px; height: 160px; background: linear-gradient(135deg, #0d1f3a, #1a3a5c); border-radius: 32px; border: 2px solid var(--gray); box-shadow: none; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; transition: all 0.5s; }
   .zivo-face::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,180,255,0.1), transparent); animation: scan 3s infinite; }
+  @keyframes scan { 0% { left: -100%; } 100% { left: 200%; } }
+  .eyes { display: flex; gap: 28px; position: relative; z-index: 1; }
+  .eye { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; box-shadow: 0 0 20px var(--blue); animation: blink 4s infinite; position: relative; overflow: hidden; }
+  .eye::after { content: ''; position: absolute; top: 4px; left: 4px; width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 3px; }
+  @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+  .zivo-name { margin-top: 14px; font-size: 22px; font-weight: 900; letter-spacing: 6px; color: var(--blue); text-shadow: 0 0 16px var(--blue-glow); }
+  .zivo-mood { margin-top: 4px; font-size: 11px; font-family: 'Share Tech Mono', monospace; color: var(--gray); letter-spacing: 2px; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .stat-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 16px; padding: 14px 10px; text-align: center; backdrop-filter: blur(10px); }
+  .stat-value { font-size: 20px; font-weight: 700; color: var(--blue); font-family: 'Share Tech Mono', monospace; }
+  .stat-label { font-size: 9px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+  .battery-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 16px; padding: 16px; margin-bottom: 12px; backdrop-filter: blur(10px); }
+  .battery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .battery-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .battery-percent { font-family: 'Share Tech Mono', monospace; font-size: 18px; color: var(--success); }
+  .battery-bar { height: 8px; background: rgba(0,180,255,0.1); border-radius: 4px; overflow: hidden; }
+  .battery-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue2), var(--blue)); border-radius: 4px; box-shadow: 0 0 8px var(--blue-glow); transition: width 0.5s; }
+  .section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray); margin: 20px 0 12px; }
+  .dpad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 200px; margin: 0 auto 24px; }
+  .dpad-btn { height: 56px; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .dpad-btn:active, .dpad-btn.pressed { background: var(--blue); box-shadow: 0 0 20px var(--blue-glow); transform: scale(0.95); }
+  .dpad-center { background: rgba(0,180,255,0.1); border-color: var(--blue); font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 1px; }
+  .dpad-empty { background: transparent; border: none; }
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .action-btn { padding: 16px; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .action-btn:active { transform: scale(0.97); border-color: var(--blue); }
+  .action-icon { font-size: 24px; margin-bottom: 6px; }
+  .action-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+  .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .lang-btn { padding: 14px; background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .lang-btn.active { border-color: var(--blue); background: rgba(0,180,255,0.1); box-shadow: 0 0 12px var(--blue-glow); }
+  .lang-flag { font-size: 26px; }
+  .lang-name { font-size: 11px; color: var(--gray); margin-top: 4px; letter-spacing: 1px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; margin-bottom: 10px; }
+  .toggle-label { font-size: 14px; font-weight: 600; }
+  .toggle-desc { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .toggle { width: 48px; height: 26px; background: var(--gray); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(22px); }
+  .boundary-map { width: 100%; aspect-ratio: 1; background: var(--card); border: 1px solid rgba(0,180,255,0.2); border-radius: 20px; position: relative; overflow: hidden; margin-bottom: 16px; }
+  .boundary-map::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,180,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,180,255,0.05) 1px, transparent 1px); background-size: 30px 30px; }
+  .boundary-zone { position: absolute; inset: 30px; border: 2px dashed var(--blue); border-radius: 12px; box-shadow: 0 0 20px var(--blue-glow), inset 0 0 20px rgba(0,180,255,0.05); }
+  .zivo-dot { position: absolute; width: 20px; height: 20px; background: var(--blue); border-radius: 6px; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 16px var(--blue); animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-6px); } }
+  .corner-handle { position: absolute; width: 14px; height: 14px; background: var(--blue); border-radius: 3px; box-shadow: 0 0 8px var(--blue); }
+  .boundary-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card { background: var(--card); border: 1px solid rgba(0,180,255,0.15); border-radius: 14px; padding: 14px; }
+  .info-card-label { font-size: 10px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; }
+  .info-card-value { font-size: 18px; font-weight: 700; color: var(--blue); font-family: 'Share Tech Mono', monospace; margin-top: 4px; }
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: rgba(5,10,20,0.95); border-top: 1px solid rgba(0,180,255,0.15); display: flex; padding: 10px 0 20px; backdrop-filter: blur(20px); z-index: 100; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 0; transition: all 0.2s; }
+  .nav-icon { font-size: 22px; filter: grayscale(1) opacity(0.4); transition: all 0.2s; }
+  .nav-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+  .nav-item.active .nav-icon { filter: none; }
+  .nav-item.active .nav-label { color: var(--blue); }
+  .log-entry { display: flex; gap: 10px; padding: 10px 14px; background: var(--card); border: 1px solid rgba(0,180,255,0.1); border-radius: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .log-time { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--gray); white-space: nowrap; padding-top: 2px; }
+  .log-text { font-size: 13px; line-height: 1.4; }
+  .log-text.info { color: var(--blue); }
+  .log-text.warn { color: #ffaa00; }
+  .log-text.ok { color: var(--success); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">ZI<span>V</span>O</div>
+    <div class="header-right">
+      <div class="status-dot" id="status-dot" style="background:var(--gray);box-shadow:none;animation:none;"></div>
+      <span id="status-text" style="color:var(--gray)"></span>
+    </div>
+  </div>
+
+  <div class="zivo-face-container">
+    <div class="zivo-face" id="zivo-face">
+      <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+    </div>
+    <div class="zivo-name">ZIVO</div>
+    <div class="zivo-mood" id="mood-text"></div>
+  </div>
+
+  <div id="offline-banner" style="text-align:center;padding:16px 20px;color:var(--gray);">
+    <div style="font-size:40px;margin-bottom:10px;">📡</div>
+    <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px;" data-t="not_connected"></div>
+    <div style="font-size:11px;opacity:0.6;margin-bottom:20px;" data-t="not_connected_desc"></div>
+    <div style="background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;padding:18px;text-align:left;">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:8px;" data-t="serial_label"></div>
+      <input id="serial-input" type="text" maxlength="12"
+        style="width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.3);border-radius:10px;padding:12px 14px;color:var(--white);font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:3px;outline:none;text-transform:uppercase;"
+        placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
+      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;" data-t="serial_wrong"></div>
+      <button onclick="tryConnect()" id="connect-btn"
+        style="width:100%;margin-top:14px;padding:13px;background:rgba(0,180,255,0.1);border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;font-weight:700;"
+        data-t="connect_btn"></button>
+    </div>
+    <div style="margin-top:14px;font-size:11px;opacity:0.5;" data-t="serial_hint"></div>
+  </div>
+
+  <div id="pages-wrapper" style="display:none">
+    <div id="page-home" class="page" style="display:block">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value" id="temp-val">--</div><div class="stat-label" data-t="temp"></div></div>
+        <div class="stat-card"><div class="stat-value" id="uptime-val">--</div><div class="stat-label" data-t="uptime"></div></div>
+        <div class="stat-card"><div class="stat-value">✓</div><div class="stat-label">Wi-Fi</div></div>
+      </div>
+      <div class="battery-card">
+        <div class="battery-header">
+          <span class="battery-title" data-t="battery"></span>
+          <span class="battery-percent" id="batt-text">--%</span>
+        </div>
+        <div class="battery-bar"><div class="battery-fill" id="batt-fill"></div></div>
+      </div>
+      <div class="section-title" data-t="log"></div>
+      <div id="log-list"></div>
+    </div>
+
+    <div id="page-control" class="page">
+      <div class="section-title" data-t="movement"></div>
+      <div class="dpad">
+        <div class="dpad-btn dpad-empty"></div>
+        <div class="dpad-btn" onclick="sendCmd('forward')">▲</div>
+        <div class="dpad-btn dpad-empty"></div>
+        <div class="dpad-btn" onclick="sendCmd('left')">◄</div>
+        <div class="dpad-btn dpad-center">ZIVO</div>
+        <div class="dpad-btn" onclick="sendCmd('right')">►</div>
+        <div class="dpad-btn dpad-empty"></div>
+        <div class="dpad-btn" onclick="sendCmd('backward')">▼</div>
+        <div class="dpad-btn dpad-empty"></div>
+      </div>
+      <div class="section-title" data-t="actions"></div>
+      <div class="action-grid">
+        <div class="action-btn" onclick="sendCmd('wake')"><div class="action-icon">🎤</div><div class="action-label" data-t="wakeup"></div></div>
+        <div class="action-btn" onclick="sendCmd('sleep')"><div class="action-icon">😴</div><div class="action-label" data-t="sleep"></div></div>
+        <div class="action-btn" onclick="sendCmd('charge')"><div class="action-icon">🔋</div><div class="action-label" data-t="charge"></div></div>
+        <div class="action-btn" onclick="sendCmd('dance')"><div class="action-icon">🎲</div><div class="action-label" data-t="random"></div></div>
+      </div>
+    </div>
+
+    <div id="page-boundary" class="page">
+      <div class="section-title" data-t="zonemap"></div>
+      <div class="boundary-map">
+        <div class="boundary-zone">
+          <div class="corner-handle" style="top:-7px;left:-7px"></div>
+          <div class="corner-handle" style="top:-7px;right:-7px"></div>
+          <div class="corner-handle" style="bottom:-7px;left:-7px"></div>
+          <div class="corner-handle" style="bottom:-7px;right:-7px"></div>
+        </div>
+        <div class="zivo-dot"></div>
+      </div>
+      <div class="boundary-info">
+        <div class="info-card"><div class="info-card-label" data-t="zonewidth"></div><div class="info-card-value">80cm</div></div>
+        <div class="info-card"><div class="info-card-label" data-t="zonedepth"></div><div class="info-card-value">60cm</div></div>
+        <div class="info-card"><div class="info-card-label" data-t="edgealerts"></div><div class="info-card-value" style="color:var(--success)" data-t="on"></div></div>
+        <div class="info-card"><div class="info-card-label" data-t="falls"></div><div class="info-card-value">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-settings" class="page" style="display:none">
+    <div class="section-title" data-t="language"></div>
+    <div class="lang-grid">
+      <div class="lang-btn" onclick="selectLang(this,'ru')"><div class="lang-flag">🇷🇺</div><div class="lang-name">Русский</div></div>
+      <div class="lang-btn active" onclick="selectLang(this,'en')"><div class="lang-flag">🇺🇸</div><div class="lang-name">English</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'he')"><div class="lang-flag">🇮🇱</div><div class="lang-name">עברית</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'zh')"><div class="lang-flag">🇨🇳</div><div class="lang-name">中文</div></div>
+      <div class="lang-btn" onclick="selectLang(this,'uk')"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
+    </div>
+    <div class="section-title" data-t="features"></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchPage('home',this)"><div class="nav-icon">🤖</div><div class="nav-label">ZIVO</div></div>
+    <div class="nav-item" onclick="switchPage('control',this)"><div class="nav-icon">🕹️</div><div class="nav-label" data-t="nav_control"></div></div>
+    <div class="nav-item" onclick="switchPage('boundary',this)"><div class="nav-icon">📍</div><div class="nav-label" data-t="nav_zone"></div></div>
+    <div class="nav-item" onclick="switchPage('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label" data-t="nav_settings"></div></div>
+  </div>
+</div>
+
+<script>
+// ── ЕДИНСТВЕННОЕ ЧТО НУЖНО МЕНЯТЬ ───────────────────────────────────────
+const REGISTERED_ROBOTS = {
+  'ZIVO-ADMINMW': { name: 'ZIVO #1', owner: 'Admin' },
+  // Добавляй сюда новых роботов:
+  // 'ZIVO-XXXXXX': { name: 'ZIVO #2', owner: 'Имя' },
+};
+// ─────────────────────────────────────────────────────────────────────────
+
+const T = {
+  ru: {
+    online:'В СЕТИ', temp:'ТЕМП', uptime:'ВРЕМЯ', battery:'БАТАРЕЯ', log:'ЖУРНАЛ',
+    movement:'ДВИЖЕНИЕ', actions:'ДЕЙСТВИЯ',
+    wakeup:'РАЗБУДИТЬ', sleep:'СПАТЬ', charge:'НА ЗАРЯДКУ', random:'ТАНЦЕВАТЬ',
+    zonemap:'КАРТА ЗОНЫ', zonewidth:'ШИРИНА', zonedepth:'ГЛУБИНА',
+    edgealerts:'ЗАЩИТА КРАЯ', on:'ВКЛ', falls:'ПАДЕНИЙ',
+    language:'ЯЗЫК', features:'ФУНКЦИИ',
+    voiceact:'Голосовая активация', voiceact_desc:'Активация фразой "Привет ZIVO"',
+    edgeprot:'Защита от падения', edgeprot_desc:'Останавливаться у края стола',
+    autocharge:'Авто зарядка', autocharge_desc:'Ехать на базу при низком заряде',
+    explore:'Случайные прогулки', explore_desc:'ZIVO ездит самостоятельно',
+    notifs:'Уведомления', notifs_desc:'Заряд и защита края',
+    nav_control:'УПРАВЛЕНИЕ', nav_zone:'ЗОНА', nav_settings:'НАСТРОЙКИ',
+    moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],
+    log_connected:'Подключён к {name}',
+    upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',
+    offline:'НЕ ПОДКЛЮЧЁН', not_connected:'ZIVO не подключён',
+    not_connected_desc:'Введи серийный номер', connect_btn:'ПОДКЛЮЧИТЬ',
+    serial_label:'СЕРИЙНЫЙ НОМЕР', serial_wrong:'Неверный серийный номер.',
+    serial_hint:'Серийный номер на наклейке на дне корпуса'
+  },
+  en: {
+    online:'ONLINE', temp:'TEMP', uptime:'UPTIME', battery:'BATTERY', log:'LOG',
+    movement:'MOVEMENT', actions:'ACTIONS',
+    wakeup:'WAKE UP', sleep:'SLEEP', charge:'GO CHARGE', random:'DANCE',
+    zonemap:'SAFE ZONE MAP', zonewidth:'WIDTH', zonedepth:'DEPTH',
+    edgealerts:'EDGE ALERTS', on:'ON', falls:'FALLS',
+    language:'LANGUAGE', features:'FEATURES',
+    voiceact:'Voice Activation', voiceact_desc:'Wake up with "Hey ZIVO"',
+    edgeprot:'Edge Protection', edgeprot_desc:'Stop at table edges',
+    autocharge:'Auto Charging', autocharge_desc:'Return to base when low',
+    explore:'Random Explore', explore_desc:'ZIVO moves on its own',
+    notifs:'Notifications', notifs_desc:'Battery and edge alerts',
+    nav_control:'CONTROL', nav_zone:'ZONE', nav_settings:'SETTINGS',
+    moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],
+    log_connected:'Connected to {name}',
+    upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',
+    offline:'DISCONNECTED', not_connected:'ZIVO is not connected',
+    not_connected_desc:'Enter your ZIVO serial number', connect_btn:'CONNECT',
+    serial_label:'SERIAL NUMBER', serial_wrong:'Wrong serial number.',
+    serial_hint:'Serial number is on the sticker on the bottom'
+  },
+  he: {
+    online:'מחובר', temp:'טמפ', uptime:'זמן', battery:'סוללה', log:'יומן',
+    movement:'תנועה', actions:'פעולות',
+    wakeup:'התעורר', sleep:'שינה', charge:'לטעינה', random:'לרקוד',
+    zonemap:'מפת אזור', zonewidth:'רוחב', zonedepth:'עומק',
+    edgealerts:'הגנת קצה', on:'פועל', falls:'נפילות',
+    language:'שפה', features:'תכונות',
+    voiceact:'הפעלה קולית', voiceact_desc:'הפעלה עם "היי ZIVO"',
+    edgeprot:'הגנה מנפילה', edgeprot_desc:'עצור בקצה השולחן',
+    autocharge:'טעינה אוטומטית', autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',
+    explore:'סיור אקראי', explore_desc:'ZIVO נוסע לבד',
+    notifs:'התראות', notifs_desc:'סוללה והגנת קצה',
+    nav_control:'שליטה', nav_zone:'אזור', nav_settings:'הגדרות',
+    moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],
+    log_connected:'מחובר ל-{name}',
+    upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',
+    offline:'מנותק', not_connected:'ZIVO לא מחובר',
+    not_connected_desc:'הזן את המספר הסידורי', connect_btn:'התחבר',
+    serial_label:'מספר סידורי', serial_wrong:'מספר סידורי שגוי.',
+    serial_hint:'המספר הסידורי נמצא בתחתית ZIVO'
+  },
+  zh: {
+    online:'在线', temp:'温度', uptime:'运行', battery:'电池', log:'日志',
+    movement:'移动', actions:'操作',
+    wakeup:'唤醒', sleep:'睡眠', charge:'去充电', random:'跳舞',
+    zonemap:'安全区域', zonewidth:'宽度', zonedepth:'深度',
+    edgealerts:'边缘保护', on:'开启', falls:'跌落',
+    language:'语言', features:'功能',
+    voiceact:'语音激活', voiceact_desc:'说"嘿 ZIVO"唤醒',
+    edgeprot:'防跌落', edgeprot_desc:'在桌子边缘停下',
+    autocharge:'自动充电', autocharge_desc:'电量低时返回充电',
+    explore:'随机探索', explore_desc:'ZIVO 自主移动',
+    notifs:'通知', notifs_desc:'电池和边缘警报',
+    nav_control:'控制', nav_zone:'区域', nav_settings:'设置',
+    moods:['准备好了','探索中','开心','等待命令'],
+    log_connected:'已连接到 {name}',
+    upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',
+    offline:'未连接', not_connected:'ZIVO 未连接',
+    not_connected_desc:'输入序列号', connect_btn:'连接',
+    serial_label:'序列号', serial_wrong:'序列号错误。',
+    serial_hint:'序列号在 ZIVO 底部的贴纸上'
+  },
+  uk: {
+    online:'В МЕРЕЖІ', temp:'ТЕМП', uptime:'ЧАС', battery:'БАТАРЕЯ', log:'ЖУРНАЛ',
+    movement:'РУХ', actions:'ДІЇ',
+    wakeup:'РОЗБУДИТИ', sleep:'СПАТИ', charge:'НА ЗАРЯДКУ', random:'ТАНЦЮВАТИ',
+    zonemap:'КАРТА ЗОНИ', zonewidth:'ШИРИНА', zonedepth:'ГЛИБИНА',
+    edgealerts:'ЗАХИСТ КРАЮ', on:'УВІМКН', falls:'ПАДІНЬ',
+    language:'МОВА', features:'ФУНКЦІЇ',
+    voiceact:'Голосова активація', voiceact_desc:'Активація фразою "Привіт ZIVO"',
+    edgeprot:'Захист від падіння', edgeprot_desc:'Зупинятись біля краю столу',
+    autocharge:'Авто зарядка', autocharge_desc:'Їхати на базу при низькому заряді',
+    explore:'Випадкові прогулянки', explore_desc:'ZIVO їздить самостійно',
+    notifs:'Сповіщення', notifs_desc:'Заряд і захист краю',
+    nav_control:'КЕРУВАННЯ', nav_zone:'ЗОНА', nav_settings:'НАЛАШТУВАННЯ',
+    moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],
+    log_connected:'Підключено до {name}',
+    upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',
+    offline:'НЕ ПІДКЛЮЧЕНО', not_connected:'ZIVO не підключено',
+    not_connected_desc:'Введи серійний номер', connect_btn:'ПІДКЛЮЧИТИ',
+    serial_label:'СЕРІЙНИЙ НОМЕР', serial_wrong:'Невірний серійний номер.',
+    serial_hint:'Серійний номер на наклейці на дні корпусу'
+  }
+};
+
+let lang = 'en';
+let moodIdx = 0;
+let connected = false;
+let currentRobot = null;
+let currentSerial = null;
+
+function isValidSerial(s) { return s in REGISTERED_ROBOTS; }
+
+function setConnected(val) {
+  connected = val;
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  const face = document.getElementById('zivo-face');
+  if (val) {
+    dot.style.cssText = 'background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite;';
+    txt.style.color = 'var(--success)';
+    txt.textContent = T[lang].online;
+    document.getElementById('offline-banner').style.display = 'none';
+    document.getElementById('pages-wrapper').style.display = 'block';
+    document.getElementById('page-home').style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector('.nav-item').classList.add('active');
+    face.style.borderColor = 'var(--blue)';
+    face.style.boxShadow = '0 0 30px var(--blue-glow), inset 0 0 30px rgba(0,180,255,0.05)';
+  } else {
+    dot.style.cssText = 'background:var(--gray);box-shadow:none;animation:none;';
+    txt.style.color = 'var(--gray)';
+    txt.textContent = T[lang].offline;
+    document.getElementById('offline-banner').style.display = 'block';
+    document.getElementById('pages-wrapper').style.display = 'none';
+    document.getElementById('page-settings').style.display = 'none';
+    face.style.borderColor = 'var(--gray)';
+    face.style.boxShadow = 'none';
+  }
+}
+
+function tryConnect() {
+  const input = document.getElementById('serial-input').value.trim().toUpperCase();
+  const err = document.getElementById('serial-error');
+  const btn = document.getElementById('connect-btn');
+  if (!input) { err.style.display = 'block'; return; }
+  btn.textContent = '...';
+  btn.style.opacity = '0.6';
+  err.style.display = 'none';
+  setTimeout(() => {
+    if (isValidSerial(input)) {
+      currentRobot = REGISTERED_ROBOTS[input];
+      currentSerial = input;
+      localStorage.setItem('zivo_last_serial', input);
+      setConnected(true);
+      addLog('ok', T[lang].log_connected.replace('{name}', currentRobot.name));
+    } else {
+      btn.textContent = T[lang].connect_btn;
+      btn.style.opacity = '1';
+      err.style.display = 'block';
+      const inp = document.getElementById('serial-input');
+      inp.style.borderColor = 'var(--danger)';
+      setTimeout(() => inp.style.borderColor = 'rgba(0,180,255,0.3)', 2000);
+    }
+  }, 1200);
+}
+
+function addLog(type, text) {
+  const list = document.getElementById('log-list');
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = '<span class="log-time">'+time+'</span><span class="log-text '+type+'">'+text+'</span>';
+  list.insertBefore(entry, list.firstChild);
+  while (list.children.length > 20) list.removeChild(list.lastChild);
+}
+
+async function sendCmd(cmd) {
+  if (!connected || !currentSerial) return;
+  try {
+    await fetch('http://zivo.local:8080/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Serial': currentSerial },
+      body: JSON.stringify({ cmd }),
+      signal: AbortSignal.timeout(2000)
+    });
+  } catch(e) {}
+}
+
+async function pollRobot() {
+  if (!connected || !currentSerial) return;
+  try {
+    const resp = await fetch('http://zivo.local:8080/status', {
+      headers: { 'X-Serial': currentSerial },
+      signal: AbortSignal.timeout(2000)
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const batt = data.battery ?? 0;
+    document.getElementById('batt-text').textContent = batt + '%';
+    document.getElementById('batt-fill').style.width = batt + '%';
+    document.getElementById('batt-text').style.color = batt < 20 ? 'var(--danger)' : batt < 50 ? '#ffaa00' : 'var(--success)';
+    document.getElementById('temp-val').textContent = (data.temp ?? '--') + '°';
+    if (data.uptime) {
+      const h = Math.floor(data.uptime / 3600);
+      const m = Math.floor((data.uptime % 3600) / 60);
+      document.getElementById('uptime-val').textContent = T[lang].upfmt(h, m);
+    }
+  } catch(e) {}
+}
+
+function applyLang(l) {
+  lang = l;
+  const t = T[l];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const k = el.getAttribute('data-t');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.getElementById('mood-text').textContent = t.moods[moodIdx];
+  document.body.style.direction = l === 'he' ? 'rtl' : 'ltr';
+  document.getElementById('status-text').textContent = connected ? t.online : t.offline;
+  document.getElementById('connect-btn').textContent = t.connect_btn;
+}
+
+function selectLang(btn, l) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang(l);
+}
+
+function switchPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  if (name === 'settings') {
+    document.getElementById('page-settings').style.display = 'block';
+  } else if (connected) {
+    document.getElementById('pages-wrapper').style.display = 'block';
+    document.getElementById('page-' + name).style.display = 'block';
+  }
+}
+
+// Восстанавливаем последний серийник
+const lastSerial = localStorage.getItem('zivo_last_serial');
+if (lastSerial) document.getElementById('serial-input').value = lastSerial;
+
+setInterval(pollRobot, 3000);
+setInterval(() => {
+  moodIdx = (moodIdx + 1) % 4;
+  document.getElementById('mood-text').textContent = T[lang].moods[moodIdx];
+}, 4000);
+
+applyLang('en');
+setConnected(false);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
+</body>
+</html>  .zivo-face::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,180,255,0.1), transparent); animation: scan 3s infinite; }
   @keyframes scan { 0% { left: -100%; } 100% { left: 200%; } }
   .eyes { display: flex; gap: 28px; position: relative; z-index: 1; }
   .eye { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; box-shadow: 0 0 20px var(--blue); animation: blink 4s infinite; position: relative; overflow: hidden; }
