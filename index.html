@@ -8,1325 +8,1062 @@
 <meta name="theme-color" content="#00b4ff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ZIVO">
-<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <style>
-:root{--bg:#050a14;--blue:#00b4ff;--blue2:#0066cc;--blue-glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--success:#00ffaa;--warn:#ffaa00;--card:rgba(10,22,40,0.8);--gold:#ffd700}
+:root{--bg:#050a14;--blue:#00b4ff;--blue2:#0066cc;--glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--ok:#00ffaa;--warn:#ffaa00;--card:rgba(10,22,40,0.8);--gold:#ffd700}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,180,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .app{position:relative;z-index:1;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
-.logo{font-size:26px;font-weight:900;letter-spacing:4px;color:var(--white);text-shadow:0 0 20px var(--blue)}
+/* HEADER */
+.hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
+.logo{font-size:26px;font-weight:900;letter-spacing:4px;text-shadow:0 0 20px var(--blue)}
 .logo span{color:var(--blue)}
-.header-right{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Share Tech Mono',monospace}
-.status-dot{width:9px;height:9px;border-radius:50%}
+.hdr-r{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--gray)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.page{display:none;flex:1;padding:0 16px 100px}
-/* Face */
+/* FACE */
 .face-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px}
-.zivo-face{width:140px;height:140px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:28px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .5s}
-.zivo-face::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.1),transparent);animation:scan 3s infinite}
+.face{width:140px;height:140px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:28px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .5s}
+.face::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.1),transparent);animation:scan 3s infinite}
 @keyframes scan{0%{left:-100%}100%{left:200%}}
 .eyes{display:flex;gap:24px;z-index:1}
 .eye{width:28px;height:28px;background:var(--blue);border-radius:7px;box-shadow:0 0 16px var(--blue);animation:blink 4s infinite;position:relative;overflow:hidden}
 .eye::after{content:'';position:absolute;top:4px;left:4px;width:8px;height:8px;background:rgba(255,255,255,.6);border-radius:2px}
 @keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
-.zivo-name{margin-top:10px;font-size:20px;font-weight:900;letter-spacing:6px;color:var(--blue)}
-.zivo-mood{font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px;margin-top:2px}
-/* Cards */
+.face-name{margin-top:10px;font-size:20px;font-weight:900;letter-spacing:6px;color:var(--blue)}
+.face-mood{font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px;margin-top:2px}
+/* PAGES */
+.page{display:none;flex:1;padding:0 16px 100px}
+/* CARDS / COMMON */
 .card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px)}
-.section-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:18px 0 10px}
-/* Stats */
-.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
-.stat-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:12px 8px;text-align:center}
-.stat-value{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
-.stat-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-/* Battery */
-.batt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.batt-pct{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--success)}
+.sec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:18px 0 10px}
+.inp{width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.25);border-radius:10px;padding:11px 13px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none}
+.inp:focus{border-color:var(--blue)}
+.inp-lbl{font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:5px}
+.inp-row{margin-bottom:10px}
+.btn{width:100%;padding:14px;background:var(--blue);border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:2px;color:#000;font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:4px}
+.btn:active{opacity:.8;transform:scale(.98)}
+.btn.gold{background:var(--gold)}
+.btn-out{width:100%;padding:13px;background:transparent;border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:6px}
+.btn-out.red{border-color:var(--danger);color:var(--danger)}
+/* AUTH SCREENS */
+.auth-screen{padding:24px 20px;text-align:center;display:none}
+.auth-icon{font-size:48px;margin-bottom:12px}
+.auth-title{font-size:22px;font-weight:900;letter-spacing:3px;margin-bottom:6px}
+.auth-sub{font-size:12px;color:var(--gray);margin-bottom:28px}
+.auth-err{font-size:11px;color:var(--danger);margin-top:8px;display:none}
+.auth-switch{background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;display:block;width:100%;font-family:'Exo 2',sans-serif;letter-spacing:1px}
+/* OFFLINE BANNER */
+#offline-banner{text-align:center;padding:14px 20px;color:var(--gray);display:none}
+/* HOME */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.stat{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:12px 8px;text-align:center}
+.stat-v{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
+.stat-l{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.batt-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.batt-pct{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--ok)}
 .batt-bar{height:7px;background:rgba(0,180,255,0.1);border-radius:4px;overflow:hidden}
 .batt-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue2),var(--blue));border-radius:4px;transition:width .5s}
-/* Log */
-.log-entry{display:flex;gap:8px;padding:9px 12px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:11px;margin-bottom:7px;align-items:flex-start}
-.log-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:1px}
-.log-text{font-size:12px;line-height:1.4}
-.log-text.info{color:var(--blue)}.log-text.warn{color:var(--warn)}.log-text.ok{color:var(--success)}
-/* Dpad */
+.log-e{display:flex;gap:8px;padding:9px 12px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:11px;margin-bottom:7px;align-items:flex-start}
+.log-t{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:1px}
+.log-m{font-size:12px;line-height:1.4}
+.log-m.info{color:var(--blue)}.log-m.warn{color:var(--warn)}.log-m.ok{color:var(--ok)}
+/* TRIAL */
+.trial-banner{background:linear-gradient(135deg,rgba(0,255,170,0.1),rgba(0,180,255,0.1));border:1px solid var(--ok);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.trial-days{font-size:28px;font-weight:900;color:var(--ok);font-family:'Share Tech Mono',monospace;min-width:40px}
+/* CONTROL */
 .dpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:190px;margin:0 auto 20px}
-.dpad-btn{height:52px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;user-select:none}
-.dpad-btn:active{background:var(--blue);box-shadow:0 0 16px var(--blue-glow);transform:scale(.95)}
-.dpad-center{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:11px;font-weight:700;color:var(--blue)}
-.dpad-empty{background:transparent;border:none}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.action-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:14px;text-align:center;cursor:pointer;transition:all .2s}
-.action-btn:active{transform:scale(.97);border-color:var(--blue)}
-.action-icon{font-size:22px;margin-bottom:5px}
-.action-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
-/* Lang */
+.db{height:52px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;user-select:none}
+.db:active{background:var(--blue);box-shadow:0 0 16px var(--glow);transform:scale(.95)}
+.db-c{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:11px;font-weight:700;color:var(--blue)}
+.db-e{background:transparent;border:none}
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.act-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:14px;text-align:center;cursor:pointer;transition:all .2s}
+.act-btn:active{transform:scale(.97);border-color:var(--blue)}
+.act-ico{font-size:22px;margin-bottom:5px}
+.act-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+/* ZONE */
+.bmap{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px}
+.bmap::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:28px 28px}
+.bzone{position:absolute;inset:28px;border:2px dashed var(--blue);border-radius:10px;box-shadow:0 0 16px var(--glow)}
+.zdot{position:absolute;width:18px;height:18px;background:var(--blue);border-radius:5px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--blue);animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-5px)}}
+.ch{position:absolute;width:12px;height:12px;background:var(--blue);border-radius:3px}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ic{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;padding:12px}
+.ic-l{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+.ic-v{font-size:16px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:3px}
+/* SETTINGS */
 .lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .lang-btn{padding:12px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s}
-.lang-btn.active{border-color:var(--blue);background:rgba(0,180,255,0.1)}
+.lang-btn.on{border-color:var(--blue);background:rgba(0,180,255,0.1)}
 .lang-flag{font-size:24px}
 .lang-name{font-size:10px;color:var(--gray);margin-top:3px}
-/* Toggle */
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;margin-bottom:8px}
-.toggle-label{font-size:13px;font-weight:600}
-.toggle-desc{font-size:10px;color:var(--gray);margin-top:2px}
-.toggle{width:46px;height:24px;background:var(--gray);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
-.toggle.on{background:var(--blue);box-shadow:0 0 8px var(--blue-glow)}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s}
-.toggle.on::after{transform:translateX(22px)}
-/* Zone */
-.boundary-map{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px}
-.boundary-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:28px 28px}
-.boundary-zone{position:absolute;inset:28px;border:2px dashed var(--blue);border-radius:10px;box-shadow:0 0 16px var(--blue-glow)}
-.zivo-dot{position:absolute;width:18px;height:18px;background:var(--blue);border-radius:5px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--blue);animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-5px)}}
-.corner-handle{position:absolute;width:12px;height:12px;background:var(--blue);border-radius:3px}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.info-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;padding:12px}
-.info-card-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
-.info-card-value{font-size:16px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:3px}
-/* Nav */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.97);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:8px 0 18px;backdrop-filter:blur(20px);z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;transition:all .2s}
-.nav-icon{font-size:20px;filter:grayscale(1) opacity(.4);transition:all .2s}
-.nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
-.nav-item.active .nav-icon{filter:none}
-.nav-item.active .nav-label{color:var(--blue)}
-/* Offline banner */
-#offline-banner{text-align:center;padding:14px 20px;color:var(--gray)}
-/* ── PROFILE ── */
-.profile-header{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;margin-bottom:10px}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;margin-bottom:8px}
+.tog-lbl{font-size:13px;font-weight:600}
+.tog-desc{font-size:10px;color:var(--gray);margin-top:2px}
+.tog{width:46px;height:24px;background:var(--gray);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--blue);box-shadow:0 0 8px var(--glow)}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s}
+.tog.on::after{transform:translateX(22px)}
+/* PROFILE */
+.prof-hdr{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;margin-bottom:10px}
 .avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.profile-name{font-size:18px;font-weight:700}
-.profile-sub{font-size:11px;color:var(--gray);margin-top:2px}
-.sub-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;margin-top:4px}
-.sub-badge.free{background:rgba(58,90,122,0.4);color:var(--gray);border:1px solid var(--gray)}
-.sub-badge.pro{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid var(--gold)}
-.sub-badge.trial{background:rgba(0,255,170,0.15);color:var(--success);border:1px solid var(--success)}
-.input-row{margin-bottom:10px}
-.input-label{font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:5px}
-.zivo-input{width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.25);border-radius:10px;padding:11px 13px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none}
-.zivo-input:focus{border-color:var(--blue)}
-/* ── SUBSCRIPTION ── */
-.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.plan-card{background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
-.plan-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
-.plan-card.gold{border-color:var(--gold);background:rgba(255,215,0,0.05)}
-.plan-card.gold.active{background:rgba(255,215,0,0.1)}
-.plan-name{font-size:13px;font-weight:700;letter-spacing:1px}
-.plan-price{font-size:22px;font-weight:900;color:var(--blue);font-family:'Share Tech Mono',monospace;margin:6px 0 2px}
-.plan-card.gold .plan-price{color:var(--gold)}
-.plan-period{font-size:10px;color:var(--gray)}
-.plan-save{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--success);color:#000;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap}
-.plan-forever{grid-column:1/-1}
-.feature-list{margin:6px 0 0}
-.feature-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,180,255,0.07)}
-.feature-item:last-child{border:none}
-.feature-item .fi-icon{font-size:14px;width:20px;text-align:center}
-.feature-locked{opacity:.4}
-.btn-primary{width:100%;padding:14px;background:var(--blue);border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:2px;color:#000;font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:4px}
-.btn-primary:active{opacity:.8;transform:scale(.98)}
-.btn-primary.gold{background:var(--gold);color:#000}
-.btn-outline{width:100%;padding:13px;background:transparent;border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:6px}
-/* Trial banner */
-.trial-banner{background:linear-gradient(135deg,rgba(0,255,170,0.1),rgba(0,180,255,0.1));border:1px solid var(--success);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
-.trial-days{font-size:28px;font-weight:900;color:var(--success);font-family:'Share Tech Mono',monospace;min-width:40px}
-/* ── VOICES ── */
+.prof-name{font-size:18px;font-weight:700}
+.prof-since{font-size:11px;color:var(--gray);margin-top:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;margin-top:4px}
+.badge.free{background:rgba(58,90,122,0.4);color:var(--gray);border:1px solid var(--gray)}
+.badge.pro{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid var(--gold)}
+.badge.trial{background:rgba(0,255,170,0.15);color:var(--ok);border:1px solid var(--ok)}
+/* SMART */
+.smart-hero{background:linear-gradient(135deg,rgba(0,180,255,0.1),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+/* VOICES */
 .voice-grid{display:grid;gap:10px;margin-bottom:14px}
 .voice-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:14px;cursor:pointer;transition:all .2s}
-.voice-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
-.voice-card.locked{opacity:.5;cursor:default}
-.voice-card.locked .lock-icon{display:flex}
-.lock-icon{display:none;margin-left:auto;font-size:14px;color:var(--gold)}
-.voice-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.voice-name{font-size:14px;font-weight:700}
-.voice-desc{font-size:11px;color:var(--gray);margin-top:1px}
-.voice-play{margin-left:auto;width:32px;height:32px;border-radius:8px;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0}
-/* ── SMART MODE ── */
-.smart-hero{background:linear-gradient(135deg,rgba(0,180,255,0.1),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
-.smart-hero-icon{font-size:36px;margin-bottom:8px}
-.smart-hero-title{font-size:16px;font-weight:700;margin-bottom:4px}
-.smart-hero-desc{font-size:11px;color:var(--gray);line-height:1.5}
-/* ── CALCULATOR ── */
-.calc-display{background:rgba(0,0,0,0.4);border:1px solid rgba(0,180,255,0.2);border-radius:14px;padding:16px;margin-bottom:12px;min-height:80px;display:flex;flex-direction:column;justify-content:flex-end}
-.calc-expr{font-size:12px;color:var(--gray);font-family:'Share Tech Mono',monospace;min-height:18px;word-break:break-all}
-.calc-result{font-size:28px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;text-align:right;word-break:break-all}
-.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.calc-btn{height:54px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;color:var(--white)}
-.calc-btn:active{transform:scale(.93)}
-.calc-btn.op{color:var(--blue);border-color:rgba(0,180,255,0.3)}
-.calc-btn.eq{background:var(--blue);color:#000;border-color:var(--blue)}
-.calc-btn.clear{color:var(--danger);border-color:rgba(255,68,102,0.3)}
-.calc-btn.wide{grid-column:span 2}
-.calc-ai-btn{width:100%;margin-top:10px;padding:13px;background:linear-gradient(135deg,rgba(0,180,255,0.15),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s}
-.calc-solution{background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.2);border-radius:12px;padding:14px;margin-top:10px;font-size:13px;line-height:1.6;display:none}
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
-.modal{background:#0a1628;border:1px solid rgba(0,180,255,0.2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.voice-card.on{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.voice-card.locked{opacity:.5}
+.v-ava{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,180,255,0.2));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.v-name{font-size:14px;font-weight:700}
+.v-desc{font-size:11px;color:var(--gray);margin-top:1px}
+.v-play{margin-left:auto;width:32px;height:32px;border-radius:8px;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.v-lock{margin-left:auto;font-size:16px}
+/* SUBSCRIPTION */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.plan{background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.plan.on{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.plan.gld{border-color:var(--gold);background:rgba(255,215,0,0.05)}
+.plan.gld.on{background:rgba(255,215,0,0.1)}
+.plan-name{font-size:13px;font-weight:700;letter-spacing:1px}
+.plan-price{font-size:22px;font-weight:900;color:var(--blue);font-family:'Share Tech Mono',monospace;margin:6px 0 2px}
+.plan.gld .plan-price{color:var(--gold)}
+.plan-per{font-size:10px;color:var(--gray)}
+.plan-save{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--ok);color:#000;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap}
+.plan-full{grid-column:1/-1}
+.feat-list{margin:6px 0 0}
+.feat{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,180,255,0.07)}
+.feat:last-child{border:none}
+.feat-ico{font-size:14px;width:20px;text-align:center}
+.feat-locked{opacity:.4}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.97);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:8px 0 18px;backdrop-filter:blur(20px);z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;transition:all .2s}
+.ni-ico{font-size:20px;filter:grayscale(1) opacity(.4);transition:all .2s}
+.ni-lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.ni.on .ni-ico{filter:none}
+.ni.on .ni-lbl{color:var(--blue)}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{background:#0a1628;border:1px solid rgba(0,180,255,0.2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;position:relative}
 .modal-title{font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}
-.modal-close{position:absolute;top:16px;right:20px;font-size:22px;cursor:pointer;color:var(--gray)}
+.modal-x{position:absolute;top:16px;right:20px;font-size:22px;cursor:pointer;color:var(--gray);background:none;border:none;color:var(--gray)}
 </style>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="app">
-  <div class="header">
+
+  <!-- HEADER -->
+  <div class="hdr">
     <div class="logo">ZI<span>V</span>O</div>
-    <div class="header-right">
-      <div class="status-dot" id="status-dot" style="background:var(--gray);box-shadow:none;animation:none;"></div>
-      <span id="status-text" style="color:var(--gray)"></span>
+    <div class="hdr-r">
+      <div class="dot" id="sdot"></div>
+      <span id="stxt" style="color:var(--gray)"></span>
     </div>
   </div>
 
-  <!-- Face — всегда видно -->
+  <!-- FACE (always visible) -->
   <div class="face-wrap">
-    <div class="zivo-face" id="zivo-face">
+    <div class="face" id="zface">
       <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
     </div>
-    <div class="zivo-name" id="bot-display-name">ZIVO</div>
-    <div class="zivo-mood" id="mood-text"></div>
+    <div class="face-name" id="botname">ZIVO</div>
+    <div class="face-mood" id="moodtxt"></div>
   </div>
 
-  <!-- REGISTRATION SCREEN — shown only on first launch -->
-  <div id="reg-screen" style="display:none;padding:24px 20px;text-align:center;">
-    <div style="font-size:48px;margin-bottom:12px;">👋</div>
-    <div style="font-size:22px;font-weight:900;letter-spacing:3px;margin-bottom:6px;" id="reg-title"></div>
-    <div style="font-size:12px;color:var(--gray);margin-bottom:28px;" id="reg-subtitle"></div>
-    <div class="card" style="text-align:left;">
-      <div class="input-row">
-        <div class="input-label" id="reg-name-label"></div>
-        <input id="reg-name" class="zivo-input" type="text" autocomplete="name"/>
+  <!-- REGISTER -->
+  <div class="auth-screen" id="scr-reg">
+    <div class="auth-icon">👋</div>
+    <div class="auth-title" id="reg-title">WELCOME</div>
+    <div class="auth-sub" id="reg-sub">Create your account</div>
+    <div class="card" style="text-align:left">
+      <div class="inp-row">
+        <div class="inp-lbl" id="reg-lbl-name">YOUR NAME</div>
+        <input id="reg-name" class="inp" type="text" placeholder="Leo">
       </div>
-      <div class="input-row">
-        <div class="input-label" id="reg-email-label"></div>
-        <input id="reg-email" class="zivo-input" type="email" autocomplete="email"/>
+      <div class="inp-row">
+        <div class="inp-lbl" id="reg-lbl-email">EMAIL</div>
+        <input id="reg-email" class="inp" type="email" placeholder="email@example.com">
       </div>
-      <div class="input-row" style="margin-bottom:0">
-        <div class="input-label" id="reg-password-label"></div>
-        <input id="reg-password" class="zivo-input" type="password" autocomplete="new-password"/>
+      <div class="inp-row" style="margin-bottom:0">
+        <div class="inp-lbl" id="reg-lbl-pass">PASSWORD</div>
+        <input id="reg-pass" class="inp" type="password" placeholder="••••••">
       </div>
-      <div id="reg-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;"></div>
+      <div class="auth-err" id="reg-err"></div>
     </div>
-    <button onclick="completeRegistration()" id="reg-btn" class="btn-primary" style="margin-top:14px;"></button>
-    <div style="margin-top:12px;font-size:11px;color:var(--gray);" id="reg-login-hint"></div>
-    <button onclick="showLoginForm()" id="reg-login-btn" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;margin-top:4px;font-family:'Exo 2',sans-serif;" id="reg-login-link"></button>
+    <button class="btn" id="reg-btn" onclick="doRegister()">CREATE ACCOUNT</button>
+    <button class="auth-switch" onclick="showLogin()">Already have an account? <b>SIGN IN</b></button>
   </div>
 
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen" style="display:none;padding:24px 20px;text-align:center;">
-    <div style="font-size:48px;margin-bottom:12px;">🔑</div>
-    <div style="font-size:22px;font-weight:900;letter-spacing:3px;margin-bottom:6px;" id="login-title"></div>
-    <div style="font-size:12px;color:var(--gray);margin-bottom:28px;" id="login-subtitle"></div>
-    <div class="card" style="text-align:left;">
-      <div class="input-row">
-        <div class="input-label" id="login-email-label"></div>
-        <input id="login-email" class="zivo-input" type="email" autocomplete="email"/>
+  <!-- LOGIN -->
+  <div class="auth-screen" id="scr-login">
+    <div class="auth-icon">🔑</div>
+    <div class="auth-title" id="login-title">WELCOME BACK</div>
+    <div class="auth-sub" id="login-sub">Sign in to continue</div>
+    <div class="card" style="text-align:left">
+      <div class="inp-row">
+        <div class="inp-lbl" id="login-lbl-email">EMAIL</div>
+        <input id="login-email" class="inp" type="email" placeholder="email@example.com">
       </div>
-      <div class="input-row" style="margin-bottom:0">
-        <div class="input-label" id="login-password-label"></div>
-        <input id="login-password" class="zivo-input" type="password" autocomplete="current-password"/>
+      <div class="inp-row" style="margin-bottom:0">
+        <div class="inp-lbl" id="login-lbl-pass">PASSWORD</div>
+        <input id="login-pass" class="inp" type="password" placeholder="••••••">
       </div>
-      <div id="login-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;"></div>
+      <div class="auth-err" id="login-err"></div>
     </div>
-    <button onclick="completeLogin()" id="login-btn" class="btn-primary" style="margin-top:14px;"></button>
-    <button onclick="showRegForm()" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;font-family:'Exo 2',sans-serif;display:block;width:100%;" id="login-reg-link"></button>
+    <button class="btn" id="login-btn" onclick="doLogin()">SIGN IN</button>
+    <button class="auth-switch" onclick="showReg()">No account? <b>CREATE ONE</b></button>
   </div>
 
-  <!-- Offline banner -->
+  <!-- OFFLINE BANNER -->
   <div id="offline-banner">
-    <div style="font-size:36px;margin-bottom:8px;">📡</div>
-    <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px;" data-t="not_connected"></div>
-    <div style="font-size:11px;opacity:.6;margin-bottom:18px;" data-t="not_connected_desc"></div>
-    <div class="card" style="text-align:left;">
-      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:6px;" data-t="serial_label"></div>
-      <input id="serial-input" type="text" maxlength="12" class="zivo-input" style="letter-spacing:3px;font-family:'Share Tech Mono',monospace;font-size:15px;text-transform:uppercase;" placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
-      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:6px;display:none;" data-t="serial_wrong"></div>
-      <button onclick="tryConnect()" id="connect-btn" class="btn-primary" style="margin-top:12px;" data-t="connect_btn"></button>
+    <div style="font-size:36px;margin-bottom:8px">📡</div>
+    <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px" id="ob-title"></div>
+    <div style="font-size:11px;opacity:.6;margin-bottom:18px" id="ob-desc"></div>
+    <div class="card" style="text-align:left">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:6px" id="ob-lbl"></div>
+      <input id="serial-inp" class="inp" type="text" maxlength="12" style="letter-spacing:3px;font-family:'Share Tech Mono',monospace;font-size:15px;text-transform:uppercase" placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()">
+      <div id="serial-err" style="font-size:11px;color:var(--danger);margin-top:6px;display:none" id="ob-err"></div>
+      <button class="btn" style="margin-top:12px" id="conn-btn" onclick="tryConnect()"></button>
     </div>
-    <div style="margin-top:12px;font-size:11px;opacity:.4;" data-t="serial_hint"></div>
+    <div style="margin-top:12px;font-size:11px;opacity:.4" id="ob-hint"></div>
   </div>
 
-  <!-- Pages wrapper -->
-  <div id="pages-wrapper" style="display:none">
+  <!-- PAGES WRAPPER (shown when connected) -->
+  <div id="pages-wrap" style="display:none">
 
     <!-- HOME -->
-    <div id="page-home" class="page" style="display:block">
-      <!-- Trial banner if active -->
-      <div id="trial-banner" class="trial-banner" style="display:none">
-        <div class="trial-days" id="trial-days-left">7</div>
+    <div id="pg-home" class="page" style="display:block">
+      <div class="trial-banner" id="trial-banner" style="display:none">
+        <div class="trial-days" id="trial-d">7</div>
         <div>
-          <div style="font-size:13px;font-weight:700;" data-t="trial_active"></div>
-          <div style="font-size:11px;color:var(--gray);margin-top:2px;" data-t="trial_desc"></div>
+          <div style="font-size:13px;font-weight:700" id="trial-title"></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px" id="trial-desc"></div>
         </div>
       </div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-value" id="temp-val">--</div><div class="stat-label" data-t="temp"></div></div>
-        <div class="stat-card"><div class="stat-value" id="uptime-val">--</div><div class="stat-label" data-t="uptime"></div></div>
-        <div class="stat-card"><div class="stat-value">✓</div><div class="stat-label">Wi-Fi</div></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-v" id="temp-v">--</div><div class="stat-l" id="lbl-temp"></div></div>
+        <div class="stat"><div class="stat-v" id="upt-v">--</div><div class="stat-l" id="lbl-upt"></div></div>
+        <div class="stat"><div class="stat-v">✓</div><div class="stat-l">Wi-Fi</div></div>
       </div>
       <div class="card">
-        <div class="batt-header">
-          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);" data-t="battery"></span>
-          <span class="batt-pct" id="batt-text">--%</span>
+        <div class="batt-hdr">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)" id="lbl-batt"></span>
+          <span class="batt-pct" id="batt-pct">--%</span>
         </div>
         <div class="batt-bar"><div class="batt-fill" id="batt-fill"></div></div>
       </div>
-      <div class="section-title" data-t="log"></div>
+      <div class="sec" id="lbl-log"></div>
       <div id="log-list"></div>
     </div>
 
     <!-- CONTROL -->
-    <div id="page-control" class="page">
-      <div class="section-title" data-t="movement"></div>
+    <div id="pg-control" class="page">
+      <div class="sec" id="lbl-move"></div>
       <div class="dpad">
-        <div class="dpad-btn dpad-empty"></div>
-        <div class="dpad-btn" onclick="sendCmd('forward')">▲</div>
-        <div class="dpad-btn dpad-empty"></div>
-        <div class="dpad-btn" onclick="sendCmd('left')">◄</div>
-        <div class="dpad-btn dpad-center">ZIVO</div>
-        <div class="dpad-btn" onclick="sendCmd('right')">►</div>
-        <div class="dpad-btn dpad-empty"></div>
-        <div class="dpad-btn" onclick="sendCmd('backward')">▼</div>
-        <div class="dpad-btn dpad-empty"></div>
+        <div class="db db-e"></div><div class="db" onclick="sendCmd('forward')">▲</div><div class="db db-e"></div>
+        <div class="db" onclick="sendCmd('left')">◄</div><div class="db db-c">ZIVO</div><div class="db" onclick="sendCmd('right')">►</div>
+        <div class="db db-e"></div><div class="db" onclick="sendCmd('backward')">▼</div><div class="db db-e"></div>
       </div>
-      <div class="section-title" data-t="actions"></div>
-      <div class="action-grid">
-        <div class="action-btn" onclick="sendCmd('wake')"><div class="action-icon">🎤</div><div class="action-label" data-t="wakeup"></div></div>
-        <div class="action-btn" onclick="sendCmd('sleep')"><div class="action-icon">😴</div><div class="action-label" data-t="sleep"></div></div>
-        <div class="action-btn" onclick="sendCmd('charge')"><div class="action-icon">🔋</div><div class="action-label" data-t="charge"></div></div>
-        <div class="action-btn" onclick="sendCmd('dance')"><div class="action-icon">🎲</div><div class="action-label" data-t="random"></div></div>
+      <div class="sec" id="lbl-actions"></div>
+      <div class="act-grid">
+        <div class="act-btn" onclick="sendCmd('wake')"><div class="act-ico">🎤</div><div class="act-lbl" id="lbl-wake"></div></div>
+        <div class="act-btn" onclick="sendCmd('sleep')"><div class="act-ico">😴</div><div class="act-lbl" id="lbl-sleep"></div></div>
+        <div class="act-btn" onclick="sendCmd('charge')"><div class="act-ico">🔋</div><div class="act-lbl" id="lbl-charge"></div></div>
+        <div class="act-btn" onclick="sendCmd('dance')"><div class="act-ico">🎲</div><div class="act-lbl" id="lbl-dance"></div></div>
       </div>
     </div>
 
     <!-- ZONE -->
-    <div id="page-boundary" class="page">
-      <div class="section-title" data-t="zonemap"></div>
-      <div class="boundary-map">
-        <div class="boundary-zone">
-          <div class="corner-handle" style="top:-6px;left:-6px"></div>
-          <div class="corner-handle" style="top:-6px;right:-6px"></div>
-          <div class="corner-handle" style="bottom:-6px;left:-6px"></div>
-          <div class="corner-handle" style="bottom:-6px;right:-6px"></div>
+    <div id="pg-boundary" class="page">
+      <div class="sec" id="lbl-zone"></div>
+      <div class="bmap">
+        <div class="bzone">
+          <div class="ch" style="top:-6px;left:-6px"></div><div class="ch" style="top:-6px;right:-6px"></div>
+          <div class="ch" style="bottom:-6px;left:-6px"></div><div class="ch" style="bottom:-6px;right:-6px"></div>
         </div>
-        <div class="zivo-dot"></div>
+        <div class="zdot"></div>
       </div>
-      <div class="info-grid">
-        <div class="info-card"><div class="info-card-label" data-t="zonewidth"></div><div class="info-card-value">80cm</div></div>
-        <div class="info-card"><div class="info-card-label" data-t="zonedepth"></div><div class="info-card-value">60cm</div></div>
-        <div class="info-card"><div class="info-card-label" data-t="edgealerts"></div><div class="info-card-value" style="color:var(--success)" data-t="on"></div></div>
-        <div class="info-card"><div class="info-card-label" data-t="falls"></div><div class="info-card-value">0</div></div>
+      <div class="ig">
+        <div class="ic"><div class="ic-l" id="lbl-zw"></div><div class="ic-v">80cm</div></div>
+        <div class="ic"><div class="ic-l" id="lbl-zd"></div><div class="ic-v">60cm</div></div>
+        <div class="ic"><div class="ic-l" id="lbl-ea"></div><div class="ic-v" style="color:var(--ok)" id="lbl-on"></div></div>
+        <div class="ic"><div class="ic-l" id="lbl-falls"></div><div class="ic-v">0</div></div>
       </div>
     </div>
 
-  </div><!-- end pages-wrapper -->
+  </div><!-- /pages-wrap -->
 
-  <!-- SETTINGS — always accessible -->
-  <div id="page-settings" class="page" style="display:none">
-    <div class="section-title" data-t="language"></div>
+  <!-- SETTINGS (always accessible) -->
+  <div id="pg-settings" class="page" style="display:none">
+    <div class="sec" id="lbl-lang"></div>
     <div class="lang-grid">
-      <div class="lang-btn" onclick="selectLang(this,'ru')"><div class="lang-flag">🇷🇺</div><div class="lang-name">Русский</div></div>
-      <div class="lang-btn active" onclick="selectLang(this,'en')"><div class="lang-flag">🇺🇸</div><div class="lang-name">English</div></div>
-      <div class="lang-btn" onclick="selectLang(this,'he')"><div class="lang-flag">🇮🇱</div><div class="lang-name">עברית</div></div>
-      <div class="lang-btn" onclick="selectLang(this,'zh')"><div class="lang-flag">🇨🇳</div><div class="lang-name">中文</div></div>
-      <div class="lang-btn" onclick="selectLang(this,'uk')"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
+      <div class="lang-btn" onclick="setLang('ru',this)"><div class="lang-flag">🇷🇺</div><div class="lang-name">Русский</div></div>
+      <div class="lang-btn on" onclick="setLang('en',this)"><div class="lang-flag">🇺🇸</div><div class="lang-name">English</div></div>
+      <div class="lang-btn" onclick="setLang('he',this)"><div class="lang-flag">🇮🇱</div><div class="lang-name">עברית</div></div>
+      <div class="lang-btn" onclick="setLang('zh',this)"><div class="lang-flag">🇨🇳</div><div class="lang-name">中文</div></div>
+      <div class="lang-btn" onclick="setLang('uk',this)"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
     </div>
-    <div class="section-title" data-t="features"></div>
-    <div class="toggle-row"><div><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="sec" id="lbl-feat"></div>
+    <div class="tog-row"><div><div class="tog-lbl" id="lbl-voice-act"></div><div class="tog-desc" id="lbl-voice-act-d"></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="tog-row"><div><div class="tog-lbl" id="lbl-edge"></div><div class="tog-desc" id="lbl-edge-d"></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="tog-row"><div><div class="tog-lbl" id="lbl-auto"></div><div class="tog-desc" id="lbl-auto-d"></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="tog-row"><div><div class="tog-lbl" id="lbl-expl"></div><div class="tog-desc" id="lbl-expl-d"></div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+    <div class="tog-row"><div><div class="tog-lbl" id="lbl-notif"></div><div class="tog-desc" id="lbl-notif-d"></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
   </div>
 
-  <!-- PROFILE PAGE -->
-  <div id="page-profile" class="page" style="display:none">
-    <div class="profile-header">
-      <div class="avatar" id="profile-avatar">🤖</div>
+  <!-- PROFILE -->
+  <div id="pg-profile" class="page" style="display:none">
+    <div class="prof-hdr">
+      <div class="avatar">🤖</div>
       <div>
-        <div class="profile-name" id="profile-name-display">User</div>
-        <div class="profile-sub" id="profile-member-since"></div>
-        <div id="sub-badge-display" class="sub-badge free">FREE</div>
+        <div class="prof-name" id="prof-name">User</div>
+        <div class="prof-since" id="prof-since"></div>
+        <div class="badge free" id="prof-badge">FREE</div>
       </div>
     </div>
-
-    <!-- User info -->
-    <div class="section-title" data-t="your_info"></div>
+    <div class="sec" id="lbl-info"></div>
     <div class="card">
-      <div class="input-row">
-        <div class="input-label" data-t="your_name"></div>
-        <input id="user-name-input" class="zivo-input" type="text" placeholder="Your name" oninput="saveProfile()"/>
+      <div class="inp-row">
+        <div class="inp-lbl" id="lbl-uname"></div>
+        <input id="inp-uname" class="inp" type="text" oninput="saveProfile()">
       </div>
-      <div class="input-row" style="margin-bottom:0">
-        <div class="input-label" data-t="bot_custom_name"></div>
-        <input id="bot-name-input" class="zivo-input" type="text" placeholder="ZIVO" oninput="saveBotName()"/>
+      <div class="inp-row" style="margin-bottom:0">
+        <div class="inp-lbl" id="lbl-botname"></div>
+        <input id="inp-botname" class="inp" type="text" placeholder="ZIVO" oninput="saveBotName()">
       </div>
     </div>
-
-    <!-- Smart mode -->
-    <div class="section-title" data-t="smart_mode"></div>
-    <div class="smart-hero">
-      <div class="smart-hero-icon">🧠</div>
-      <div class="smart-hero-title" data-t="smart_mode_title"></div>
-      <div class="smart-hero-desc" data-t="smart_mode_desc"></div>
+    <div class="sec" id="lbl-smart"></div>
+    <div class="smart-hero card" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">🧠</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="lbl-smart-t"></div>
+      <div style="font-size:11px;color:var(--gray);line-height:1.5" id="lbl-smart-d"></div>
     </div>
-    <div class="toggle-row" id="smart-mode-toggle-row">
-      <div><div class="toggle-label" data-t="smart_mode_label"></div><div class="toggle-desc" data-t="smart_mode_sub"></div></div>
-      <div class="toggle" id="smart-toggle" onclick="toggleSmartMode()"></div>
+    <div class="tog-row" id="smart-row">
+      <div><div class="tog-lbl" id="lbl-smart-l"></div><div class="tog-desc" id="lbl-smart-s"></div></div>
+      <div class="tog" id="smart-tog" onclick="toggleSmart()"></div>
     </div>
-
-    <!-- Voices -->
-    <div class="section-title" data-t="voice_section"></div>
+    <div class="sec" id="lbl-voices"></div>
     <div class="voice-grid" id="voice-list"></div>
-    <div id="voice-locked-msg" style="display:none;text-align:center;padding:10px;font-size:11px;color:var(--gold);" data-t="voice_locked_msg"></div>
-
-    <!-- Subscription -->
-    <div class="section-title" data-t="subscription"></div>
-    <div id="sub-current-info" class="card" style="margin-bottom:10px;"></div>
-    <button class="btn-outline" onclick="openSubModal()" data-t="manage_sub"></button>
-    <button onclick="logout()" style="width:100%;margin-top:10px;padding:13px;background:transparent;border:1px solid var(--danger);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--danger);font-family:'Exo 2',sans-serif;" id="logout-btn">LOGOUT</button>
+    <div id="voice-lock-msg" style="display:none;text-align:center;padding:10px;font-size:11px;color:var(--gold)"></div>
+    <div class="sec" id="lbl-sub"></div>
+    <div class="card" id="sub-info"></div>
+    <button class="btn-out" onclick="openSub()" id="manage-sub-btn"></button>
+    <button class="btn-out red" style="margin-top:8px" onclick="doLogout()" id="logout-btn">LOGOUT</button>
   </div>
 
-  <!-- CALCULATOR PAGE -->
-  <div id="page-calc" class="page" style="display:none">
-    <div class="section-title" data-t="calculator"></div>
-    <div class="calc-display">
-      <div class="calc-expr" id="calc-expr"></div>
-      <div class="calc-result" id="calc-result">0</div>
-    </div>
-    <div class="calc-grid">
-      <div class="calc-btn clear" onclick="calcClear()">C</div>
-      <div class="calc-btn op" onclick="calcInput('(')">(</div>
-      <div class="calc-btn op" onclick="calcInput(')')">)</div>
-      <div class="calc-btn op" onclick="calcInput('/')">÷</div>
-      <div class="calc-btn" onclick="calcInput('7')">7</div>
-      <div class="calc-btn" onclick="calcInput('8')">8</div>
-      <div class="calc-btn" onclick="calcInput('9')">9</div>
-      <div class="calc-btn op" onclick="calcInput('*')">×</div>
-      <div class="calc-btn" onclick="calcInput('4')">4</div>
-      <div class="calc-btn" onclick="calcInput('5')">5</div>
-      <div class="calc-btn" onclick="calcInput('6')">6</div>
-      <div class="calc-btn op" onclick="calcInput('-')">−</div>
-      <div class="calc-btn" onclick="calcInput('1')">1</div>
-      <div class="calc-btn" onclick="calcInput('2')">2</div>
-      <div class="calc-btn" onclick="calcInput('3')">3</div>
-      <div class="calc-btn op" onclick="calcInput('+')">+</div>
-      <div class="calc-btn" onclick="calcInput('0')">0</div>
-      <div class="calc-btn" onclick="calcInput('.')">.</div>
-      <div class="calc-btn op" onclick="calcInput('^')">xⁿ</div>
-      <div class="calc-btn eq" onclick="calcEquals()">=</div>
-      <div class="calc-btn op wide" onclick="calcInput('sqrt(')">√</div>
-      <div class="calc-btn op" onclick="calcInput('Math.PI')">π</div>
-      <div class="calc-btn op" onclick="calcBackspace()">⌫</div>
-    </div>
-    <button class="calc-ai-btn" id="ai-solve-btn" onclick="aiSolve()">
-      🧠 <span data-t="ai_solve"></span>
-    </button>
-    <div id="ai-locked-calc" style="display:none;text-align:center;padding:12px;font-size:11px;color:var(--gold);cursor:pointer;" onclick="openSubModal()" data-t="calc_locked"></div>
-    <div class="calc-solution" id="calc-solution"></div>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="ni on" onclick="goPage('home',this)"><div class="ni-ico">🤖</div><div class="ni-lbl">ZIVO</div></div>
+    <div class="ni" onclick="goPage('control',this)"><div class="ni-ico">🕹️</div><div class="ni-lbl" id="nav-ctrl"></div></div>
+    <div class="ni" onclick="goPage('boundary',this)"><div class="ni-ico">📍</div><div class="ni-lbl" id="nav-zone"></div></div>
+    <div class="ni" onclick="goPage('profile',this)"><div class="ni-ico">👤</div><div class="ni-lbl" id="nav-prof"></div></div>
+    <div class="ni" onclick="goPage('settings',this)"><div class="ni-ico">⚙️</div><div class="ni-lbl" id="nav-set"></div></div>
   </div>
 
-  <!-- Bottom nav — 6 items -->
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchPage('home',this)"><div class="nav-icon">🤖</div><div class="nav-label">ZIVO</div></div>
-    <div class="nav-item" onclick="switchPage('control',this)"><div class="nav-icon">🕹️</div><div class="nav-label" data-t="nav_control"></div></div>
-    <div class="nav-item" onclick="switchPage('boundary',this)"><div class="nav-icon">📍</div><div class="nav-label" data-t="nav_zone"></div></div>
-    <div class="nav-item" onclick="switchPage('calc',this)"><div class="nav-icon">🧮</div><div class="nav-label" data-t="nav_calc"></div></div>
-    <div class="nav-item" onclick="switchPage('profile',this)"><div class="nav-icon">👤</div><div class="nav-label" data-t="nav_profile"></div></div>
-    <div class="nav-item" onclick="switchPage('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label" data-t="nav_settings"></div></div>
-  </div>
-</div>
+</div><!-- /app -->
 
-<!-- SUBSCRIPTION MODAL -->
-<div class="modal-overlay" id="sub-modal">
-  <div class="modal" style="position:relative">
-    <div class="modal-close" onclick="closeSubModal()">✕</div>
-    <div class="modal-title" data-t="choose_plan"></div>
-
-    <!-- Trial info if active -->
-    <div id="modal-trial-info" style="display:none;background:rgba(0,255,170,0.08);border:1px solid var(--success);border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;text-align:center;color:var(--success);" data-t="trial_modal_info"></div>
-
+<!-- SUB MODAL -->
+<div class="modal-bg" id="sub-modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeSub()">✕</button>
+    <div class="modal-title" id="lbl-plan"></div>
+    <div id="modal-trial" style="display:none;background:rgba(0,255,170,0.08);border:1px solid var(--ok);border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;text-align:center;color:var(--ok)" id="lbl-trial-modal"></div>
     <div class="plan-grid">
-      <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
-        <div class="plan-name" data-t="plan_monthly"></div>
-        <div class="plan-price" id="price-monthly">—</div>
-        <div class="plan-period" data-t="per_month"></div>
+      <div class="plan" id="pl-monthly" onclick="pickPlan('monthly')">
+        <div class="plan-name" id="lbl-pm"></div>
+        <div class="plan-price" id="price-m">—</div>
+        <div class="plan-per" id="lbl-pm-per"></div>
       </div>
-      <div class="plan-card" id="plan-yearly" onclick="selectPlan('yearly')">
-        <div class="plan-save" data-t="save_40"></div>
-        <div class="plan-name" data-t="plan_yearly"></div>
-        <div class="plan-price" id="price-yearly">—</div>
-        <div class="plan-period" data-t="per_month_billed"></div>
+      <div class="plan" id="pl-yearly" onclick="pickPlan('yearly')">
+        <div class="plan-save" id="lbl-save"></div>
+        <div class="plan-name" id="lbl-py"></div>
+        <div class="plan-price" id="price-y">—</div>
+        <div class="plan-per" id="lbl-py-per"></div>
       </div>
-      <div class="plan-card gold plan-forever" id="plan-forever" onclick="selectPlan('forever')">
-        <div class="plan-name" data-t="plan_forever"></div>
-        <div class="plan-price" style="color:var(--gold)" id="price-forever">—</div>
-        <div class="plan-period" data-t="one_time"></div>
+      <div class="plan gld plan-full" id="pl-forever" onclick="pickPlan('forever')">
+        <div class="plan-name" id="lbl-pf"></div>
+        <div class="plan-price" id="price-f" style="color:var(--gold)">—</div>
+        <div class="plan-per" id="lbl-pf-per"></div>
       </div>
     </div>
-
-    <div class="section-title" data-t="whats_included"></div>
-    <div class="feature-list">
-      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_basic"></span></div>
-      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_control"></span></div>
-      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_voices"></span></div>
-      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_smart"></span></div>
-      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_calc"></span></div>
-      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_custom_name"></span></div>
+    <div class="sec" id="lbl-included"></div>
+    <div class="feat-list">
+      <div class="feat"><span class="feat-ico">✅</span><span id="lbl-f1"></span></div>
+      <div class="feat"><span class="feat-ico">✅</span><span id="lbl-f2"></span></div>
+      <div class="feat"><span class="feat-ico">🔒</span><span class="feat-locked" id="lbl-f3"></span></div>
+      <div class="feat"><span class="feat-ico">🔒</span><span class="feat-locked" id="lbl-f4"></span></div>
     </div>
-
-    <button class="btn-primary" id="sub-btn" onclick="subscribePlan()" data-t="subscribe_btn"></button>
-    <button class="btn-outline" onclick="closeSubModal()" style="margin-top:8px;" data-t="maybe_later"></button>
+    <button class="btn" id="sub-do-btn" onclick="doSubscribe()"></button>
+    <button class="btn-out" onclick="closeSub()" style="margin-top:8px" id="lbl-later"></button>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// FIREBASE
-// ═══════════════════════════════════════════════
-const firebaseConfig = {
+// ── FIREBASE ──────────────────────────────────
+firebase.initializeApp({
   apiKey: "AIzaSyA60wxCXnSd0r_crI8Kfke8FE4D1D7YCbA",
   authDomain: "zivo-c411b.firebaseapp.com",
   projectId: "zivo-c411b",
   storageBucket: "zivo-c411b.firebasestorage.app",
   messagingSenderId: "508877760361",
   appId: "1:508877760361:web:68fac40a187eb6c9bdbff8"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+});
+var auth = firebase.auth();
+var db   = firebase.firestore();
 
-// ═══════════════════════════════════════════════
-// REGISTERED ROBOTS — единственное что менять
-// ═══════════════════════════════════════════════
-const REGISTERED_ROBOTS = {
-  'ZIVO-ADMINMW': { name: 'ZIVO #1', owner: 'Admin' },
-  // 'ZIVO-XXXXXX': { name: 'ZIVO #2', owner: 'Name' },
+// ── STATE ─────────────────────────────────────
+var lang = 'en';
+var moodIdx = 0;
+var connected = false;
+var currentRobot = null;
+var currentSerial = null;
+var selectedPlan = 'yearly';
+var USER = JSON.parse(localStorage.getItem('zivo_user') || '{}');
+
+// ── ROBOTS ────────────────────────────────────
+var ROBOTS = {
+  'ZIVO-ADMINMW': { name: 'ZIVO #1', owner: 'Admin' }
 };
 
-// ═══════════════════════════════════════════════
-// VOICES
-// ═══════════════════════════════════════════════
-const VOICES = [
-  { id:'default', emoji:'🤖', name:'ZIVO',  desc_key:'voice_default_desc', free:true  },
-  { id:'sage',    emoji:'🧙', name:'Sage',  desc_key:'voice_sage_desc',    free:false },
-  { id:'nova',    emoji:'⚡', name:'Nova',  desc_key:'voice_nova_desc',    free:false },
-  { id:'echo',    emoji:'🌊', name:'Echo',  desc_key:'voice_echo_desc',    free:false },
-  { id:'spark',   emoji:'🔥', name:'Spark', desc_key:'voice_spark_desc',   free:false },
-  { id:'atlas',   emoji:'🌍', name:'Atlas', desc_key:'voice_atlas_desc',   free:false },
-  { id:'luna',    emoji:'🌙', name:'Luna',  desc_key:'voice_luna_desc',    free:false },
-  { id:'titan',   emoji:'⚙️', name:'Titan', desc_key:'voice_titan_desc',   free:false },
-  { id:'pixel',   emoji:'👾', name:'Pixel', desc_key:'voice_pixel_desc',   free:false },
-  { id:'zen',     emoji:'🍃', name:'Zen',   desc_key:'voice_zen_desc',     free:false },
+// ── VOICES ────────────────────────────────────
+var VOICES = [
+  { id:'default', e:'🤖', name:'ZIVO',  dk:'vd_default', free:true  },
+  { id:'sage',    e:'🧙', name:'Sage',  dk:'vd_sage',    free:false },
+  { id:'nova',    e:'⚡', name:'Nova',  dk:'vd_nova',    free:false },
+  { id:'echo',    e:'🌊', name:'Echo',  dk:'vd_echo',    free:false },
+  { id:'spark',   e:'🔥', name:'Spark', dk:'vd_spark',   free:false },
+  { id:'atlas',   e:'🌍', name:'Atlas', dk:'vd_atlas',   free:false },
+  { id:'luna',    e:'🌙', name:'Luna',  dk:'vd_luna',    free:false },
+  { id:'titan',   e:'⚙️', name:'Titan', dk:'vd_titan',   free:false },
+  { id:'pixel',   e:'👾', name:'Pixel', dk:'vd_pixel',   free:false },
+  { id:'zen',     e:'🍃', name:'Zen',   dk:'vd_zen',     free:false }
 ];
 
-// ═══════════════════════════════════════════════
-// TRANSLATIONS
-// ═══════════════════════════════════════════════
-const T = {
-  ru:{
-    online:'В СЕТИ',temp:'ТЕМП',uptime:'ВРЕМЯ',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'ДВИЖЕНИЕ',actions:'ДЕЙСТВИЯ',
-    wakeup:'РАЗБУДИТЬ',sleep:'СПАТЬ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦ',
-    zonemap:'КАРТА ЗОНЫ',zonewidth:'ШИРИНА',zonedepth:'ГЛУБИНА',
-    edgealerts:'ЗАЩИТА КРАЯ',on:'ВКЛ',falls:'ПАДЕНИЙ',
-    language:'ЯЗЫК',features:'ФУНКЦИИ',
-    voiceact:'Голосовая активация',voiceact_desc:'Активация фразой "Привет ZIVO"',
-    edgeprot:'Защита от падения',edgeprot_desc:'Останавливаться у края стола',
-    autocharge:'Авто зарядка',autocharge_desc:'Ехать на базу при низком заряде',
-    explore:'Случайные прогулки',explore_desc:'ZIVO ездит самостоятельно',
-    notifs:'Уведомления',notifs_desc:'Заряд и защита края',
-    nav_control:'УПРАВЛЕНИЕ',nav_zone:'ЗОНА',nav_settings:'НАСТРОЙКИ',
-    nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФИЛЬ',
-    moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],
-    log_connected:'Подключён к {name}',
-    upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',
-    offline:'НЕ ПОДКЛЮЧЁН',not_connected:'ZIVO не подключён',
-    not_connected_desc:'Введи серийный номер',connect_btn:'ПОДКЛЮЧИТЬ',
-    serial_label:'СЕРИЙНЫЙ НОМЕР',serial_wrong:'Неверный серийный номер.',
-    serial_hint:'Серийный номер на наклейке на дне корпуса',
-    // Registration
-    reg_title:'ДОБРО ПОЖАЛОВАТЬ',reg_subtitle:'Создай аккаунт чтобы начать',
-    reg_name:'ТВОЁ ИМЯ',reg_email:'EMAIL',reg_password:'ПАРОЛЬ',
-    reg_btn:'СОЗДАТЬ АККАУНТ',reg_login_hint:'Уже есть аккаунт?',reg_login_link:'ВОЙТИ',
-    login_title:'С ВОЗВРАЩЕНИЕМ',login_subtitle:'Войди в свой аккаунт',
-    login_email:'EMAIL',login_password:'ПАРОЛЬ',login_btn:'ВОЙТИ',login_reg_link:'Создать новый аккаунт',
-    reg_err_fill:'Заполни все поля',reg_err_email:'Неверный email',reg_err_pass:'Пароль минимум 6 символов',
-    reg_err_exists:'Email уже зарегистрирован',reg_err_notfound:'Аккаунт не найден',reg_err_wrongpass:'Неверный пароль',
-    member_since_fmt:'Участник с',
-    ,
-    // Profile
-    member_since:'Участник ZIVO',your_info:'ИНФОРМАЦИЯ',your_name:'ТВОЁ ИМЯ',
-    bot_custom_name:'ИМПЛАНТ ДЛЯ БОТА (умный режим)',
-    smart_mode:'УМНЫЙ РЕЖИМ',smart_mode_title:'Умный режим',
-    smart_mode_desc:'Бот отвечает на своё имя которое ты выбрал. Только платная версия.',
-    smart_mode_label:'Включить умный режим',smart_mode_sub:'Бот реагирует на своё имя',
-    voice_section:'ГОЛОС БОТА',
-    voice_default_desc:'Стандартный голос ZIVO',voice_sage_desc:'Мудрый и спокойный',
-    voice_nova_desc:'Энергичный и молодой',voice_echo_desc:'Глубокий и объёмный',
-    voice_spark_desc:'Весёлый и игривый',
-    voice_atlas_desc:'Мощный и авторитетный',voice_luna_desc:'Мягкий и лунный',
-    voice_titan_desc:'Роботизированный и точный',voice_pixel_desc:'Цифровой и технический',
-    voice_zen_desc:'Спокойный и медитативный',
-    voice_locked_msg:'🔒 Дополнительные голоса доступны в Pro версии',
-    subscription:'ПОДПИСКА',manage_sub:'УПРАВЛЕНИЕ ПОДПИСКОЙ',
-    // Trial
-    trial_active:'Пробный период активен!',trial_desc:'Все функции бесплатно',
-    // Sub modal
-    choose_plan:'ВЫБЕРИ ПЛАН',plan_monthly:'Месяц',plan_yearly:'Год',plan_forever:'Навсегда',
-    per_month:'/месяц',per_month_billed:'в месяц (год)',one_time:'одноразовый платёж',
-    save_40:'СКИДКА 40%',whats_included:'ЧТО ВКЛЮЧЕНО',
-    feat_basic:'Управление роботом',feat_control:'Базовые команды',
-    feat_voices:'5 голосов на выбор',feat_smart:'Умный режим + своё имя',
-    feat_calc:'Умный калькулятор с ИИ',feat_custom_name:'Кастомное имя бота',
-    subscribe_btn:'ПОДКЛЮЧИТЬ PRO',maybe_later:'Позже',
-    trial_modal_info:'У тебя активен пробный период — все функции уже открыты!',
-    // Calc
-    calculator:'КАЛЬКУЛЯТОР',ai_solve:'Решить сложное уравнение (ИИ)',
-    calc_locked:'🔒 Умный калькулятор доступен в Pro. Нажми чтобы открыть.',
-    ai_solving:'Решаю...',
-  },
+// ── TRANSLATIONS ──────────────────────────────
+var T = {
   en:{
-    online:'ONLINE',temp:'TEMP',uptime:'UPTIME',battery:'BATTERY',log:'LOG',
-    movement:'MOVEMENT',actions:'ACTIONS',
-    wakeup:'WAKE UP',sleep:'SLEEP',charge:'GO CHARGE',random:'DANCE',
-    zonemap:'SAFE ZONE MAP',zonewidth:'WIDTH',zonedepth:'DEPTH',
-    edgealerts:'EDGE ALERTS',on:'ON',falls:'FALLS',
-    language:'LANGUAGE',features:'FEATURES',
-    voiceact:'Voice Activation',voiceact_desc:'Wake up with "Hey ZIVO"',
-    edgeprot:'Edge Protection',edgeprot_desc:'Stop at table edges',
-    autocharge:'Auto Charging',autocharge_desc:'Return to base when low',
-    explore:'Random Explore',explore_desc:'ZIVO moves on its own',
-    notifs:'Notifications',notifs_desc:'Battery and edge alerts',
-    nav_control:'CONTROL',nav_zone:'ZONE',nav_settings:'SETTINGS',
-    nav_calc:'CALC',nav_profile:'PROFILE',
-    moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],
-    log_connected:'Connected to {name}',
-    upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',
-    offline:'DISCONNECTED',not_connected:'ZIVO is not connected',
-    not_connected_desc:'Enter your ZIVO serial number',connect_btn:'CONNECT',
-    serial_label:'SERIAL NUMBER',serial_wrong:'Wrong serial number.',
-    serial_hint:'Serial number is on the sticker on the bottom',
-    // Registration
-    reg_title:'WELCOME',reg_subtitle:'Create your account to get started',
-    reg_name:'YOUR NAME',reg_email:'EMAIL',reg_password:'PASSWORD',
-    reg_btn:'CREATE ACCOUNT',reg_login_hint:'Already have an account?',reg_login_link:'SIGN IN',
-    login_title:'WELCOME BACK',login_subtitle:'Sign in to your account',
-    login_email:'EMAIL',login_password:'PASSWORD',login_btn:'SIGN IN',login_reg_link:'Create new account',
-    reg_err_fill:'Please fill all fields',reg_err_email:'Invalid email address',reg_err_pass:'Password must be at least 6 characters',
-    reg_err_exists:'Email already registered',reg_err_notfound:'Account not found',reg_err_wrongpass:'Wrong password',
-    member_since_fmt:'Member since',
-    ,
-    member_since:'ZIVO Member',your_info:'YOUR INFO',your_name:'YOUR NAME',
-    bot_custom_name:'BOT NAME (smart mode)',
-    smart_mode:'SMART MODE',smart_mode_title:'Smart Mode',
-    smart_mode_desc:'Your bot responds to a custom name you choose. Pro only.',
-    smart_mode_label:'Enable Smart Mode',smart_mode_sub:'Bot responds to its name',
-    voice_section:'BOT VOICE',
-    voice_default_desc:'Default ZIVO voice',voice_sage_desc:'Wise and calm',
-    voice_nova_desc:'Energetic and young',voice_echo_desc:'Deep and rich',
-    voice_spark_desc:'Fun and playful',
-    voice_atlas_desc:'Powerful and authoritative',voice_luna_desc:'Soft and dreamy',
-    voice_titan_desc:'Robotic and precise',voice_pixel_desc:'Digital and techy',
-    voice_zen_desc:'Calm and meditative',
-    voice_locked_msg:'🔒 Extra voices available in Pro',
-    subscription:'SUBSCRIPTION',manage_sub:'MANAGE SUBSCRIPTION',
-    trial_active:'Free trial is active!',trial_desc:'All features unlocked',
-    choose_plan:'CHOOSE YOUR PLAN',plan_monthly:'Monthly',plan_yearly:'Yearly',plan_forever:'Forever',
-    per_month:'/month',per_month_billed:'/mo billed yearly',one_time:'one-time payment',
-    save_40:'SAVE 40%',whats_included:'WHAT\'S INCLUDED',
-    feat_basic:'Robot control',feat_control:'Basic commands',
-    feat_voices:'5 voices to choose',feat_smart:'Smart mode + custom name',
-    feat_calc:'Smart AI calculator',feat_custom_name:'Custom bot name',
-    subscribe_btn:'GET PRO',maybe_later:'Maybe later',
-    trial_modal_info:'Your free trial is active — all features are unlocked!',
-    calculator:'CALCULATOR',ai_solve:'Solve complex equation (AI)',
-    calc_locked:'🔒 Smart calculator available in Pro. Tap to unlock.',
-    ai_solving:'Solving...',
+    online:'ONLINE', offline:'DISCONNECTED', not_conn:'ZIVO is not connected',
+    not_conn_d:'Enter your serial number', serial_lbl:'SERIAL NUMBER',
+    serial_wrong:'Wrong serial number.', serial_hint:'Serial number is on the sticker on the bottom',
+    conn_btn:'CONNECT', moods:['READY','EXPLORING','HAPPY','WAITING'],
+    temp:'TEMP', upt:'UPTIME', batt:'BATTERY', log:'LOG', move:'MOVEMENT',
+    actions:'ACTIONS', wake:'WAKE UP', sleep:'SLEEP', charge:'CHARGE', dance:'DANCE',
+    zone:'SAFE ZONE', zw:'WIDTH', zd:'DEPTH', ea:'EDGE ALERTS', on:'ON', falls:'FALLS',
+    lang:'LANGUAGE', feat:'FEATURES',
+    voiceact:'Voice Activation', voiceact_d:'Wake with "Hey ZIVO"',
+    edge:'Edge Protection', edge_d:'Stop at table edges',
+    auto:'Auto Charging', auto_d:'Return to base when low',
+    expl:'Random Explore', expl_d:'ZIVO moves on its own',
+    notif:'Notifications', notif_d:'Battery and edge alerts',
+    nav_ctrl:'CONTROL', nav_zone:'ZONE', nav_prof:'PROFILE', nav_set:'SETTINGS',
+    info:'YOUR INFO', uname:'YOUR NAME', botname:'BOT NAME (smart mode)',
+    smart:'SMART MODE', smart_t:'Smart Mode', smart_d:'Bot responds to custom name. Pro only.',
+    smart_l:'Enable Smart Mode', smart_s:'Bot responds to its name',
+    voices:'BOT VOICE', voice_lock:'Extra voices available in Pro',
+    vd_default:'Default ZIVO voice', vd_sage:'Wise and calm', vd_nova:'Energetic',
+    vd_echo:'Deep and rich', vd_spark:'Fun and playful', vd_atlas:'Powerful',
+    vd_luna:'Soft and dreamy', vd_titan:'Robotic precise', vd_pixel:'Digital techy',
+    vd_zen:'Calm and meditative',
+    sub:'SUBSCRIPTION', manage_sub:'MANAGE SUBSCRIPTION',
+    trial_title:'Free trial active!', trial_d:'All features unlocked',
+    trial_modal:'Your trial is active — all features unlocked!',
+    plan:'CHOOSE YOUR PLAN', pm:'Monthly', py:'Yearly', pf:'Forever',
+    pm_per:'/month', py_per:'/mo billed yearly', pf_per:'one-time',
+    save:'SAVE 40%', included:"WHAT'S INCLUDED",
+    f1:'Robot control', f2:'Basic commands', f3:'10 voices',
+    f4:'Smart mode + custom name',
+    sub_btn:'GET PRO', later:'Maybe later',
+    log_conn:'Connected to {name}', member_since:'Member since',
+    upfmt: function(h,m){ return h+'h'+String(m).padStart(2,'0')+'m'; }
+  },
+  ru:{
+    online:'В СЕТИ', offline:'НЕ ПОДКЛЮЧЁН', not_conn:'ZIVO не подключён',
+    not_conn_d:'Введи серийный номер', serial_lbl:'СЕРИЙНЫЙ НОМЕР',
+    serial_wrong:'Неверный серийный номер.', serial_hint:'Серийный номер на наклейке на дне корпуса',
+    conn_btn:'ПОДКЛЮЧИТЬ', moods:['ГОТОВ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ'],
+    temp:'ТЕМП', upt:'ВРЕМЯ', batt:'БАТАРЕЯ', log:'ЖУРНАЛ', move:'ДВИЖЕНИЕ',
+    actions:'ДЕЙСТВИЯ', wake:'РАЗБУДИТЬ', sleep:'СПАТЬ', charge:'ЗАРЯДКА', dance:'ТАНЕЦ',
+    zone:'КАРТА ЗОНЫ', zw:'ШИРИНА', zd:'ГЛУБИНА', ea:'ЗАЩИТА КРАЯ', on:'ВКЛ', falls:'ПАДЕНИЙ',
+    lang:'ЯЗЫК', feat:'ФУНКЦИИ',
+    voiceact:'Голосовая активация', voiceact_d:'Активация "Привет ZIVO"',
+    edge:'Защита от падения', edge_d:'Останавливаться у края',
+    auto:'Авто зарядка', auto_d:'Ехать на базу при низком заряде',
+    expl:'Случайные прогулки', expl_d:'ZIVO ездит самостоятельно',
+    notif:'Уведомления', notif_d:'Заряд и защита края',
+    nav_ctrl:'УПРАВЛЕНИЕ', nav_zone:'ЗОНА', nav_prof:'ПРОФИЛЬ', nav_set:'НАСТРОЙКИ',
+    info:'ИНФОРМАЦИЯ', uname:'ТВОЁ ИМЯ', botname:'ИМЯ БОТА (умный режим)',
+    smart:'УМНЫЙ РЕЖИМ', smart_t:'Умный режим', smart_d:'Бот отвечает на своё имя. Только Pro.',
+    smart_l:'Включить умный режим', smart_s:'Бот реагирует на своё имя',
+    voices:'ГОЛОС БОТА', voice_lock:'Голоса доступны в Pro',
+    vd_default:'Стандартный голос', vd_sage:'Мудрый и спокойный', vd_nova:'Энергичный',
+    vd_echo:'Глубокий и объёмный', vd_spark:'Весёлый', vd_atlas:'Мощный',
+    vd_luna:'Мягкий и лунный', vd_titan:'Роботизированный', vd_pixel:'Цифровой',
+    vd_zen:'Спокойный',
+    sub:'ПОДПИСКА', manage_sub:'УПРАВЛЕНИЕ ПОДПИСКОЙ',
+    trial_title:'Пробный период активен!', trial_d:'Все функции бесплатно',
+    trial_modal:'Пробный период активен — все функции открыты!',
+    plan:'ВЫБЕРИ ПЛАН', pm:'Месяц', py:'Год', pf:'Навсегда',
+    pm_per:'/месяц', py_per:'в месяц (год)', pf_per:'одноразовый платёж',
+    save:'СКИДКА 40%', included:'ЧТО ВКЛЮЧЕНО',
+    f1:'Управление роботом', f2:'Базовые команды', f3:'10 голосов',
+    f4:'Умный режим + своё имя',
+    sub_btn:'ПОДКЛЮЧИТЬ PRO', later:'Позже',
+    log_conn:'Подключён к {name}', member_since:'Участник с',
+    upfmt: function(h,m){ return h+'ч'+String(m).padStart(2,'0')+'м'; }
   },
   he:{
-    online:'מחובר',temp:'טמפ',uptime:'זמן',battery:'סוללה',log:'יומן',
-    movement:'תנועה',actions:'פעולות',wakeup:'התעורר',sleep:'שינה',charge:'לטעינה',random:'לרקוד',
-    zonemap:'מפת אזור',zonewidth:'רוחב',zonedepth:'עומק',edgealerts:'הגנת קצה',on:'פועל',falls:'נפילות',
-    language:'שפה',features:'תכונות',voiceact:'הפעלה קולית',voiceact_desc:'הפעלה עם "היי ZIVO"',
-    edgeprot:'הגנה מנפילה',edgeprot_desc:'עצור בקצה השולחן',
-    autocharge:'טעינה אוטומטית',autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',
-    explore:'סיור אקראי',explore_desc:'ZIVO נוסע לבד',notifs:'התראות',notifs_desc:'סוללה והגנת קצה',
-    nav_control:'שליטה',nav_zone:'אזור',nav_settings:'הגדרות',nav_calc:'מחשבון',nav_profile:'פרופיל',
-    moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],log_connected:'מחובר ל-{name}',
-    upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',
-    offline:'מנותק',not_connected:'ZIVO לא מחובר',not_connected_desc:'הזן את המספר הסידורי',connect_btn:'התחבר',
-    serial_label:'מספר סידורי',serial_wrong:'מספר סידורי שגוי.',serial_hint:'המספר הסידורי נמצא בתחתית ZIVO',
-    // Registration
-    reg_title:'ברוך הבא',reg_subtitle:'צור חשבון כדי להתחיל',
-    reg_name:'שמך',reg_email:'אימייל',reg_password:'סיסמה',
-    reg_btn:'צור חשבון',reg_login_hint:'כבר יש לך חשבון?',reg_login_link:'התחבר',
-    login_title:'ברוך שובך',login_subtitle:'התחבר לחשבונך',
-    login_email:'אימייל',login_password:'סיסמה',login_btn:'התחבר',login_reg_link:'צור חשבון חדש',
-    reg_err_fill:'מלא את כל השדות',reg_err_email:'כתובת אימייל לא תקינה',reg_err_pass:'הסיסמה חייבת להכיל לפחות 6 תווים',
-    reg_err_exists:'האימייל כבר רשום',reg_err_notfound:'החשבון לא נמצא',reg_err_wrongpass:'סיסמה שגויה',
-    member_since_fmt:'חבר מאז',
-    ,
-    member_since:'חבר ZIVO',your_info:'פרטים',your_name:'שמך',bot_custom_name:'שם הבוט (מצב חכם)',
-    smart_mode:'מצב חכם',smart_mode_title:'מצב חכם',smart_mode_desc:'הבוט מגיב לשם שבחרת. Pro בלבד.',
-    smart_mode_label:'הפעל מצב חכם',smart_mode_sub:'הבוט מגיב לשמו',
-    voice_section:'קול הבוט',voice_default_desc:'קול ZIVO ברירת מחדל',voice_sage_desc:'חכם ורגוע',
-    voice_nova_desc:'אנרגטי וצעיר',voice_echo_desc:'עמוק ועשיר',voice_spark_desc:'כיפי ושובבי',
-    voice_atlas_desc:'חזק וסמכותי',voice_luna_desc:'רך וחלומי',
-    voice_titan_desc:'רובוטי ומדויק',voice_pixel_desc:'דיגיטלי וטכנולוגי',
-    voice_zen_desc:'רגוע ומדיטטיבי',
-    voice_locked_msg:'🔒 קולות נוספים זמינים ב-Pro',subscription:'מנוי',manage_sub:'ניהול מנוי',
-    trial_active:'תקופת ניסיון פעילה!',trial_desc:'כל הפונקציות פתוחות',
-    choose_plan:'בחר תוכנית',plan_monthly:'חודשי',plan_yearly:'שנתי',plan_forever:'לצמיתות',
-    per_month:'/חודש',per_month_billed:'/חודש (שנתי)',one_time:'תשלום חד פעמי',
-    save_40:'חסוך 40%',whats_included:'מה כלול',feat_basic:'שליטה בבוט',feat_control:'פקודות בסיסיות',
-    feat_voices:'5 קולות לבחירה',feat_smart:'מצב חכם + שם מותאם',feat_calc:'מחשבון AI חכם',feat_custom_name:'שם בוט מותאם',
-    subscribe_btn:'הצטרף ל-Pro',maybe_later:'אולי מאוחר יותר',
-    trial_modal_info:'תקופת הניסיון שלך פעילה — כל הפונקציות פתוחות!',
-    calculator:'מחשבון',ai_solve:'פתור משוואה מורכבת (AI)',
-    calc_locked:'🔒 מחשבון חכם זמין ב-Pro. לחץ לפתיחה.',ai_solving:'פותר...',
+    online:'מחובר', offline:'מנותק', not_conn:'ZIVO לא מחובר',
+    not_conn_d:'הזן את המספר הסידורי', serial_lbl:'מספר סידורי',
+    serial_wrong:'מספר סידורי שגוי.', serial_hint:'המספר נמצא בתחתית ZIVO',
+    conn_btn:'התחבר', moods:['מוכן','חוקר','שמח','ממתין'],
+    temp:'טמפ', upt:'זמן', batt:'סוללה', log:'יומן', move:'תנועה',
+    actions:'פעולות', wake:'התעורר', sleep:'שינה', charge:'לטעינה', dance:'לרקוד',
+    zone:'מפת אזור', zw:'רוחב', zd:'עומק', ea:'הגנת קצה', on:'פועל', falls:'נפילות',
+    lang:'שפה', feat:'תכונות',
+    voiceact:'הפעלה קולית', voiceact_d:'הפעלה עם "היי ZIVO"',
+    edge:'הגנה מנפילה', edge_d:'עצור בקצה השולחן',
+    auto:'טעינה אוטומטית', auto_d:'חזור לבסיס כשהסוללה נמוכה',
+    expl:'סיור אקראי', expl_d:'ZIVO נוסע לבד',
+    notif:'התראות', notif_d:'סוללה והגנת קצה',
+    nav_ctrl:'שליטה', nav_zone:'אזור', nav_prof:'פרופיל', nav_set:'הגדרות',
+    info:'פרטים', uname:'שמך', botname:'שם הבוט',
+    smart:'מצב חכם', smart_t:'מצב חכם', smart_d:'הבוט מגיב לשם שבחרת. Pro בלבד.',
+    smart_l:'הפעל מצב חכם', smart_s:'הבוט מגיב לשמו',
+    voices:'קול הבוט', voice_lock:'קולות נוספים ב-Pro',
+    vd_default:'קול ברירת מחדל', vd_sage:'חכם ורגוע', vd_nova:'אנרגטי',
+    vd_echo:'עמוק', vd_spark:'כיפי', vd_atlas:'חזק',
+    vd_luna:'רך', vd_titan:'רובוטי', vd_pixel:'דיגיטלי',
+    vd_zen:'רגוע',
+    sub:'מנוי', manage_sub:'ניהול מנוי',
+    trial_title:'תקופת ניסיון פעילה!', trial_d:'כל הפונקציות פתוחות',
+    trial_modal:'תקופת הניסיון פעילה!',
+    plan:'בחר תוכנית', pm:'חודשי', py:'שנתי', pf:'לצמיתות',
+    pm_per:'/חודש', py_per:'/חודש שנתי', pf_per:'תשלום חד פעמי',
+    save:'חסוך 40%', included:'מה כלול',
+    f1:'שליטה בבוט', f2:'פקודות בסיסיות', f3:'10 קולות',
+    f4:'מצב חכם',
+    sub_btn:'הצטרף ל-Pro', later:'אולי מאוחר יותר',
+    log_conn:'מחובר ל-{name}', member_since:'חבר מאז',
+    upfmt: function(h,m){ return h+'ש'+String(m).padStart(2,'0')+'ד'; }
   },
   zh:{
-    online:'在线',temp:'温度',uptime:'运行',battery:'电池',log:'日志',
-    movement:'移动',actions:'操作',wakeup:'唤醒',sleep:'睡眠',charge:'去充电',random:'跳舞',
-    zonemap:'安全区域',zonewidth:'宽度',zonedepth:'深度',edgealerts:'边缘保护',on:'开启',falls:'跌落',
-    language:'语言',features:'功能',voiceact:'语音激活',voiceact_desc:'说"嘿 ZIVO"唤醒',
-    edgeprot:'防跌落',edgeprot_desc:'在桌子边缘停下',autocharge:'自动充电',autocharge_desc:'电量低时返回充电',
-    explore:'随机探索',explore_desc:'ZIVO 自主移动',notifs:'通知',notifs_desc:'电池和边缘警报',
-    nav_control:'控制',nav_zone:'区域',nav_settings:'设置',nav_calc:'计算器',nav_profile:'个人',
-    moods:['准备好了','探索中','开心','等待命令'],log_connected:'已连接到 {name}',
-    upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',
-    offline:'未连接',not_connected:'ZIVO 未连接',not_connected_desc:'输入序列号',connect_btn:'连接',
-    serial_label:'序列号',serial_wrong:'序列号错误。',serial_hint:'序列号在 ZIVO 底部的贴纸上',
-    // Registration
-    reg_title:'欢迎',reg_subtitle:'创建账户开始使用',
-    reg_name:'你的名字',reg_email:'邮箱',reg_password:'密码',
-    reg_btn:'创建账户',reg_login_hint:'已有账户？',reg_login_link:'登录',
-    login_title:'欢迎回来',login_subtitle:'登录你的账户',
-    login_email:'邮箱',login_password:'密码',login_btn:'登录',login_reg_link:'创建新账户',
-    reg_err_fill:'请填写所有字段',reg_err_email:'无效的邮箱地址',reg_err_pass:'密码至少需要6个字符',
-    reg_err_exists:'邮箱已注册',reg_err_notfound:'账户未找到',reg_err_wrongpass:'密码错误',
-    member_since_fmt:'加入时间',
-    ,
-    member_since:'ZIVO 会员',your_info:'个人信息',your_name:'你的名字',bot_custom_name:'机器人名称（智能模式）',
-    smart_mode:'智能模式',smart_mode_title:'智能模式',smart_mode_desc:'机器人响应你选择的名字。仅限Pro。',
-    smart_mode_label:'启用智能模式',smart_mode_sub:'机器人响应其名字',
-    voice_section:'机器人声音',voice_default_desc:'默认ZIVO声音',voice_sage_desc:'睿智平静',
-    voice_nova_desc:'充满活力',voice_echo_desc:'深沉丰富',voice_spark_desc:'有趣活泼',
-    voice_atlas_desc:'强大权威',voice_luna_desc:'柔和梦幻',
-    voice_titan_desc:'机器人精准',voice_pixel_desc:'数字科技',
-    voice_zen_desc:'平静冥想',
-    voice_locked_msg:'🔒 更多声音在Pro版本中可用',subscription:'订阅',manage_sub:'管理订阅',
-    trial_active:'试用期激活！',trial_desc:'所有功能免费',
-    choose_plan:'选择方案',plan_monthly:'月度',plan_yearly:'年度',plan_forever:'永久',
-    per_month:'/月',per_month_billed:'/月（年付）',one_time:'一次性付款',
-    save_40:'节省40%',whats_included:'包含内容',feat_basic:'机器人控制',feat_control:'基本命令',
-    feat_voices:'5种声音可选',feat_smart:'智能模式+自定义名称',feat_calc:'AI智能计算器',feat_custom_name:'自定义机器人名称',
-    subscribe_btn:'获取Pro',maybe_later:'稍后',
-    trial_modal_info:'您的试用期已激活 — 所有功能已解锁！',
-    calculator:'计算器',ai_solve:'解复杂方程（AI）',
-    calc_locked:'🔒 智能计算器在Pro版本中可用。点击解锁。',ai_solving:'解算中...',
+    online:'在线', offline:'未连接', not_conn:'ZIVO未连接',
+    not_conn_d:'输入序列号', serial_lbl:'序列号',
+    serial_wrong:'序列号错误。', serial_hint:'序列号在底部贴纸上',
+    conn_btn:'连接', moods:['准备好了','探索中','开心','等待'],
+    temp:'温度', upt:'运行', batt:'电池', log:'日志', move:'移动',
+    actions:'操作', wake:'唤醒', sleep:'睡眠', charge:'充电', dance:'跳舞',
+    zone:'安全区域', zw:'宽度', zd:'深度', ea:'边缘保护', on:'开启', falls:'跌落',
+    lang:'语言', feat:'功能',
+    voiceact:'语音激活', voiceact_d:'说"嘿ZIVO"唤醒',
+    edge:'防跌落', edge_d:'在边缘停下',
+    auto:'自动充电', auto_d:'电量低时返回充电',
+    expl:'随机探索', expl_d:'ZIVO自主移动',
+    notif:'通知', notif_d:'电池和边缘警报',
+    nav_ctrl:'控制', nav_zone:'区域', nav_prof:'个人', nav_set:'设置',
+    info:'个人信息', uname:'你的名字', botname:'机器人名称',
+    smart:'智能模式', smart_t:'智能模式', smart_d:'机器人响应自定义名字。仅Pro。',
+    smart_l:'启用智能模式', smart_s:'机器人响应其名字',
+    voices:'声音', voice_lock:'更多声音在Pro中可用',
+    vd_default:'默认声音', vd_sage:'睿智', vd_nova:'活力',
+    vd_echo:'深沉', vd_spark:'活泼', vd_atlas:'强大',
+    vd_luna:'柔和', vd_titan:'机器人', vd_pixel:'数字',
+    vd_zen:'平静',
+    sub:'订阅', manage_sub:'管理订阅',
+    trial_title:'试用期激活！', trial_d:'所有功能免费',
+    trial_modal:'试用期已激活！',
+    plan:'选择方案', pm:'月度', py:'年度', pf:'永久',
+    pm_per:'/月', py_per:'/月年付', pf_per:'一次性',
+    save:'节省40%', included:'包含内容',
+    f1:'机器人控制', f2:'基本命令', f3:'10种声音',
+    f4:'智能模式',
+    sub_btn:'获取Pro', later:'稍后',
+    log_conn:'已连接到{name}', member_since:'加入时间',
+    upfmt: function(h,m){ return h+'时'+String(m).padStart(2,'0')+'分'; }
   },
   uk:{
-    online:'В МЕРЕЖІ',temp:'ТЕМП',uptime:'ЧАС',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'РУХ',actions:'ДІЇ',wakeup:'РОЗБУДИТИ',sleep:'СПАТИ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦЬ',
-    zonemap:'КАРТА ЗОНИ',zonewidth:'ШИРИНА',zonedepth:'ГЛИБИНА',edgealerts:'ЗАХИСТ КРАЮ',on:'УВІМКН',falls:'ПАДІНЬ',
-    language:'МОВА',features:'ФУНКЦІЇ',voiceact:'Голосова активація',voiceact_desc:'Активація "Привіт ZIVO"',
-    edgeprot:'Захист від падіння',edgeprot_desc:'Зупинятись біля краю столу',
-    autocharge:'Авто зарядка',autocharge_desc:'Їхати на базу при низькому заряді',
-    explore:'Випадкові прогулянки',explore_desc:'ZIVO їздить самостійно',
-    notifs:'Сповіщення',notifs_desc:'Заряд і захист краю',
-    nav_control:'КЕРУВАННЯ',nav_zone:'ЗОНА',nav_settings:'НАЛАШТУВАННЯ',nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФІЛЬ',
-    moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],log_connected:'Підключено до {name}',
-    upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',
-    offline:'НЕ ПІДКЛЮЧЕНО',not_connected:'ZIVO не підключено',not_connected_desc:'Введи серійний номер',connect_btn:'ПІДКЛЮЧИТИ',
-    serial_label:'СЕРІЙНИЙ НОМЕР',serial_wrong:'Невірний серійний номер.',serial_hint:'Серійний номер на наклейці на дні корпусу',
-    // Registration
-    reg_title:'ЛАСКАВО ПРОСИМО',reg_subtitle:'Створи акаунт щоб почати',
-    reg_name:"ТВОЄ ІМ'Я",reg_email:'EMAIL',reg_password:'ПАРОЛЬ',
-    reg_btn:'СТВОРИТИ АКАУНТ',reg_login_hint:'Вже є акаунт?',reg_login_link:'УВІЙТИ',
-    login_title:'З ПОВЕРНЕННЯМ',login_subtitle:'Увійди до свого акаунту',
-    login_email:'EMAIL',login_password:'ПАРОЛЬ',login_btn:'УВІЙТИ',login_reg_link:'Створити новий акаунт',
-    reg_err_fill:'Заповни всі поля',reg_err_email:'Невірний email',reg_err_pass:'Пароль мінімум 6 символів',
-    reg_err_exists:'Email вже зареєстровано',reg_err_notfound:'Акаунт не знайдено',reg_err_wrongpass:'Невірний пароль',
-    member_since_fmt:'Учасник з',
-    ,
-    member_since:'Учасник ZIVO',your_info:'ІНФОРМАЦІЯ',your_name:'ТВОЄ ІМ\'Я',bot_custom_name:'ІМ\'Я БОТА (розумний режим)',
-    smart_mode:'РОЗУМНИЙ РЕЖИМ',smart_mode_title:'Розумний режим',smart_mode_desc:'Бот відповідає на своє ім\'я яке ти обрав. Тільки платна версія.',
-    smart_mode_label:'Увімкнути розумний режим',smart_mode_sub:'Бот реагує на своє ім\'я',
-    voice_section:'ГОЛОС БОТА',voice_default_desc:'Стандартний голос ZIVO',voice_sage_desc:'Мудрий і спокійний',
-    voice_nova_desc:'Енергійний і молодий',voice_echo_desc:'Глибокий і об\'ємний',voice_spark_desc:'Веселий і грайливий',
-    voice_atlas_desc:'Потужний і авторитетний',voice_luna_desc:'М'який і мрійливий',
-    voice_titan_desc:'Роботизований і точний',voice_pixel_desc:'Цифровий і технічний',
-    voice_zen_desc:'Спокійний і медитативний',
-    voice_locked_msg:'🔒 Додаткові голоси доступні в Pro версії',subscription:'ПІДПИСКА',manage_sub:'КЕРУВАННЯ ПІДПИСКОЮ',
-    trial_active:'Пробний період активний!',trial_desc:'Всі функції безкоштовно',
-    choose_plan:'ОБЕРИ ПЛАН',plan_monthly:'Місяць',plan_yearly:'Рік',plan_forever:'Назавжди',
-    per_month:'/місяць',per_month_billed:'на місяць (рік)',one_time:'одноразовий платіж',
-    save_40:'ЗНИЖКА 40%',whats_included:'ЩО ВКЛЮЧЕНО',feat_basic:'Керування роботом',feat_control:'Базові команди',
-    feat_voices:'5 голосів на вибір',feat_smart:'Розумний режим + своє ім\'я',feat_calc:'Розумний калькулятор з ІІ',feat_custom_name:'Кастомне ім\'я бота',
-    subscribe_btn:'ОТРИМАТИ PRO',maybe_later:'Пізніше',
-    trial_modal_info:'У тебе активний пробний період — всі функції вже відкриті!',
-    calculator:'КАЛЬКУЛЯТОР',ai_solve:'Вирішити складне рівняння (ІІ)',
-    calc_locked:'🔒 Розумний калькулятор доступний у Pro. Натисни щоб відкрити.',ai_solving:'Вирішую...',
+    online:'В МЕРЕЖІ', offline:'НЕ ПІДКЛЮЧЕНО', not_conn:'ZIVO не підключено',
+    not_conn_d:'Введи серійний номер', serial_lbl:'СЕРІЙНИЙ НОМЕР',
+    serial_wrong:'Невірний серійний номер.', serial_hint:'Серійний номер на наклейці на дні корпусу',
+    conn_btn:'ПІДКЛЮЧИТИ', moods:['ГОТОВИЙ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],
+    temp:'ТЕМП', upt:'ЧАС', batt:'БАТАРЕЯ', log:'ЖУРНАЛ', move:'РУХ',
+    actions:'ДІЇ', wake:'РОЗБУДИТИ', sleep:'СПАТИ', charge:'ЗАРЯДКА', dance:'ТАНЕЦЬ',
+    zone:'КАРТА ЗОНИ', zw:'ШИРИНА', zd:'ГЛИБИНА', ea:'ЗАХИСТ КРАЮ', on:'УВІМКН', falls:'ПАДІНЬ',
+    lang:'МОВА', feat:'ФУНКЦІЇ',
+    voiceact:'Голосова активація', voiceact_d:'Активація "Привіт ZIVO"',
+    edge:'Захист від падіння', edge_d:'Зупинятись біля краю',
+    auto:'Авто зарядка', auto_d:'Їхати на базу при низькому заряді',
+    expl:'Випадкові прогулянки', expl_d:'ZIVO їздить самостійно',
+    notif:'Сповіщення', notif_d:'Заряд і захист краю',
+    nav_ctrl:'КЕРУВАННЯ', nav_zone:'ЗОНА', nav_prof:'ПРОФІЛЬ', nav_set:'НАЛАШТУВАННЯ',
+    info:'ІНФОРМАЦІЯ', uname:'ТВОЄ ІМЯ', botname:'ІМЯ БОТА (розумний режим)',
+    smart:'РОЗУМНИЙ РЕЖИМ', smart_t:'Розумний режим', smart_d:'Бот відповідає на своє імя. Тільки Pro.',
+    smart_l:'Увімкнути розумний режим', smart_s:'Бот реагує на своє імя',
+    voices:'ГОЛОС БОТА', voice_lock:'Голоси доступні в Pro',
+    vd_default:'Стандартний голос', vd_sage:'Мудрий і спокійний', vd_nova:'Енергійний',
+    vd_echo:'Глибокий', vd_spark:'Веселий', vd_atlas:'Потужний',
+    vd_luna:'Мякий і мрійливий', vd_titan:'Роботизований', vd_pixel:'Цифровий',
+    vd_zen:'Спокійний',
+    sub:'ПІДПИСКА', manage_sub:'КЕРУВАННЯ ПІДПИСКОЮ',
+    trial_title:'Пробний період активний!', trial_d:'Всі функції безкоштовно',
+    trial_modal:'Пробний період активний!',
+    plan:'ОБЕРИ ПЛАН', pm:'Місяць', py:'Рік', pf:'Назавжди',
+    pm_per:'/місяць', py_per:'на місяць (рік)', pf_per:'одноразовий платіж',
+    save:'ЗНИЖКА 40%', included:'ЩО ВКЛЮЧЕНО',
+    f1:'Керування роботом', f2:'Базові команди', f3:'10 голосів',
+    f4:'Розумний режим',
+    sub_btn:'ОТРИМАТИ PRO', later:'Пізніше',
+    log_conn:'Підключено до {name}', member_since:'Учасник з',
+    upfmt: function(h,m){ return h+'г'+String(m).padStart(2,'0')+'хв'; }
   }
 };
 
-// ═══════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════
-let lang='en', moodIdx=0, connected=false, currentRobot=null, currentSerial=null;
-let selectedPlan='yearly';
-
-// Load user data from localStorage
-const USER = JSON.parse(localStorage.getItem('zivo_user') || '{}');
-// USER = { name, botName, voice, smartMode, sub, subStart, firstConnected }
+// ── HELPERS ───────────────────────────────────
+function t(k){ return (T[lang] && T[lang][k]) ? T[lang][k] : (T.en[k] || k); }
 
 function saveUser(){
   localStorage.setItem('zivo_user', JSON.stringify(USER));
-  // Sync to Firestore if logged in
-  if(USER.uid){
-    const {uid,...data}=USER;
-    updateDoc(doc(db,'users',USER.uid), data).catch(()=>{});
+  if(auth.currentUser){
+    var data = Object.assign({}, USER);
+    delete data.uid;
+    db.collection('users').doc(auth.currentUser.uid).set(data, {merge:true}).catch(function(){});
   }
 }
 
 function isPro(){
-  if(USER.sub === 'forever') return true;
-  if(USER.sub === 'monthly' || USER.sub === 'yearly'){
-    // Demo: always active if subscribed
-    return true;
-  }
-  return false;
+  return USER.sub === 'forever' || USER.sub === 'monthly' || USER.sub === 'yearly';
 }
-
 function isTrialActive(){
   if(!USER.firstConnected) return false;
-  const days = (Date.now() - USER.firstConnected) / (1000*60*60*24);
-  return days < 7;
+  return (Date.now() - USER.firstConnected) / 86400000 < 7;
 }
-
-function hasProAccess(){
-  return isPro() || isTrialActive();
-}
-
-function trialDaysLeft(){
+function hasPro(){ return isPro() || isTrialActive(); }
+function trialLeft(){
   if(!USER.firstConnected) return 0;
-  const days = (Date.now() - USER.firstConnected) / (1000*60*60*24);
-  return Math.max(0, Math.ceil(7 - days));
+  return Math.max(0, Math.ceil(7 - (Date.now()-USER.firstConnected)/86400000));
+}
+function fmtDate(ts){
+  if(!ts) return '';
+  var d = new Date(ts);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
 }
 
-// ═══════════════════════════════════════════════
-// CONNECTION
-// ═══════════════════════════════════════════════
+// ── AUTH SCREENS ──────────────────────────────
+function showReg(){
+  document.getElementById('scr-reg').style.display = 'block';
+  document.getElementById('scr-login').style.display = 'none';
+  document.getElementById('offline-banner').style.display = 'none';
+  document.getElementById('pages-wrap').style.display = 'none';
+  document.getElementById('pg-settings').style.display = 'none';
+  document.getElementById('pg-profile').style.display = 'none';
+}
+function showLogin(){
+  document.getElementById('scr-reg').style.display = 'none';
+  document.getElementById('scr-login').style.display = 'block';
+  document.getElementById('offline-banner').style.display = 'none';
+}
+function showOffline(){
+  document.getElementById('scr-reg').style.display = 'none';
+  document.getElementById('scr-login').style.display = 'none';
+  document.getElementById('offline-banner').style.display = 'block';
+}
+
+function doRegister(){
+  var name  = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass  = document.getElementById('reg-pass').value;
+  var err   = document.getElementById('reg-err');
+  err.style.display = 'none';
+  if(!name||!email||!pass){ err.textContent='Fill all fields'; err.style.display='block'; return; }
+  if(pass.length < 6){ err.textContent='Password min 6 chars'; err.style.display='block'; return; }
+  var btn = document.getElementById('reg-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(function(cred){
+      var now = Date.now();
+      var data = { name:name, email:email, registeredAt:now, firstConnected:now,
+                   sub:null, voice:'default', smartMode:false, botName:'ZIVO' };
+      return db.collection('users').doc(cred.user.uid).set(data).then(function(){ return data; });
+    })
+    .then(function(data){
+      Object.assign(USER, data);
+      USER.uid = auth.currentUser.uid;
+      saveUser();
+      showOffline();
+      applyLang(lang);
+    })
+    .catch(function(e){
+      err.textContent = e.code === 'auth/email-already-in-use' ? 'Email already registered' : e.message;
+      err.style.display = 'block';
+    })
+    .finally(function(){ btn.textContent = 'CREATE ACCOUNT'; btn.disabled = false; });
+}
+
+function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-pass').value;
+  var err   = document.getElementById('login-err');
+  err.style.display = 'none';
+  if(!email||!pass){ err.textContent='Fill all fields'; err.style.display='block'; return; }
+  var btn = document.getElementById('login-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(function(cred){
+      return db.collection('users').doc(cred.user.uid).get();
+    })
+    .then(function(snap){
+      if(snap.exists){
+        Object.assign(USER, snap.data());
+        USER.uid = auth.currentUser.uid;
+        saveUser();
+      }
+      showOffline();
+      applyLang(lang);
+    })
+    .catch(function(e){
+      var msg = e.message;
+      if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential') msg='Account not found';
+      if(e.code==='auth/wrong-password') msg='Wrong password';
+      err.textContent = msg; err.style.display = 'block';
+    })
+    .finally(function(){ btn.textContent = 'SIGN IN'; btn.disabled = false; });
+}
+
+function doLogout(){
+  auth.signOut().then(function(){
+    USER = {};
+    localStorage.removeItem('zivo_user');
+    setConnected(false);
+    showReg();
+  });
+}
+
+// ── CONNECTION ────────────────────────────────
 function setConnected(val){
-  connected=val;
-  const dot=document.getElementById('status-dot');
-  const txt=document.getElementById('status-text');
-  const face=document.getElementById('zivo-face');
+  connected = val;
+  var dot = document.getElementById('sdot');
+  var stxt = document.getElementById('stxt');
+  var face = document.getElementById('zface');
   if(val){
-    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite';
-    txt.style.color='var(--success)'; txt.textContent=T[lang].online;
-    document.getElementById('offline-banner').style.display='none';
-    document.getElementById('pages-wrapper').style.display='block';
-    document.getElementById('page-home').style.display='block';
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    document.querySelector('.nav-item').classList.add('active');
-    face.style.borderColor='var(--blue)';
-    face.style.boxShadow='0 0 28px var(--blue-glow),inset 0 0 28px rgba(0,180,255,0.05)';
-    // Record first connection
-    if(!USER.firstConnected){ USER.firstConnected=Date.now(); saveUser(); }
+    dot.style.cssText = 'width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite';
+    stxt.style.color = 'var(--ok)'; stxt.textContent = t('online');
+    document.getElementById('offline-banner').style.display = 'none';
+    document.getElementById('pages-wrap').style.display = 'block';
+    document.getElementById('pg-home').style.display = 'block';
+    document.querySelectorAll('.ni').forEach(function(n){ n.classList.remove('on'); });
+    document.querySelector('.ni').classList.add('on');
+    face.style.borderColor = 'var(--blue)';
+    face.style.boxShadow = '0 0 28px var(--glow),inset 0 0 28px rgba(0,180,255,0.05)';
+    if(!USER.firstConnected){ USER.firstConnected = Date.now(); saveUser(); }
     updateTrialBanner();
   } else {
-    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--gray);box-shadow:none;animation:none';
-    txt.style.color='var(--gray)'; txt.textContent=T[lang].offline;
-    document.getElementById('offline-banner').style.display='block';
-    document.getElementById('pages-wrapper').style.display='none';
-    document.getElementById('page-settings').style.display='none';
-    document.getElementById('page-profile').style.display='none';
-    document.getElementById('page-calc').style.display='none';
-    face.style.borderColor='var(--gray)'; face.style.boxShadow='none';
+    dot.style.cssText = 'width:9px;height:9px;border-radius:50%;background:var(--gray);box-shadow:none;animation:none';
+    stxt.style.color = 'var(--gray)'; stxt.textContent = t('offline');
+    document.getElementById('offline-banner').style.display = 'block';
+    document.getElementById('pages-wrap').style.display = 'none';
+    face.style.borderColor = 'var(--gray)'; face.style.boxShadow = 'none';
   }
 }
 
 function tryConnect(){
-  const input=document.getElementById('serial-input').value.trim().toUpperCase();
-  const err=document.getElementById('serial-error');
-  const btn=document.getElementById('connect-btn');
-  if(!input){err.style.display='block';return;}
-  btn.textContent='...'; btn.style.opacity='0.6'; err.style.display='none';
-  setTimeout(()=>{
-    if(input in REGISTERED_ROBOTS){
-      currentRobot=REGISTERED_ROBOTS[input]; currentSerial=input;
-      localStorage.setItem('zivo_last_serial',input);
+  var input = document.getElementById('serial-inp').value.trim().toUpperCase();
+  var err = document.getElementById('serial-err');
+  var btn = document.getElementById('conn-btn');
+  if(!input){ err.style.display='block'; return; }
+  btn.textContent = '...'; btn.style.opacity = '0.6'; err.style.display = 'none';
+  setTimeout(function(){
+    if(ROBOTS[input]){
+      currentRobot = ROBOTS[input]; currentSerial = input;
+      localStorage.setItem('zivo_last_serial', input);
       setConnected(true);
-      addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));
+      addLog('ok', t('log_conn').replace('{name}', currentRobot.name));
     } else {
-      btn.textContent=T[lang].connect_btn; btn.style.opacity='1';
-      err.style.display='block';
-      const inp=document.getElementById('serial-input');
-      inp.style.borderColor='var(--danger)';
-      setTimeout(()=>inp.style.borderColor='rgba(0,180,255,0.3)',2000);
+      btn.textContent = t('conn_btn'); btn.style.opacity = '1';
+      err.style.display = 'block';
+      var inp = document.getElementById('serial-inp');
+      inp.style.borderColor = 'var(--danger)';
+      setTimeout(function(){ inp.style.borderColor='rgba(0,180,255,0.3)'; }, 2000);
     }
-  },1200);
+  }, 1200);
 }
 
-// ═══════════════════════════════════════════════
-// TRIAL BANNER
-// ═══════════════════════════════════════════════
+// ── TRIAL ─────────────────────────────────────
 function updateTrialBanner(){
-  const banner=document.getElementById('trial-banner');
+  var b = document.getElementById('trial-banner');
   if(isTrialActive() && !isPro()){
-    banner.style.display='flex';
-    document.getElementById('trial-days-left').textContent=trialDaysLeft();
+    b.style.display = 'flex';
+    document.getElementById('trial-d').textContent = trialLeft();
+    document.getElementById('trial-title').textContent = t('trial_title');
+    document.getElementById('trial-desc').textContent = t('trial_d');
   } else {
-    banner.style.display='none';
+    b.style.display = 'none';
   }
 }
 
-// ═══════════════════════════════════════════════
-// PROFILE
-// ═══════════════════════════════════════════════
+// ── PROFILE ───────────────────────────────────
 function saveProfile(){
-  USER.name = document.getElementById('user-name-input').value;
+  USER.name = document.getElementById('inp-uname').value;
   saveUser();
-  updateProfileUI();
+  document.getElementById('prof-name').textContent = USER.name || 'User';
 }
-
 function saveBotName(){
-  USER.botName = document.getElementById('bot-name-input').value || 'ZIVO';
+  USER.botName = document.getElementById('inp-botname').value || 'ZIVO';
   saveUser();
-  document.getElementById('bot-display-name').textContent = USER.botName || 'ZIVO';
+  document.getElementById('botname').textContent = USER.botName || 'ZIVO';
 }
-
-function toggleSmartMode(){
-  if(!hasProAccess()){
-    openSubModal(); return;
-  }
-  const tog=document.getElementById('smart-toggle');
+function toggleSmart(){
+  if(!hasPro()){ openSub(); return; }
   USER.smartMode = !USER.smartMode;
-  tog.classList.toggle('on', USER.smartMode);
+  document.getElementById('smart-tog').classList.toggle('on', USER.smartMode);
   saveUser();
-  sendCmd(USER.smartMode ? 'smart_on' : 'smart_off');
 }
 
 function updateProfileUI(){
-  const t=T[lang];
-  // Name
-  const name = USER.name || 'User';
-  document.getElementById('profile-name-display').textContent = name;
-  document.getElementById('user-name-input').value = USER.name || '';
-  document.getElementById('bot-name-input').value = USER.botName || '';
-  document.getElementById('bot-display-name').textContent = USER.botName || 'ZIVO';
-
-  // Badge
-  const badge=document.getElementById('sub-badge-display');
-  if(isPro()){
-    badge.className='sub-badge pro'; badge.textContent='PRO';
-  } else if(isTrialActive()){
-    badge.className='sub-badge trial'; badge.textContent='TRIAL '+trialDaysLeft()+'d';
-  } else {
-    badge.className='sub-badge free'; badge.textContent='FREE';
-  }
-
-  // Smart toggle
-  document.getElementById('smart-toggle').classList.toggle('on', !!USER.smartMode);
-
-  // Smart mode lock visual
-  const smRow=document.getElementById('smart-mode-toggle-row');
-  smRow.style.opacity = hasProAccess() ? '1' : '0.5';
-
-  // Sub info
-  const subInfo=document.getElementById('sub-current-info');
-  if(isPro()){
-    subInfo.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--gold)">⭐ PRO Active</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+
-      (USER.sub==='forever'?'Lifetime':'Renews automatically')+'</div>';
-  } else if(isTrialActive()){
-    subInfo.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--success)">🎁 Free Trial</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+trialDaysLeft()+' days remaining — all features unlocked</div>';
-  } else {
-    subInfo.innerHTML='<div style="font-size:13px;font-weight:700;">Free Plan</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Upgrade to unlock all features</div>';
-  }
-
-  // Voices
+  var name = USER.name || 'User';
+  document.getElementById('prof-name').textContent = name;
+  document.getElementById('inp-uname').value = USER.name || '';
+  document.getElementById('inp-botname').value = USER.botName || '';
+  document.getElementById('botname').textContent = USER.botName || 'ZIVO';
+  var since = document.getElementById('prof-since');
+  since.textContent = t('member_since') + ' ' + fmtDate(USER.registeredAt || USER.firstConnected);
+  var badge = document.getElementById('prof-badge');
+  if(isPro()){ badge.className='badge pro'; badge.textContent='PRO'; }
+  else if(isTrialActive()){ badge.className='badge trial'; badge.textContent='TRIAL '+trialLeft()+'d'; }
+  else { badge.className='badge free'; badge.textContent='FREE'; }
+  document.getElementById('smart-tog').classList.toggle('on', !!USER.smartMode);
+  document.getElementById('smart-row').style.opacity = hasPro() ? '1' : '0.5';
+  var si = document.getElementById('sub-info');
+  if(isPro()) si.innerHTML = '<div style="font-size:13px;font-weight:700;color:var(--gold)">⭐ PRO Active</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+(USER.sub==='forever'?'Lifetime':'Renews automatically')+'</div>';
+  else if(isTrialActive()) si.innerHTML = '<div style="font-size:13px;font-weight:700;color:var(--ok)">🎁 Free Trial</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+trialLeft()+' days remaining</div>';
+  else si.innerHTML = '<div style="font-size:13px;font-weight:700">Free Plan</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Upgrade to unlock all features</div>';
   renderVoices();
-
-  // Calc AI button
-  const aiBtn=document.getElementById('ai-solve-btn');
-  const aiLock=document.getElementById('ai-locked-calc');
-  if(hasProAccess()){
-    aiBtn.style.display='block'; aiLock.style.display='none';
-  } else {
-    aiBtn.style.display='none'; aiLock.style.display='block';
-  }
+  var pro = hasPro();
 }
 
 function renderVoices(){
-  const list=document.getElementById('voice-list');
-  list.innerHTML='';
-  const locked=document.getElementById('voice-locked-msg');
-  const pro=hasProAccess();
-  VOICES.forEach(v=>{
-    const isActive = (USER.voice||'default')===v.id;
-    const isLocked = !v.free && !pro;
-    const div=document.createElement('div');
-    div.className='voice-card'+(isActive?' active':'')+(isLocked?' locked':'');
-    div.innerHTML=`
-      <div class="voice-avatar" style="background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,180,255,0.2))">${v.emoji}</div>
-      <div>
-        <div class="voice-name">${v.name}</div>
-        <div class="voice-desc">${T[lang][v.desc_key]||''}</div>
-      </div>
-      ${isLocked ? '<div class="lock-icon" style="display:flex">🔒</div>' : `<div class="voice-play" onclick="event.stopPropagation();playVoicePreview('${v.id}')">▶</div>`}
-    `;
-    if(!isLocked){
-      div.onclick=()=>selectVoice(v.id);
-    } else {
-      div.onclick=()=>openSubModal();
-    }
+  var list = document.getElementById('voice-list');
+  list.innerHTML = '';
+  var pro = hasPro();
+  VOICES.forEach(function(v){
+    var isActive = (USER.voice || 'default') === v.id;
+    var isLocked = !v.free && !pro;
+    var div = document.createElement('div');
+    div.className = 'voice-card' + (isActive?' on':'') + (isLocked?' locked':'');
+    div.innerHTML = '<div class="v-ava">'+v.e+'</div><div><div class="v-name">'+v.name+'</div><div class="v-desc">'+t(v.dk)+'</div></div>'
+      + (isLocked ? '<div class="v-lock">🔒</div>' : '<div class="v-play">▶</div>');
+    div.onclick = isLocked ? function(){ openSub(); } : function(){ selectVoice(v.id); };
     list.appendChild(div);
   });
-  locked.style.display = pro ? 'none' : 'block';
+  document.getElementById('voice-lock-msg').style.display = pro ? 'none' : 'block';
+  document.getElementById('voice-lock-msg').textContent = t('voice_lock');
 }
 
 function selectVoice(id){
-  USER.voice=id; saveUser();
-  sendCmd('set_voice:'+id);
-  renderVoices();
-  addLog('info','Voice: '+id);
+  USER.voice = id; saveUser(); renderVoices();
 }
 
-function playVoicePreview(id){
-  addLog('info','Preview: '+id);
-}
-
-// ═══════════════════════════════════════════════
-// SUBSCRIPTION
-// ═══════════════════════════════════════════════
-function openSubModal(){
+// ── SUBSCRIPTION ──────────────────────────────
+function openSub(){
   document.getElementById('sub-modal').classList.add('open');
-  selectPlan(selectedPlan);
-  const trialInfo=document.getElementById('modal-trial-info');
-  trialInfo.style.display = isTrialActive() ? 'block' : 'none';
+  pickPlan(selectedPlan);
+  document.getElementById('modal-trial').style.display = isTrialActive() ? 'block' : 'none';
+  document.getElementById('modal-trial').textContent = t('trial_modal');
 }
-
-function closeSubModal(){
-  document.getElementById('sub-modal').classList.remove('open');
-}
-
-function selectPlan(plan){
-  selectedPlan=plan;
-  ['monthly','yearly','forever'].forEach(p=>{
-    document.getElementById('plan-'+p).classList.toggle('active',p===plan);
+function closeSub(){ document.getElementById('sub-modal').classList.remove('open'); }
+function pickPlan(p){
+  selectedPlan = p;
+  ['monthly','yearly','forever'].forEach(function(x){
+    document.getElementById('pl-'+x).classList.toggle('on', x===p);
   });
-  const btn=document.getElementById('sub-btn');
-  btn.className = plan==='forever' ? 'btn-primary gold' : 'btn-primary';
+  document.getElementById('sub-do-btn').className = p==='forever' ? 'btn gold' : 'btn';
+}
+function doSubscribe(){
+  USER.sub = selectedPlan; USER.subStart = Date.now(); saveUser();
+  closeSub(); updateProfileUI();
+  addLog('ok', 'Subscribed: ' + selectedPlan);
 }
 
-function subscribePlan(){
-  // Demo — in real app connect to Stripe/PayPal here
-  USER.sub=selectedPlan;
-  USER.subStart=Date.now();
-  saveUser();
-  closeSubModal();
-  updateProfileUI();
-  addLog('ok','Subscribed: '+selectedPlan);
-  // Update badge
-  const badge=document.getElementById('sub-badge-display');
-  badge.className='sub-badge pro'; badge.textContent='PRO';
+
+// ── LOG & POLL ────────────────────────────────
+function addLog(type, text){
+  var list = document.getElementById('log-list');
+  var now = new Date();
+  var time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  var el = document.createElement('div'); el.className = 'log-e';
+  el.innerHTML = '<span class="log-t">'+time+'</span><span class="log-m '+type+'">'+text+'</span>';
+  list.insertBefore(el, list.firstChild);
+  while(list.children.length > 20) list.removeChild(list.lastChild);
 }
 
-// ═══════════════════════════════════════════════
-// CALCULATOR
-// ═══════════════════════════════════════════════
-let calcExpr='';
-
-function calcInput(val){
-  calcExpr += val;
-  document.getElementById('calc-expr').textContent=calcExpr;
-  try{
-    const safe = calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt(');
-    // eslint-disable-next-line no-new-func
-    const res = new Function('return '+safe)();
-    if(isFinite(res)) document.getElementById('calc-result').textContent=+res.toFixed(10);
-  } catch(e){}
+function pollRobot(){
+  if(!connected || !currentSerial) return;
+  fetch('http://zivo.local:8080/status', { headers:{'X-Serial':currentSerial}, signal:AbortSignal.timeout(2000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var batt = d.battery || 0;
+      document.getElementById('batt-pct').textContent = batt + '%';
+      document.getElementById('batt-fill').style.width = batt + '%';
+      document.getElementById('batt-pct').style.color = batt<20 ? 'var(--danger)' : batt<50 ? 'var(--warn)' : 'var(--ok)';
+      document.getElementById('temp-v').textContent = (d.temp || '--') + '°';
+      if(d.uptime){
+        var h = Math.floor(d.uptime/3600), m = Math.floor((d.uptime%3600)/60);
+        document.getElementById('upt-v').textContent = T[lang].upfmt(h, m);
+      }
+    }).catch(function(){});
 }
 
-function calcClear(){ calcExpr=''; document.getElementById('calc-expr').textContent=''; document.getElementById('calc-result').textContent='0'; document.getElementById('calc-solution').style.display='none'; }
-function calcBackspace(){ calcExpr=calcExpr.slice(0,-1); document.getElementById('calc-expr').textContent=calcExpr; }
-
-function calcEquals(){
-  try{
-    const safe = calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt(');
-    // eslint-disable-next-line no-new-func
-    const res = new Function('return '+safe)();
-    document.getElementById('calc-result').textContent=+res.toFixed(10);
-    calcExpr=String(+res.toFixed(10));
-  } catch(e){ document.getElementById('calc-result').textContent='ERR'; }
+function sendCmd(cmd){
+  if(!connected || !currentSerial) return;
+  fetch('http://zivo.local:8080/command', {
+    method:'POST', headers:{'Content-Type':'application/json','X-Serial':currentSerial},
+    body:JSON.stringify({cmd:cmd}), signal:AbortSignal.timeout(2000)
+  }).catch(function(){});
 }
 
-async function aiSolve(){
-  if(!hasProAccess()){ openSubModal(); return; }
-  const expr = calcExpr || document.getElementById('calc-result').textContent;
-  if(!expr || expr==='0') return;
-  const btn=document.getElementById('ai-solve-btn');
-  btn.textContent='⏳ '+T[lang].ai_solving;
-  btn.disabled=true;
-  const sol=document.getElementById('calc-solution');
-  sol.style.display='block';
-  sol.textContent='...';
-  try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:500,
-        messages:[{role:'user',content:'Solve step by step (be concise): '+expr}]
-      })
-    });
-    const data=await resp.json();
-    sol.textContent = data.content?.[0]?.text || 'No answer';
-  } catch(e){
-    // Offline fallback
-    sol.textContent = '= '+document.getElementById('calc-result').textContent;
-  }
-  btn.innerHTML='🧠 <span data-t="ai_solve">'+T[lang].ai_solve+'</span>';
-  btn.disabled=false;
-}
-
-// ═══════════════════════════════════════════════
-// LOG & POLL
-// ═══════════════════════════════════════════════
-function addLog(type,text){
-  const list=document.getElementById('log-list');
-  const now=new Date();
-  const time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  const el=document.createElement('div');
-  el.className='log-entry';
-  el.innerHTML='<span class="log-time">'+time+'</span><span class="log-text '+type+'">'+text+'</span>';
-  list.insertBefore(el,list.firstChild);
-  while(list.children.length>20)list.removeChild(list.lastChild);
-}
-
-async function sendCmd(cmd){
-  if(!connected||!currentSerial)return;
-  try{await fetch('http://zivo.local:8080/command',{method:'POST',headers:{'Content-Type':'application/json','X-Serial':currentSerial},body:JSON.stringify({cmd}),signal:AbortSignal.timeout(2000)});}catch(e){}
-}
-
-async function pollRobot(){
-  if(!connected||!currentSerial)return;
-  try{
-    const resp=await fetch('http://zivo.local:8080/status',{headers:{'X-Serial':currentSerial},signal:AbortSignal.timeout(2000)});
-    if(!resp.ok)return;
-    const data=await resp.json();
-    const batt=data.battery??0;
-    document.getElementById('batt-text').textContent=batt+'%';
-    document.getElementById('batt-fill').style.width=batt+'%';
-    document.getElementById('batt-text').style.color=batt<20?'var(--danger)':batt<50?'var(--warn)':'var(--success)';
-    document.getElementById('temp-val').textContent=(data.temp??'--')+'°';
-    if(data.uptime){const h=Math.floor(data.uptime/3600),m=Math.floor((data.uptime%3600)/60);document.getElementById('uptime-val').textContent=T[lang].upfmt(h,m);}
-  }catch(e){}
-}
-
-// ═══════════════════════════════════════════════
-// LANG & NAV
-// ═══════════════════════════════════════════════
+// ── LANG ──────────────────────────────────────
 function applyLang(l){
-  lang=l; const t=T[l];
-  document.querySelectorAll('[data-t]').forEach(el=>{
-    const k=el.getAttribute('data-t');
-    if(t[k]!==undefined) el.textContent=t[k];
-  });
-  document.getElementById('mood-text').textContent=t.moods[moodIdx];
-  document.body.style.direction=l==='he'?'rtl':'ltr';
-  document.getElementById('status-text').textContent=connected?t.online:t.offline;
-  document.getElementById('connect-btn').textContent=t.connect_btn;
-  if(document.getElementById('ai-solve-btn'))
-    document.getElementById('ai-solve-btn').innerHTML='🧠 '+t.ai_solve;
+  lang = l;
+  document.body.style.direction = l==='he' ? 'rtl' : 'ltr';
+  document.getElementById('moodtxt').textContent = t('moods')[moodIdx] || '';
+  // Status
+  document.getElementById('stxt').textContent = connected ? t('online') : t('offline');
+  // Offline banner
+  document.getElementById('ob-title').textContent = t('not_conn');
+  document.getElementById('ob-desc').textContent = t('not_conn_d');
+  document.getElementById('ob-lbl').textContent = t('serial_lbl');
+  document.getElementById('serial-err').textContent = t('serial_wrong');
+  document.getElementById('conn-btn').textContent = t('conn_btn');
+  document.getElementById('ob-hint').textContent = t('serial_hint');
+  // Nav
+  document.getElementById('nav-ctrl').textContent = t('nav_ctrl');
+  document.getElementById('nav-zone').textContent = t('nav_zone');
+  document.getElementById('nav-prof').textContent = t('nav_prof');
+  document.getElementById('nav-set').textContent = t('nav_set');
+  // Home
+  document.getElementById('lbl-temp').textContent = t('temp');
+  document.getElementById('lbl-upt').textContent = t('upt');
+  document.getElementById('lbl-batt').textContent = t('batt');
+  document.getElementById('lbl-log').textContent = t('log');
+  // Control
+  document.getElementById('lbl-move').textContent = t('move');
+  document.getElementById('lbl-actions').textContent = t('actions');
+  document.getElementById('lbl-wake').textContent = t('wake');
+  document.getElementById('lbl-sleep').textContent = t('sleep');
+  document.getElementById('lbl-charge').textContent = t('charge');
+  document.getElementById('lbl-dance').textContent = t('dance');
+  // Zone
+  document.getElementById('lbl-zone').textContent = t('zone');
+  document.getElementById('lbl-zw').textContent = t('zw');
+  document.getElementById('lbl-zd').textContent = t('zd');
+  document.getElementById('lbl-ea').textContent = t('ea');
+  document.getElementById('lbl-on').textContent = t('on');
+  document.getElementById('lbl-falls').textContent = t('falls');
+  // Settings
+  document.getElementById('lbl-lang').textContent = t('lang');
+  document.getElementById('lbl-feat').textContent = t('feat');
+  document.getElementById('lbl-voice-act').textContent = t('voiceact');
+  document.getElementById('lbl-voice-act-d').textContent = t('voiceact_d');
+  document.getElementById('lbl-edge').textContent = t('edge');
+  document.getElementById('lbl-edge-d').textContent = t('edge_d');
+  document.getElementById('lbl-auto').textContent = t('auto');
+  document.getElementById('lbl-auto-d').textContent = t('auto_d');
+  document.getElementById('lbl-expl').textContent = t('expl');
+  document.getElementById('lbl-expl-d').textContent = t('expl_d');
+  document.getElementById('lbl-notif').textContent = t('notif');
+  document.getElementById('lbl-notif-d').textContent = t('notif_d');
+  // Profile
+  document.getElementById('lbl-info').textContent = t('info');
+  document.getElementById('lbl-uname').textContent = t('uname');
+  document.getElementById('lbl-botname').textContent = t('botname');
+  document.getElementById('lbl-smart').textContent = t('smart');
+  document.getElementById('lbl-smart-t').textContent = t('smart_t');
+  document.getElementById('lbl-smart-d').textContent = t('smart_d');
+  document.getElementById('lbl-smart-l').textContent = t('smart_l');
+  document.getElementById('lbl-smart-s').textContent = t('smart_s');
+  document.getElementById('lbl-voices').textContent = t('voices');
+  document.getElementById('lbl-sub').textContent = t('sub');
+  document.getElementById('manage-sub-btn').textContent = t('manage_sub');
+  document.getElementById('logout-btn').textContent = 'LOGOUT';
   renderVoices();
 }
 
-function selectLang(btn,l){
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); applyLang(l);
+function setLang(l, btn){
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  applyLang(l);
 }
 
-function switchPage(name,el){
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  el.classList.add('active');
-  if(name==='settings'){
-    document.getElementById('page-settings').style.display='block';
-  } else if(name==='profile'){
-    document.getElementById('page-profile').style.display='block';
-    updateProfileUI();
-  } else if(name==='calc'){
-    document.getElementById('page-calc').style.display='block';
+// ── NAVIGATION ────────────────────────────────
+function goPage(name, el){
+  document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+  document.querySelectorAll('.ni').forEach(function(n){ n.classList.remove('on'); });
+  el.classList.add('on');
+  if(name === 'settings'){
+    document.getElementById('pg-settings').style.display = 'block';
+  } else if(name === 'profile'){
+    document.getElementById('pg-profile').style.display = 'block';
     updateProfileUI();
   } else if(connected){
-    document.getElementById('pages-wrapper').style.display='block';
-    document.getElementById('page-'+name).style.display='block';
+    document.getElementById('pages-wrap').style.display = 'block';
+    document.getElementById('pg-'+name).style.display = 'block';
   }
 }
 
-// Close modal on overlay click
-document.getElementById('sub-modal').addEventListener('click',function(e){
-  if(e.target===this)closeSubModal();
+// Close modal on bg click
+document.getElementById('sub-modal').addEventListener('click', function(e){
+  if(e.target === this) closeSub();
 });
 
-
-// ═══════════════════════════════════════════════
-// REGISTRATION & LOGIN
-// ═══════════════════════════════════════════════
-function applyRegLang(l){
-  const t=T[l];
-  const set=(id,key)=>{const el=document.getElementById(id);if(el&&t[key])el.textContent=t[key];};
-  set('reg-title','reg_title'); set('reg-subtitle','reg_subtitle');
-  set('reg-name-label','reg_name'); set('reg-email-label','reg_email'); set('reg-password-label','reg_password');
-  set('reg-btn','reg_btn'); set('reg-login-hint','reg_login_hint'); set('reg-login-btn','reg_login_link');
-  set('login-title','login_title'); set('login-subtitle','login_subtitle');
-  set('login-email-label','login_email'); set('login-password-label','login_password');
-  set('login-btn','login_btn'); set('login-reg-link','login_reg_link');
-  document.getElementById('reg-name').placeholder=t.reg_name||'';
-  document.getElementById('reg-email').placeholder='email@example.com';
-  document.getElementById('reg-password').placeholder='••••••';
-  document.getElementById('login-email').placeholder='email@example.com';
-  document.getElementById('login-password').placeholder='••••••';
-}
-
-function showRegForm(){
-  document.getElementById('reg-screen').style.display='block';
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('offline-banner').style.display='none';
-  document.getElementById('pages-wrapper').style.display='none';
-  applyRegLang(lang);
-}
-
-function showLoginForm(){
-  document.getElementById('reg-screen').style.display='none';
-  document.getElementById('login-screen').style.display='block';
-  document.getElementById('offline-banner').style.display='none';
-  applyRegLang(lang);
-}
-
-function showOfflineBanner(){
-  document.getElementById('reg-screen').style.display='none';
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('offline-banner').style.display='block';
-}
-
-function validateEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-async function completeRegistration(){
-  const t=T[lang];
-  const name=document.getElementById('reg-name').value.trim();
-  const email=document.getElementById('reg-email').value.trim().toLowerCase();
-  const pass=document.getElementById('reg-password').value;
-  const err=document.getElementById('reg-error');
-  err.style.display='none';
-  if(!name||!email||!pass){err.textContent=t.reg_err_fill;err.style.display='block';return;}
-  if(!validateEmail(email)){err.textContent=t.reg_err_email;err.style.display='block';return;}
-  if(pass.length<6){err.textContent=t.reg_err_pass;err.style.display='block';return;}
-  const btn=document.getElementById('reg-btn');
-  btn.textContent='...';btn.disabled=true;
-  try{
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    const now = Date.now();
-    const userData = {name, email, registeredAt: now, firstConnected: now, sub: null, voice: 'default', smartMode: false, botName: 'ZIVO'};
-    await db.collection('users').doc(cred.user.uid).set(userData);
-    Object.assign(USER, userData);
-    saveUser();
-    document.getElementById('reg-screen').style.display='none';
-    showOfflineBanner();
-    updateProfileUI();
-  } catch(e){
-    let msg = e.message;
-    if(e.code==='auth/email-already-in-use') msg=t.reg_err_exists;
-    err.textContent=msg; err.style.display='block';
-  }
-  btn.textContent=t.reg_btn; btn.disabled=false;
-}
-
-async function completeLogin(){
-  const t=T[lang];
-  const email=document.getElementById('login-email').value.trim().toLowerCase();
-  const pass=document.getElementById('login-password').value;
-  const err=document.getElementById('login-error');
-  err.style.display='none';
-  if(!email||!pass){err.textContent=t.reg_err_fill;err.style.display='block';return;}
-  const btn=document.getElementById('login-btn');
-  btn.textContent='...'; btn.disabled=true;
-  try{
-    const cred = await auth.signInWithEmailAndPassword(email, pass);
-    const snap = await db.collection('users').doc(cred.user.uid).get();
-    if(snap.exists){
-      const data = snap.data();
-      Object.assign(USER, data);
-      USER.uid = cred.user.uid;
-      saveUser();
-    }
-    document.getElementById('login-screen').style.display='none';
-    showOfflineBanner();
-    updateProfileUI();
-  } catch(e){
-    let msg = e.message;
-    if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential') msg=t.reg_err_notfound;
-    if(e.code==='auth/wrong-password') msg=t.reg_err_wrongpass;
-    err.textContent=msg; err.style.display='block';
-  }
-  btn.textContent=t.login_btn; btn.disabled=false;
-}
-
-async function logout(){
-  await auth.signOut();
-  ['email','name','registeredAt','uid','sub','voice','smartMode','botName','firstConnected'].forEach(k=>delete USER[k]);
-  saveUser();
-  setConnected(false);
-  showRegForm();
-}
-
-function formatRegDate(ts){
-  if(!ts)return'';
-  const d=new Date(ts);
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
-}
-
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-// Firebase auth state
-auth.onAuthStateChanged(async (firebaseUser) => {
-  if(firebaseUser){
-    try{
-      const snap = await db.collection('users').doc(firebaseUser.uid).get();
-      if(snap.exists){ Object.assign(USER, snap.data()); USER.uid=firebaseUser.uid; saveUser(); }
-    }catch(e){}
-    showOfflineBanner();
-    updateProfileUI();
-    const lastSerial=localStorage.getItem('zivo_last_serial');
-    if(lastSerial && lastSerial in REGISTERED_ROBOTS){
-      currentRobot=REGISTERED_ROBOTS[lastSerial]; currentSerial=lastSerial;
-      setTimeout(()=>{setConnected(true);addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));},500);
-    } else if(lastSerial){
-      document.getElementById('serial-input').value=lastSerial;
-    }
-  } else {
-    showRegForm();
-  }
-});
-
-setInterval(pollRobot,3000);
-setInterval(()=>{moodIdx=(moodIdx+1)%4;document.getElementById('mood-text').textContent=T[lang].moods[moodIdx];},4000);
+// ── INIT ──────────────────────────────────────
+setInterval(pollRobot, 3000);
+setInterval(function(){
+  moodIdx = (moodIdx+1) % 4;
+  document.getElementById('moodtxt').textContent = t('moods')[moodIdx];
+}, 4000);
 
 applyLang('en');
-setConnected(connected);
-updateProfileUI();
+
+auth.onAuthStateChanged(function(user){
+  if(user){
+    db.collection('users').doc(user.uid).get()
+      .then(function(snap){
+        if(snap.exists){ Object.assign(USER, snap.data()); }
+        USER.uid = user.uid;
+        saveUser();
+        showOffline();
+        applyLang(lang);
+        updateProfileUI();
+        var last = localStorage.getItem('zivo_last_serial');
+        if(last && ROBOTS[last]){
+          currentRobot = ROBOTS[last]; currentSerial = last;
+          setTimeout(function(){
+            setConnected(true);
+            addLog('ok', t('log_conn').replace('{name}', currentRobot.name));
+          }, 500);
+        } else if(last){
+          document.getElementById('serial-inp').value = last;
+        }
+      })
+      .catch(function(){ showOffline(); });
+  } else {
+    showReg();
+  }
+});
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
