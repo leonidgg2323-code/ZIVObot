@@ -11,83 +11,146 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050a14;--bg2:#0a1628;--blue:#00b4ff;--blue2:#0066cc;--blue-glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--success:#00ffaa;--card:rgba(10,22,40,0.8)}
+:root{--bg:#050a14;--blue:#00b4ff;--blue2:#0066cc;--blue-glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--success:#00ffaa;--warn:#ffaa00;--card:rgba(10,22,40,0.8);--gold:#ffd700}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,180,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .app{position:relative;z-index:1;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.header{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
-.logo{font-size:28px;font-weight:900;letter-spacing:4px;color:var(--white);text-shadow:0 0 20px var(--blue),0 0 40px var(--blue2)}
+.header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
+.logo{font-size:26px;font-weight:900;letter-spacing:4px;color:var(--white);text-shadow:0 0 20px var(--blue)}
 .logo span{color:var(--blue)}
-.status-dot{width:10px;height:10px;border-radius:50%}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
-.header-right{display:flex;align-items:center;gap:10px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.header-right{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.status-dot{width:9px;height:9px;border-radius:50%}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .page{display:none;flex:1;padding:0 16px 100px}
-.zivo-face-container{display:flex;flex-direction:column;align-items:center;padding:24px 0}
-.zivo-face{width:160px;height:160px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:32px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all 0.5s}
+.face-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px}
+.zivo-face{width:140px;height:140px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:28px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .5s}
 .zivo-face::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.1),transparent);animation:scan 3s infinite}
 @keyframes scan{0%{left:-100%}100%{left:200%}}
-.eyes{display:flex;gap:28px;position:relative;z-index:1}
-.eye{width:32px;height:32px;background:var(--blue);border-radius:8px;box-shadow:0 0 20px var(--blue);animation:blink 4s infinite;position:relative;overflow:hidden}
-.eye::after{content:'';position:absolute;top:4px;left:4px;width:10px;height:10px;background:rgba(255,255,255,0.6);border-radius:3px}
-@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(0.1)}}
-.zivo-name{margin-top:14px;font-size:22px;font-weight:900;letter-spacing:6px;color:var(--blue);text-shadow:0 0 16px var(--blue-glow)}
-.zivo-mood{margin-top:4px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px}
-.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
-.stat-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:14px 10px;text-align:center;backdrop-filter:blur(10px)}
-.stat-value{font-size:20px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
-.stat-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.battery-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(10px)}
-.battery-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.battery-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
-.battery-percent{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--success)}
-.battery-bar{height:8px;background:rgba(0,180,255,0.1);border-radius:4px;overflow:hidden}
-.battery-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue2),var(--blue));border-radius:4px;box-shadow:0 0 8px var(--blue-glow);transition:width 0.5s}
-.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:20px 0 12px}
-.dpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:200px;margin:0 auto 24px}
-.dpad-btn{height:56px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all 0.15s;user-select:none}
-.dpad-btn:active{background:var(--blue);box-shadow:0 0 20px var(--blue-glow);transform:scale(0.95)}
-.dpad-center{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:12px;font-weight:700;color:var(--blue);letter-spacing:1px}
+.eyes{display:flex;gap:24px;z-index:1}
+.eye{width:28px;height:28px;background:var(--blue);border-radius:7px;box-shadow:0 0 16px var(--blue);animation:blink 4s infinite;position:relative;overflow:hidden}
+.eye::after{content:'';position:absolute;top:4px;left:4px;width:8px;height:8px;background:rgba(255,255,255,.6);border-radius:2px}
+@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.zivo-name{margin-top:10px;font-size:20px;font-weight:900;letter-spacing:6px;color:var(--blue)}
+.zivo-mood{font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px;margin-top:2px}
+.card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px)}
+.section-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:18px 0 10px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.stat-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:12px 8px;text-align:center}
+.stat-value{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
+.stat-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.batt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.batt-pct{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--success)}
+.batt-bar{height:7px;background:rgba(0,180,255,0.1);border-radius:4px;overflow:hidden}
+.batt-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue2),var(--blue));border-radius:4px;transition:width .5s}
+.log-entry{display:flex;gap:8px;padding:9px 12px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:11px;margin-bottom:7px;align-items:flex-start}
+.log-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:1px}
+.log-text{font-size:12px;line-height:1.4}
+.log-text.info{color:var(--blue)}.log-text.warn{color:var(--warn)}.log-text.ok{color:var(--success)}
+.dpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:190px;margin:0 auto 20px}
+.dpad-btn{height:52px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;user-select:none}
+.dpad-btn:active{background:var(--blue);box-shadow:0 0 16px var(--blue-glow);transform:scale(.95)}
+.dpad-center{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:11px;font-weight:700;color:var(--blue)}
 .dpad-empty{background:transparent;border:none}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.action-btn{padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;text-align:center;cursor:pointer;transition:all 0.2s}
-.action-btn:active{transform:scale(0.97);border-color:var(--blue)}
-.action-icon{font-size:24px;margin-bottom:6px}
-.action-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
-.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.lang-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s}
-.lang-btn.active{border-color:var(--blue);background:rgba(0,180,255,0.1);box-shadow:0 0 12px var(--blue-glow)}
-.lang-flag{font-size:26px}
-.lang-name{font-size:11px;color:var(--gray);margin-top:4px;letter-spacing:1px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;margin-bottom:10px}
-.toggle-label{font-size:14px;font-weight:600}
-.toggle-desc{font-size:11px;color:var(--gray);margin-top:2px}
-.toggle{width:48px;height:26px;background:var(--gray);border-radius:13px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
-.toggle.on{background:var(--blue);box-shadow:0 0 10px var(--blue-glow)}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;transition:transform 0.2s}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.action-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:14px;text-align:center;cursor:pointer;transition:all .2s}
+.action-btn:active{transform:scale(.97);border-color:var(--blue)}
+.action-icon{font-size:22px;margin-bottom:5px}
+.action-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.lang-btn{padding:12px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s}
+.lang-btn.active{border-color:var(--blue);background:rgba(0,180,255,0.1)}
+.lang-flag{font-size:24px}
+.lang-name{font-size:10px;color:var(--gray);margin-top:3px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;margin-bottom:8px}
+.toggle-label{font-size:13px;font-weight:600}
+.toggle-desc{font-size:10px;color:var(--gray);margin-top:2px}
+.toggle{width:46px;height:24px;background:var(--gray);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--blue);box-shadow:0 0 8px var(--blue-glow)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s}
 .toggle.on::after{transform:translateX(22px)}
-.boundary-map{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:20px;position:relative;overflow:hidden;margin-bottom:16px}
-.boundary-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:30px 30px}
-.boundary-zone{position:absolute;inset:30px;border:2px dashed var(--blue);border-radius:12px;box-shadow:0 0 20px var(--blue-glow),inset 0 0 20px rgba(0,180,255,0.05)}
-.zivo-dot{position:absolute;width:20px;height:20px;background:var(--blue);border-radius:6px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 16px var(--blue);animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-6px)}}
-.corner-handle{position:absolute;width:14px;height:14px;background:var(--blue);border-radius:3px;box-shadow:0 0 8px var(--blue)}
-.boundary-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.info-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:14px}
-.info-card-label{font-size:10px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
-.info-card-value{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:4px}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.95);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:10px 0 20px;backdrop-filter:blur(20px);z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:6px 0;transition:all 0.2s}
-.nav-icon{font-size:22px;filter:grayscale(1) opacity(0.4);transition:all 0.2s}
-.nav-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.boundary-map{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px}
+.boundary-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:28px 28px}
+.boundary-zone{position:absolute;inset:28px;border:2px dashed var(--blue);border-radius:10px;box-shadow:0 0 16px var(--blue-glow)}
+.zivo-dot{position:absolute;width:18px;height:18px;background:var(--blue);border-radius:5px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--blue);animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-5px)}}
+.corner-handle{position:absolute;width:12px;height:12px;background:var(--blue);border-radius:3px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;padding:12px}
+.info-card-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+.info-card-value{font-size:16px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:3px}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.97);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:8px 0 18px;backdrop-filter:blur(20px);z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;transition:all .2s}
+.nav-icon{font-size:20px;filter:grayscale(1) opacity(.4);transition:all .2s}
+.nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
 .nav-item.active .nav-icon{filter:none}
 .nav-item.active .nav-label{color:var(--blue)}
-.log-entry{display:flex;gap:10px;padding:10px 14px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:12px;margin-bottom:8px;align-items:flex-start}
-.log-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:2px}
-.log-text{font-size:13px;line-height:1.4}
-.log-text.info{color:var(--blue)}
-.log-text.warn{color:#ffaa00}
-.log-text.ok{color:var(--success)}
+#offline-banner{text-align:center;padding:14px 20px;color:var(--gray)}
+.profile-header{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;margin-bottom:10px}
+.avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.profile-name{font-size:18px;font-weight:700}
+.profile-sub{font-size:11px;color:var(--gray);margin-top:2px}
+.sub-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;margin-top:4px}
+.sub-badge.free{background:rgba(58,90,122,0.4);color:var(--gray);border:1px solid var(--gray)}
+.sub-badge.pro{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid var(--gold)}
+.sub-badge.trial{background:rgba(0,255,170,0.15);color:var(--success);border:1px solid var(--success)}
+.input-row{margin-bottom:10px}
+.input-label{font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:5px}
+.zivo-input{width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.25);border-radius:10px;padding:11px 13px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none}
+.zivo-input:focus{border-color:var(--blue)}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.plan-card{background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.plan-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.plan-card.gold{border-color:var(--gold);background:rgba(255,215,0,0.05)}
+.plan-card.gold.active{background:rgba(255,215,0,0.1)}
+.plan-name{font-size:13px;font-weight:700;letter-spacing:1px}
+.plan-price{font-size:22px;font-weight:900;color:var(--blue);font-family:'Share Tech Mono',monospace;margin:6px 0 2px}
+.plan-card.gold .plan-price{color:var(--gold)}
+.plan-period{font-size:10px;color:var(--gray)}
+.plan-save{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--success);color:#000;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap}
+.plan-forever{grid-column:1/-1}
+.feature-list{margin:6px 0 0}
+.feature-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,180,255,0.07)}
+.feature-item:last-child{border:none}
+.feature-item .fi-icon{font-size:14px;width:20px;text-align:center}
+.feature-locked{opacity:.4}
+.btn-primary{width:100%;padding:14px;background:var(--blue);border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:2px;color:#000;font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:4px}
+.btn-primary:active{opacity:.8;transform:scale(.98)}
+.btn-primary.gold{background:var(--gold);color:#000}
+.btn-outline{width:100%;padding:13px;background:transparent;border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:6px}
+.trial-banner{background:linear-gradient(135deg,rgba(0,255,170,0.1),rgba(0,180,255,0.1));border:1px solid var(--success);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.trial-days{font-size:28px;font-weight:900;color:var(--success);font-family:'Share Tech Mono',monospace;min-width:40px}
+.voice-grid{display:grid;gap:10px;margin-bottom:14px}
+.voice-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:14px;cursor:pointer;transition:all .2s}
+.voice-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.voice-card.locked{opacity:.5;cursor:default}
+.voice-card.locked .lock-icon{display:flex}
+.lock-icon{display:none;margin-left:auto;font-size:14px;color:var(--gold)}
+.voice-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.voice-name{font-size:14px;font-weight:700}
+.voice-desc{font-size:11px;color:var(--gray);margin-top:1px}
+.voice-play{margin-left:auto;width:32px;height:32px;border-radius:8px;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0}
+.smart-hero{background:linear-gradient(135deg,rgba(0,180,255,0.1),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+.smart-hero-icon{font-size:36px;margin-bottom:8px}
+.smart-hero-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.smart-hero-desc{font-size:11px;color:var(--gray);line-height:1.5}
+.calc-display{background:rgba(0,0,0,0.4);border:1px solid rgba(0,180,255,0.2);border-radius:14px;padding:16px;margin-bottom:12px;min-height:80px;display:flex;flex-direction:column;justify-content:flex-end}
+.calc-expr{font-size:12px;color:var(--gray);font-family:'Share Tech Mono',monospace;min-height:18px;word-break:break-all}
+.calc-result{font-size:28px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;text-align:right;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-btn{height:54px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;color:var(--white)}
+.calc-btn:active{transform:scale(.93)}
+.calc-btn.op{color:var(--blue);border-color:rgba(0,180,255,0.3)}
+.calc-btn.eq{background:var(--blue);color:#000;border-color:var(--blue)}
+.calc-btn.clear{color:var(--danger);border-color:rgba(255,68,102,0.3)}
+.calc-btn.wide{grid-column:span 2}
+.calc-ai-btn{width:100%;margin-top:10px;padding:13px;background:linear-gradient(135deg,rgba(0,180,255,0.15),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s}
+.calc-solution{background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.2);border-radius:12px;padding:14px;margin-top:10px;font-size:13px;line-height:1.6;display:none}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#0a1628;border:1px solid rgba(0,180,255,0.2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}
+.modal-close{position:absolute;top:16px;right:20px;font-size:22px;cursor:pointer;color:var(--gray)}
 </style>
 </head>
 <body>
@@ -100,44 +163,47 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
   </div>
 
-  <div class="zivo-face-container">
+  <div class="face-wrap">
     <div class="zivo-face" id="zivo-face">
       <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
     </div>
-    <div class="zivo-name">ZIVO</div>
+    <div class="zivo-name" id="bot-display-name">ZIVO</div>
     <div class="zivo-mood" id="mood-text"></div>
   </div>
 
-  <div id="offline-banner" style="text-align:center;padding:16px 20px;color:var(--gray);">
-    <div style="font-size:40px;margin-bottom:10px;">📡</div>
+  <div id="offline-banner">
+    <div style="font-size:36px;margin-bottom:8px;">📡</div>
     <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px;" data-t="not_connected"></div>
-    <div style="font-size:11px;opacity:0.6;margin-bottom:20px;" data-t="not_connected_desc"></div>
-    <div style="background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;padding:18px;text-align:left;">
-      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:8px;" data-t="serial_label"></div>
-      <input id="serial-input" type="text" maxlength="12"
-        style="width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.3);border-radius:10px;padding:12px 14px;color:var(--white);font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:3px;outline:none;text-transform:uppercase;"
-        placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
-      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;" data-t="serial_wrong"></div>
-      <button onclick="tryConnect()" id="connect-btn"
-        style="width:100%;margin-top:14px;padding:13px;background:rgba(0,180,255,0.1);border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;font-weight:700;"
-        data-t="connect_btn"></button>
+    <div style="font-size:11px;opacity:.6;margin-bottom:18px;" data-t="not_connected_desc"></div>
+    <div class="card" style="text-align:left;">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:6px;" data-t="serial_label"></div>
+      <input id="serial-input" type="text" maxlength="12" class="zivo-input" style="letter-spacing:3px;font-family:'Share Tech Mono',monospace;font-size:15px;text-transform:uppercase;" placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
+      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:6px;display:none;" data-t="serial_wrong"></div>
+      <button onclick="tryConnect()" id="connect-btn" class="btn-primary" style="margin-top:12px;" data-t="connect_btn"></button>
     </div>
-    <div style="margin-top:14px;font-size:11px;opacity:0.5;" data-t="serial_hint"></div>
+    <div style="margin-top:12px;font-size:11px;opacity:.4;" data-t="serial_hint"></div>
   </div>
 
   <div id="pages-wrapper" style="display:none">
     <div id="page-home" class="page" style="display:block">
+      <div id="trial-banner" class="trial-banner" style="display:none">
+        <div class="trial-days" id="trial-days-left">7</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;" data-t="trial_active"></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;" data-t="trial_desc"></div>
+        </div>
+      </div>
       <div class="stats-row">
         <div class="stat-card"><div class="stat-value" id="temp-val">--</div><div class="stat-label" data-t="temp"></div></div>
         <div class="stat-card"><div class="stat-value" id="uptime-val">--</div><div class="stat-label" data-t="uptime"></div></div>
         <div class="stat-card"><div class="stat-value">✓</div><div class="stat-label">Wi-Fi</div></div>
       </div>
-      <div class="battery-card">
-        <div class="battery-header">
-          <span class="battery-title" data-t="battery"></span>
-          <span class="battery-percent" id="batt-text">--%</span>
+      <div class="card">
+        <div class="batt-header">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);" data-t="battery"></span>
+          <span class="batt-pct" id="batt-text">--%</span>
         </div>
-        <div class="battery-bar"><div class="battery-fill" id="batt-fill"></div></div>
+        <div class="batt-bar"><div class="batt-fill" id="batt-fill"></div></div>
       </div>
       <div class="section-title" data-t="log"></div>
       <div id="log-list"></div>
@@ -169,14 +235,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="section-title" data-t="zonemap"></div>
       <div class="boundary-map">
         <div class="boundary-zone">
-          <div class="corner-handle" style="top:-7px;left:-7px"></div>
-          <div class="corner-handle" style="top:-7px;right:-7px"></div>
-          <div class="corner-handle" style="bottom:-7px;left:-7px"></div>
-          <div class="corner-handle" style="bottom:-7px;right:-7px"></div>
+          <div class="corner-handle" style="top:-6px;left:-6px"></div>
+          <div class="corner-handle" style="top:-6px;right:-6px"></div>
+          <div class="corner-handle" style="bottom:-6px;left:-6px"></div>
+          <div class="corner-handle" style="bottom:-6px;right:-6px"></div>
         </div>
         <div class="zivo-dot"></div>
       </div>
-      <div class="boundary-info">
+      <div class="info-grid">
         <div class="info-card"><div class="info-card-label" data-t="zonewidth"></div><div class="info-card-value">80cm</div></div>
         <div class="info-card"><div class="info-card-label" data-t="zonedepth"></div><div class="info-card-value">60cm</div></div>
         <div class="info-card"><div class="info-card-label" data-t="edgealerts"></div><div class="info-card-value" style="color:var(--success)" data-t="on"></div></div>
@@ -195,18 +261,131 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="lang-btn" onclick="selectLang(this,'uk')"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
     </div>
     <div class="section-title" data-t="features"></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+
+  <div id="page-profile" class="page" style="display:none">
+    <div class="profile-header">
+      <div class="avatar" id="profile-avatar">🤖</div>
+      <div>
+        <div class="profile-name" id="profile-name-display">User</div>
+        <div class="profile-sub" data-t="member_since"></div>
+        <div id="sub-badge-display" class="sub-badge free">FREE</div>
+      </div>
+    </div>
+    <div class="section-title" data-t="your_info"></div>
+    <div class="card">
+      <div class="input-row">
+        <div class="input-label" data-t="your_name"></div>
+        <input id="user-name-input" class="zivo-input" type="text" placeholder="Your name" oninput="saveProfile()"/>
+      </div>
+      <div class="input-row" style="margin-bottom:0">
+        <div class="input-label" data-t="bot_custom_name"></div>
+        <input id="bot-name-input" class="zivo-input" type="text" placeholder="ZIVO" oninput="saveBotName()"/>
+      </div>
+    </div>
+    <div class="section-title" data-t="smart_mode"></div>
+    <div class="smart-hero">
+      <div class="smart-hero-icon">🧠</div>
+      <div class="smart-hero-title" data-t="smart_mode_title"></div>
+      <div class="smart-hero-desc" data-t="smart_mode_desc"></div>
+    </div>
+    <div class="toggle-row" id="smart-mode-toggle-row">
+      <div><div class="toggle-label" data-t="smart_mode_label"></div><div class="toggle-desc" data-t="smart_mode_sub"></div></div>
+      <div class="toggle" id="smart-toggle" onclick="toggleSmartMode()"></div>
+    </div>
+    <div class="section-title" data-t="voice_section"></div>
+    <div class="voice-grid" id="voice-list"></div>
+    <div id="voice-locked-msg" style="display:none;text-align:center;padding:10px;font-size:11px;color:var(--gold);" data-t="voice_locked_msg"></div>
+    <div class="section-title" data-t="subscription"></div>
+    <div id="sub-current-info" class="card" style="margin-bottom:10px;"></div>
+    <button class="btn-outline" onclick="openSubModal()" data-t="manage_sub"></button>
+  </div>
+
+  <div id="page-calc" class="page" style="display:none">
+    <div class="section-title" data-t="calculator"></div>
+    <div class="calc-display">
+      <div class="calc-expr" id="calc-expr"></div>
+      <div class="calc-result" id="calc-result">0</div>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-btn clear" onclick="calcClear()">C</div>
+      <div class="calc-btn op" onclick="calcInput('(')">(</div>
+      <div class="calc-btn op" onclick="calcInput(')')">)</div>
+      <div class="calc-btn op" onclick="calcInput('/')">÷</div>
+      <div class="calc-btn" onclick="calcInput('7')">7</div>
+      <div class="calc-btn" onclick="calcInput('8')">8</div>
+      <div class="calc-btn" onclick="calcInput('9')">9</div>
+      <div class="calc-btn op" onclick="calcInput('*')">×</div>
+      <div class="calc-btn" onclick="calcInput('4')">4</div>
+      <div class="calc-btn" onclick="calcInput('5')">5</div>
+      <div class="calc-btn" onclick="calcInput('6')">6</div>
+      <div class="calc-btn op" onclick="calcInput('-')">−</div>
+      <div class="calc-btn" onclick="calcInput('1')">1</div>
+      <div class="calc-btn" onclick="calcInput('2')">2</div>
+      <div class="calc-btn" onclick="calcInput('3')">3</div>
+      <div class="calc-btn op" onclick="calcInput('+')">+</div>
+      <div class="calc-btn" onclick="calcInput('0')">0</div>
+      <div class="calc-btn" onclick="calcInput('.')">.</div>
+      <div class="calc-btn op" onclick="calcInput('^')">xⁿ</div>
+      <div class="calc-btn eq" onclick="calcEquals()">=</div>
+      <div class="calc-btn op wide" onclick="calcInput('sqrt(')">√</div>
+      <div class="calc-btn op" onclick="calcInput('Math.PI')">π</div>
+      <div class="calc-btn op" onclick="calcBackspace()">⌫</div>
+    </div>
+    <button class="calc-ai-btn" id="ai-solve-btn" onclick="aiSolve()">🧠 <span data-t="ai_solve"></span></button>
+    <div id="ai-locked-calc" style="display:none;text-align:center;padding:12px;font-size:11px;color:var(--gold);cursor:pointer;" onclick="openSubModal()" data-t="calc_locked"></div>
+    <div class="calc-solution" id="calc-solution"></div>
   </div>
 
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchPage('home',this)"><div class="nav-icon">🤖</div><div class="nav-label">ZIVO</div></div>
     <div class="nav-item" onclick="switchPage('control',this)"><div class="nav-icon">🕹️</div><div class="nav-label" data-t="nav_control"></div></div>
     <div class="nav-item" onclick="switchPage('boundary',this)"><div class="nav-icon">📍</div><div class="nav-label" data-t="nav_zone"></div></div>
+    <div class="nav-item" onclick="switchPage('calc',this)"><div class="nav-icon">🧮</div><div class="nav-label" data-t="nav_calc"></div></div>
+    <div class="nav-item" onclick="switchPage('profile',this)"><div class="nav-icon">👤</div><div class="nav-label" data-t="nav_profile"></div></div>
     <div class="nav-item" onclick="switchPage('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label" data-t="nav_settings"></div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sub-modal">
+  <div class="modal" style="position:relative">
+    <div class="modal-close" onclick="closeSubModal()">✕</div>
+    <div class="modal-title" data-t="choose_plan"></div>
+    <div id="modal-trial-info" style="display:none;background:rgba(0,255,170,0.08);border:1px solid var(--success);border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;text-align:center;color:var(--success);" data-t="trial_modal_info"></div>
+    <div class="plan-grid">
+      <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
+        <div class="plan-name" data-t="plan_monthly"></div>
+        <div class="plan-price" id="price-monthly">—</div>
+        <div class="plan-period" data-t="per_month"></div>
+      </div>
+      <div class="plan-card" id="plan-yearly" onclick="selectPlan('yearly')">
+        <div class="plan-save" data-t="save_40"></div>
+        <div class="plan-name" data-t="plan_yearly"></div>
+        <div class="plan-price" id="price-yearly">—</div>
+        <div class="plan-period" data-t="per_month_billed"></div>
+      </div>
+      <div class="plan-card gold plan-forever" id="plan-forever" onclick="selectPlan('forever')">
+        <div class="plan-name" data-t="plan_forever"></div>
+        <div class="plan-price" style="color:var(--gold)" id="price-forever">—</div>
+        <div class="plan-period" data-t="one_time"></div>
+      </div>
+    </div>
+    <div class="section-title" data-t="whats_included"></div>
+    <div class="feature-list">
+      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_basic"></span></div>
+      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_control"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_voices"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_smart"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_calc"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_custom_name"></span></div>
+    </div>
+    <button class="btn-primary" id="sub-btn" onclick="subscribePlan()" data-t="subscribe_btn"></button>
+    <button class="btn-outline" onclick="closeSubModal()" style="margin-top:8px;" data-t="maybe_later"></button>
   </div>
 </div>
 
@@ -215,189 +394,189 @@ const REGISTERED_ROBOTS = {
   'ZIVO-ADMINMW': { name: 'ZIVO #1', owner: 'Admin' },
 };
 
+const VOICES = [
+  { id:'default', emoji:'🤖', name:'ZIVO',  desc_key:'voice_default_desc', free:true  },
+  { id:'sage',    emoji:'🧙', name:'Sage',  desc_key:'voice_sage_desc',    free:false },
+  { id:'nova',    emoji:'⚡', name:'Nova',  desc_key:'voice_nova_desc',    free:false },
+  { id:'echo',    emoji:'🌊', name:'Echo',  desc_key:'voice_echo_desc',    free:false },
+  { id:'spark',   emoji:'🔥', name:'Spark', desc_key:'voice_spark_desc',   free:false },
+  { id:'atlas',   emoji:'🌍', name:'Atlas', desc_key:'voice_atlas_desc',   free:false },
+  { id:'luna',    emoji:'🌙', name:'Luna',  desc_key:'voice_luna_desc',    free:false },
+  { id:'titan',   emoji:'⚙️', name:'Titan', desc_key:'voice_titan_desc',   free:false },
+  { id:'pixel',   emoji:'👾', name:'Pixel', desc_key:'voice_pixel_desc',   free:false },
+  { id:'zen',     emoji:'🍃', name:'Zen',   desc_key:'voice_zen_desc',     free:false },
+];
+
 const T = {
-  ru: {
-    online:'В СЕТИ',temp:'ТЕМП',uptime:'ВРЕМЯ',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'ДВИЖЕНИЕ',actions:'ДЕЙСТВИЯ',
-    wakeup:'РАЗБУДИТЬ',sleep:'СПАТЬ',charge:'НА ЗАРЯДКУ',random:'ТАНЦЕВАТЬ',
-    zonemap:'КАРТА ЗОНЫ',zonewidth:'ШИРИНА',zonedepth:'ГЛУБИНА',
-    edgealerts:'ЗАЩИТА КРАЯ',on:'ВКЛ',falls:'ПАДЕНИЙ',
-    language:'ЯЗЫК',features:'ФУНКЦИИ',
-    voiceact:'Голосовая активация',voiceact_desc:'Активация фразой "Привет ZIVO"',
-    edgeprot:'Защита от падения',edgeprot_desc:'Останавливаться у края стола',
-    autocharge:'Авто зарядка',autocharge_desc:'Ехать на базу при низком заряде',
-    explore:'Случайные прогулки',explore_desc:'ZIVO ездит самостоятельно',
-    notifs:'Уведомления',notifs_desc:'Заряд и защита края',
-    nav_control:'УПРАВЛЕНИЕ',nav_zone:'ЗОНА',nav_settings:'НАСТРОЙКИ',
-    moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],
-    log_connected:'Подключён к {name}',
-    upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',
-    offline:'НЕ ПОДКЛЮЧЁН',not_connected:'ZIVO не подключён',
-    not_connected_desc:'Введи серийный номер',connect_btn:'ПОДКЛЮЧИТЬ',
-    serial_label:'СЕРИЙНЫЙ НОМЕР',serial_wrong:'Неверный серийный номер.',
-    serial_hint:'Серийный номер на наклейке на дне корпуса'
-  },
-  en: {
-    online:'ONLINE',temp:'TEMP',uptime:'UPTIME',battery:'BATTERY',log:'LOG',
-    movement:'MOVEMENT',actions:'ACTIONS',
-    wakeup:'WAKE UP',sleep:'SLEEP',charge:'GO CHARGE',random:'DANCE',
-    zonemap:'SAFE ZONE MAP',zonewidth:'WIDTH',zonedepth:'DEPTH',
-    edgealerts:'EDGE ALERTS',on:'ON',falls:'FALLS',
-    language:'LANGUAGE',features:'FEATURES',
-    voiceact:'Voice Activation',voiceact_desc:'Wake up with "Hey ZIVO"',
-    edgeprot:'Edge Protection',edgeprot_desc:'Stop at table edges',
-    autocharge:'Auto Charging',autocharge_desc:'Return to base when low',
-    explore:'Random Explore',explore_desc:'ZIVO moves on its own',
-    notifs:'Notifications',notifs_desc:'Battery and edge alerts',
-    nav_control:'CONTROL',nav_zone:'ZONE',nav_settings:'SETTINGS',
-    moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],
-    log_connected:'Connected to {name}',
-    upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',
-    offline:'DISCONNECTED',not_connected:'ZIVO is not connected',
-    not_connected_desc:'Enter your ZIVO serial number',connect_btn:'CONNECT',
-    serial_label:'SERIAL NUMBER',serial_wrong:'Wrong serial number.',
-    serial_hint:'Serial number is on the sticker on the bottom'
-  },
-  he: {
-    online:'מחובר',temp:'טמפ',uptime:'זמן',battery:'סוללה',log:'יומן',
-    movement:'תנועה',actions:'פעולות',
-    wakeup:'התעורר',sleep:'שינה',charge:'לטעינה',random:'לרקוד',
-    zonemap:'מפת אזור',zonewidth:'רוחב',zonedepth:'עומק',
-    edgealerts:'הגנת קצה',on:'פועל',falls:'נפילות',
-    language:'שפה',features:'תכונות',
-    voiceact:'הפעלה קולית',voiceact_desc:'הפעלה עם "היי ZIVO"',
-    edgeprot:'הגנה מנפילה',edgeprot_desc:'עצור בקצה השולחן',
-    autocharge:'טעינה אוטומטית',autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',
-    explore:'סיור אקראי',explore_desc:'ZIVO נוסע לבד',
-    notifs:'התראות',notifs_desc:'סוללה והגנת קצה',
-    nav_control:'שליטה',nav_zone:'אזור',nav_settings:'הגדרות',
-    moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],
-    log_connected:'מחובר ל-{name}',
-    upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',
-    offline:'מנותק',not_connected:'ZIVO לא מחובר',
-    not_connected_desc:'הזן את המספר הסידורי',connect_btn:'התחבר',
-    serial_label:'מספר סידורי',serial_wrong:'מספר סידורי שגוי.',
-    serial_hint:'המספר הסידורי נמצא בתחתית ZIVO'
-  },
-  zh: {
-    online:'在线',temp:'温度',uptime:'运行',battery:'电池',log:'日志',
-    movement:'移动',actions:'操作',
-    wakeup:'唤醒',sleep:'睡眠',charge:'去充电',random:'跳舞',
-    zonemap:'安全区域',zonewidth:'宽度',zonedepth:'深度',
-    edgealerts:'边缘保护',on:'开启',falls:'跌落',
-    language:'语言',features:'功能',
-    voiceact:'语音激活',voiceact_desc:'说"嘿 ZIVO"唤醒',
-    edgeprot:'防跌落',edgeprot_desc:'在桌子边缘停下',
-    autocharge:'自动充电',autocharge_desc:'电量低时返回充电',
-    explore:'随机探索',explore_desc:'ZIVO 自主移动',
-    notifs:'通知',notifs_desc:'电池和边缘警报',
-    nav_control:'控制',nav_zone:'区域',nav_settings:'设置',
-    moods:['准备好了','探索中','开心','等待命令'],
-    log_connected:'已连接到 {name}',
-    upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',
-    offline:'未连接',not_connected:'ZIVO 未连接',
-    not_connected_desc:'输入序列号',connect_btn:'连接',
-    serial_label:'序列号',serial_wrong:'序列号错误。',
-    serial_hint:'序列号在 ZIVO 底部的贴纸上'
-  },
-  uk: {
-    online:'В МЕРЕЖІ',temp:'ТЕМП',uptime:'ЧАС',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'РУХ',actions:'ДІЇ',
-    wakeup:'РОЗБУДИТИ',sleep:'СПАТИ',charge:'НА ЗАРЯДКУ',random:'ТАНЦЮВАТИ',
-    zonemap:'КАРТА ЗОНИ',zonewidth:'ШИРИНА',zonedepth:'ГЛИБИНА',
-    edgealerts:'ЗАХИСТ КРАЮ',on:'УВІМКН',falls:'ПАДІНЬ',
-    language:'МОВА',features:'ФУНКЦІЇ',
-    voiceact:'Голосова активація',voiceact_desc:'Активація фразою "Привіт ZIVO"',
-    edgeprot:'Захист від падіння',edgeprot_desc:'Зупинятись біля краю столу',
-    autocharge:'Авто зарядка',autocharge_desc:'Їхати на базу при низькому заряді',
-    explore:'Випадкові прогулянки',explore_desc:'ZIVO їздить самостійно',
-    notifs:'Сповіщення',notifs_desc:'Заряд і захист краю',
-    nav_control:'КЕРУВАННЯ',nav_zone:'ЗОНА',nav_settings:'НАЛАШТУВАННЯ',
-    moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],
-    log_connected:'Підключено до {name}',
-    upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',
-    offline:'НЕ ПІДКЛЮЧЕНО',not_connected:'ZIVO не підключено',
-    not_connected_desc:'Введи серійний номер',connect_btn:'ПІДКЛЮЧИТИ',
-    serial_label:'СЕРІЙНИЙ НОМЕР',serial_wrong:'Невірний серійний номер.',
-    serial_hint:'Серійний номер на наклейці на дні корпусу'
-  }
+  ru:{online:'В СЕТИ',temp:'ТЕМП',uptime:'ВРЕМЯ',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',movement:'ДВИЖЕНИЕ',actions:'ДЕЙСТВИЯ',wakeup:'РАЗБУДИТЬ',sleep:'СПАТЬ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦ',zonemap:'КАРТА ЗОНЫ',zonewidth:'ШИРИНА',zonedepth:'ГЛУБИНА',edgealerts:'ЗАЩИТА КРАЯ',on:'ВКЛ',falls:'ПАДЕНИЙ',language:'ЯЗЫК',features:'ФУНКЦИИ',voiceact:'Голосовая активация',voiceact_desc:'Активация фразой "Привет ZIVO"',edgeprot:'Защита от падения',edgeprot_desc:'Останавливаться у края стола',autocharge:'Авто зарядка',autocharge_desc:'Ехать на базу при низком заряде',explore:'Случайные прогулки',explore_desc:'ZIVO ездит самостоятельно',notifs:'Уведомления',notifs_desc:'Заряд и защита края',nav_control:'УПРАВЛЕНИЕ',nav_zone:'ЗОНА',nav_settings:'НАСТРОЙКИ',nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФИЛЬ',moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],log_connected:'Подключён к {name}',upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',offline:'НЕ ПОДКЛЮЧЁН',not_connected:'ZIVO не подключён',not_connected_desc:'Введи серийный номер',connect_btn:'ПОДКЛЮЧИТЬ',serial_label:'СЕРИЙНЫЙ НОМЕР',serial_wrong:'Неверный серийный номер.',serial_hint:'Серийный номер на наклейке на дне корпуса',member_since:'Участник ZIVO',your_info:'ИНФОРМАЦИЯ',your_name:'ТВОЁ ИМЯ',bot_custom_name:'ИМЯ БОТА (умный режим)',smart_mode:'УМНЫЙ РЕЖИМ',smart_mode_title:'Умный режим',smart_mode_desc:'Бот отвечает на своё имя которое ты выбрал. Только платная версия.',smart_mode_label:'Включить умный режим',smart_mode_sub:'Бот реагирует на своё имя',voice_section:'ГОЛОС БОТА',voice_default_desc:'Стандартный голос ZIVO',voice_sage_desc:'Мудрый и спокойный',voice_nova_desc:'Энергичный и молодой',voice_echo_desc:'Глубокий и объёмный',voice_spark_desc:'Весёлый и игривый',voice_atlas_desc:'Мощный и авторитетный',voice_luna_desc:'Мягкий и лунный',voice_titan_desc:'Роботизированный и точный',voice_pixel_desc:'Цифровой и технический',voice_zen_desc:'Спокойный и медитативный',voice_locked_msg:'🔒 Дополнительные голоса доступны в Pro версии',subscription:'ПОДПИСКА',manage_sub:'УПРАВЛЕНИЕ ПОДПИСКОЙ',trial_active:'Пробный период активен!',trial_desc:'Все функции бесплатно',choose_plan:'ВЫБЕРИ ПЛАН',plan_monthly:'Месяц',plan_yearly:'Год',plan_forever:'Навсегда',per_month:'/месяц',per_month_billed:'в месяц (год)',one_time:'одноразовый платёж',save_40:'СКИДКА 40%',whats_included:'ЧТО ВКЛЮЧЕНО',feat_basic:'Управление роботом',feat_control:'Базовые команды',feat_voices:'10 голосов на выбор',feat_smart:'Умный режим + своё имя',feat_calc:'Умный калькулятор с ИИ',feat_custom_name:'Кастомное имя бота',subscribe_btn:'ПОДКЛЮЧИТЬ PRO',maybe_later:'Позже',trial_modal_info:'У тебя активен пробный период — все функции уже открыты!',calculator:'КАЛЬКУЛЯТОР',ai_solve:'Решить сложное уравнение (ИИ)',calc_locked:'🔒 Умный калькулятор доступен в Pro. Нажми чтобы открыть.',ai_solving:'Решаю...'},
+  en:{online:'ONLINE',temp:'TEMP',uptime:'UPTIME',battery:'BATTERY',log:'LOG',movement:'MOVEMENT',actions:'ACTIONS',wakeup:'WAKE UP',sleep:'SLEEP',charge:'GO CHARGE',random:'DANCE',zonemap:'SAFE ZONE MAP',zonewidth:'WIDTH',zonedepth:'DEPTH',edgealerts:'EDGE ALERTS',on:'ON',falls:'FALLS',language:'LANGUAGE',features:'FEATURES',voiceact:'Voice Activation',voiceact_desc:'Wake up with "Hey ZIVO"',edgeprot:'Edge Protection',edgeprot_desc:'Stop at table edges',autocharge:'Auto Charging',autocharge_desc:'Return to base when low',explore:'Random Explore',explore_desc:'ZIVO moves on its own',notifs:'Notifications',notifs_desc:'Battery and edge alerts',nav_control:'CONTROL',nav_zone:'ZONE',nav_settings:'SETTINGS',nav_calc:'CALC',nav_profile:'PROFILE',moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],log_connected:'Connected to {name}',upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',offline:'DISCONNECTED',not_connected:'ZIVO is not connected',not_connected_desc:'Enter your ZIVO serial number',connect_btn:'CONNECT',serial_label:'SERIAL NUMBER',serial_wrong:'Wrong serial number.',serial_hint:'Serial number is on the sticker on the bottom',member_since:'ZIVO Member',your_info:'YOUR INFO',your_name:'YOUR NAME',bot_custom_name:'BOT NAME (smart mode)',smart_mode:'SMART MODE',smart_mode_title:'Smart Mode',smart_mode_desc:'Your bot responds to a custom name you choose. Pro only.',smart_mode_label:'Enable Smart Mode',smart_mode_sub:'Bot responds to its name',voice_section:'BOT VOICE',voice_default_desc:'Default ZIVO voice',voice_sage_desc:'Wise and calm',voice_nova_desc:'Energetic and young',voice_echo_desc:'Deep and rich',voice_spark_desc:'Fun and playful',voice_atlas_desc:'Powerful and authoritative',voice_luna_desc:'Soft and dreamy',voice_titan_desc:'Robotic and precise',voice_pixel_desc:'Digital and techy',voice_zen_desc:'Calm and meditative',voice_locked_msg:'🔒 Extra voices available in Pro',subscription:'SUBSCRIPTION',manage_sub:'MANAGE SUBSCRIPTION',trial_active:'Free trial is active!',trial_desc:'All features unlocked',choose_plan:'CHOOSE YOUR PLAN',plan_monthly:'Monthly',plan_yearly:'Yearly',plan_forever:'Forever',per_month:'/month',per_month_billed:'/mo billed yearly',one_time:'one-time payment',save_40:'SAVE 40%',whats_included:"WHAT'S INCLUDED",feat_basic:'Robot control',feat_control:'Basic commands',feat_voices:'10 voices to choose',feat_smart:'Smart mode + custom name',feat_calc:'Smart AI calculator',feat_custom_name:'Custom bot name',subscribe_btn:'GET PRO',maybe_later:'Maybe later',trial_modal_info:'Your free trial is active — all features are unlocked!',calculator:'CALCULATOR',ai_solve:'Solve complex equation (AI)',calc_locked:'🔒 Smart calculator available in Pro. Tap to unlock.',ai_solving:'Solving...'},
+  he:{online:'מחובר',temp:'טמפ',uptime:'זמן',battery:'סוללה',log:'יומן',movement:'תנועה',actions:'פעולות',wakeup:'התעורר',sleep:'שינה',charge:'לטעינה',random:'לרקוד',zonemap:'מפת אזור',zonewidth:'רוחב',zonedepth:'עומק',edgealerts:'הגנת קצה',on:'פועל',falls:'נפילות',language:'שפה',features:'תכונות',voiceact:'הפעלה קולית',voiceact_desc:'הפעלה עם "היי ZIVO"',edgeprot:'הגנה מנפילה',edgeprot_desc:'עצור בקצה השולחן',autocharge:'טעינה אוטומטית',autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',explore:'סיור אקראי',explore_desc:'ZIVO נוסע לבד',notifs:'התראות',notifs_desc:'סוללה והגנת קצה',nav_control:'שליטה',nav_zone:'אזור',nav_settings:'הגדרות',nav_calc:'מחשבון',nav_profile:'פרופיל',moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],log_connected:'מחובר ל-{name}',upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',offline:'מנותק',not_connected:'ZIVO לא מחובר',not_connected_desc:'הזן את המספר הסידורי',connect_btn:'התחבר',serial_label:'מספר סידורי',serial_wrong:'מספר סידורי שגוי.',serial_hint:'המספר הסידורי נמצא בתחתית ZIVO',member_since:'חבר ZIVO',your_info:'פרטים',your_name:'שמך',bot_custom_name:'שם הבוט (מצב חכם)',smart_mode:'מצב חכם',smart_mode_title:'מצב חכם',smart_mode_desc:'הבוט מגיב לשם שבחרת. Pro בלבד.',smart_mode_label:'הפעל מצב חכם',smart_mode_sub:'הבוט מגיב לשמו',voice_section:'קול הבוט',voice_default_desc:'קול ZIVO ברירת מחדל',voice_sage_desc:'חכם ורגוע',voice_nova_desc:'אנרגטי וצעיר',voice_echo_desc:'עמוק ועשיר',voice_spark_desc:'כיפי ושובבי',voice_atlas_desc:'חזק וסמכותי',voice_luna_desc:'רך וחלומי',voice_titan_desc:'רובוטי ומדויק',voice_pixel_desc:'דיגיטלי וטכנולוגי',voice_zen_desc:'רגוע ומדיטטיבי',voice_locked_msg:'🔒 קולות נוספים זמינים ב-Pro',subscription:'מנוי',manage_sub:'ניהול מנוי',trial_active:'תקופת ניסיון פעילה!',trial_desc:'כל הפונקציות פתוחות',choose_plan:'בחר תוכנית',plan_monthly:'חודשי',plan_yearly:'שנתי',plan_forever:'לצמיתות',per_month:'/חודש',per_month_billed:'/חודש (שנתי)',one_time:'תשלום חד פעמי',save_40:'חסוך 40%',whats_included:'מה כלול',feat_basic:'שליטה בבוט',feat_control:'פקודות בסיסיות',feat_voices:'10 קולות לבחירה',feat_smart:'מצב חכם + שם מותאם',feat_calc:'מחשבון AI חכם',feat_custom_name:'שם בוט מותאם',subscribe_btn:'הצטרף ל-Pro',maybe_later:'אולי מאוחר יותר',trial_modal_info:'תקופת הניסיון שלך פעילה — כל הפונקציות פתוחות!',calculator:'מחשבון',ai_solve:'פתור משוואה מורכבת (AI)',calc_locked:'🔒 מחשבון חכם זמין ב-Pro. לחץ לפתיחה.',ai_solving:'פותר...'},
+  zh:{online:'在线',temp:'温度',uptime:'运行',battery:'电池',log:'日志',movement:'移动',actions:'操作',wakeup:'唤醒',sleep:'睡眠',charge:'去充电',random:'跳舞',zonemap:'安全区域',zonewidth:'宽度',zonedepth:'深度',edgealerts:'边缘保护',on:'开启',falls:'跌落',language:'语言',features:'功能',voiceact:'语音激活',voiceact_desc:'说"嘿 ZIVO"唤醒',edgeprot:'防跌落',edgeprot_desc:'在桌子边缘停下',autocharge:'自动充电',autocharge_desc:'电量低时返回充电',explore:'随机探索',explore_desc:'ZIVO 自主移动',notifs:'通知',notifs_desc:'电池和边缘警报',nav_control:'控制',nav_zone:'区域',nav_settings:'设置',nav_calc:'计算器',nav_profile:'个人',moods:['准备好了','探索中','开心','等待命令'],log_connected:'已连接到 {name}',upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',offline:'未连接',not_connected:'ZIVO 未连接',not_connected_desc:'输入序列号',connect_btn:'连接',serial_label:'序列号',serial_wrong:'序列号错误。',serial_hint:'序列号在 ZIVO 底部的贴纸上',member_since:'ZIVO 会员',your_info:'个人信息',your_name:'你的名字',bot_custom_name:'机器人名称（智能模式）',smart_mode:'智能模式',smart_mode_title:'智能模式',smart_mode_desc:'机器人响应你选择的名字。仅限Pro。',smart_mode_label:'启用智能模式',smart_mode_sub:'机器人响应其名字',voice_section:'机器人声音',voice_default_desc:'默认ZIVO声音',voice_sage_desc:'睿智平静',voice_nova_desc:'充满活力',voice_echo_desc:'深沉丰富',voice_spark_desc:'有趣活泼',voice_atlas_desc:'强大权威',voice_luna_desc:'柔和梦幻',voice_titan_desc:'机器人精准',voice_pixel_desc:'数字科技',voice_zen_desc:'平静冥想',voice_locked_msg:'🔒 更多声音在Pro版本中可用',subscription:'订阅',manage_sub:'管理订阅',trial_active:'试用期激活！',trial_desc:'所有功能免费',choose_plan:'选择方案',plan_monthly:'月度',plan_yearly:'年度',plan_forever:'永久',per_month:'/月',per_month_billed:'/月（年付）',one_time:'一次性付款',save_40:'节省40%',whats_included:'包含内容',feat_basic:'机器人控制',feat_control:'基本命令',feat_voices:'10种声音可选',feat_smart:'智能模式+自定义名称',feat_calc:'AI智能计算器',feat_custom_name:'自定义机器人名称',subscribe_btn:'获取Pro',maybe_later:'稍后',trial_modal_info:'您的试用期已激活 — 所有功能已解锁！',calculator:'计算器',ai_solve:'解复杂方程（AI）',calc_locked:'🔒 智能计算器在Pro版本中可用。点击解锁。',ai_solving:'解算中...'},
+  uk:{online:'В МЕРЕЖІ',temp:'ТЕМП',uptime:'ЧАС',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',movement:'РУХ',actions:'ДІЇ',wakeup:'РОЗБУДИТИ',sleep:'СПАТИ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦЬ',zonemap:'КАРТА ЗОНИ',zonewidth:'ШИРИНА',zonedepth:'ГЛИБИНА',edgealerts:'ЗАХИСТ КРАЮ',on:'УВІМКН',falls:'ПАДІНЬ',language:'МОВА',features:'ФУНКЦІЇ',voiceact:'Голосова активація',voiceact_desc:'Активація "Привіт ZIVO"',edgeprot:'Захист від падіння',edgeprot_desc:'Зупинятись біля краю столу',autocharge:'Авто зарядка',autocharge_desc:'Їхати на базу при низькому заряді',explore:'Випадкові прогулянки',explore_desc:'ZIVO їздить самостійно',notifs:'Сповіщення',notifs_desc:'Заряд і захист краю',nav_control:'КЕРУВАННЯ',nav_zone:'ЗОНА',nav_settings:'НАЛАШТУВАННЯ',nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФІЛЬ',moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],log_connected:'Підключено до {name}',upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',offline:'НЕ ПІДКЛЮЧЕНО',not_connected:'ZIVO не підключено',not_connected_desc:'Введи серійний номер',connect_btn:'ПІДКЛЮЧИТИ',serial_label:'СЕРІЙНИЙ НОМЕР',serial_wrong:'Невірний серійний номер.',serial_hint:'Серійний номер на наклейці на дні корпусу',member_since:'Учасник ZIVO',your_info:'ІНФОРМАЦІЯ',your_name:"ТВОЄ ІМ'Я",bot_custom_name:"ІМ'Я БОТА (розумний режим)",smart_mode:'РОЗУМНИЙ РЕЖИМ',smart_mode_title:'Розумний режим',smart_mode_desc:"Бот відповідає на своє ім'я яке ти обрав. Тільки платна версія.",smart_mode_label:'Увімкнути розумний режим',smart_mode_sub:"Бот реагує на своє ім'я",voice_section:'ГОЛОС БОТА',voice_default_desc:'Стандартний голос ZIVO',voice_sage_desc:'Мудрий і спокійний',voice_nova_desc:'Енергійний і молодий',voice_echo_desc:"Глибокий і об'ємний",voice_spark_desc:'Веселий і грайливий',voice_atlas_desc:'Потужний і авторитетний',voice_luna_desc:'Мягкий і мрійливий',voice_titan_desc:'Роботизований і точний',voice_pixel_desc:'Цифровий і технічний',voice_zen_desc:'Спокійний і медитативний',voice_locked_msg:'🔒 Додаткові голоси доступні в Pro версії',subscription:'ПІДПИСКА',manage_sub:'КЕРУВАННЯ ПІДПИСКОЮ',trial_active:'Пробний період активний!',trial_desc:'Всі функції безкоштовно',choose_plan:'ОБЕРИ ПЛАН',plan_monthly:'Місяць',plan_yearly:'Рік',plan_forever:'Назавжди',per_month:'/місяць',per_month_billed:'на місяць (рік)',one_time:'одноразовий платіж',save_40:'ЗНИЖКА 40%',whats_included:'ЩО ВКЛЮЧЕНО',feat_basic:'Керування роботом',feat_control:'Базові команди',feat_voices:'10 голосів на вибір',feat_smart:"Розумний режим + своє ім'я",feat_calc:'Розумний калькулятор з ІІ',feat_custom_name:"Кастомне ім'я бота",subscribe_btn:'ОТРИМАТИ PRO',maybe_later:'Пізніше',trial_modal_info:'У тебе активний пробний період — всі функції вже відкриті!',calculator:'КАЛЬКУЛЯТОР',ai_solve:'Вирішити складне рівняння (ІІ)',calc_locked:'🔒 Розумний калькулятор доступний у Pro. Натисни щоб відкрити.',ai_solving:'Вирішую...'}
 };
 
-let lang='en',moodIdx=0,connected=false,currentRobot=null,currentSerial=null;
+let lang='en',moodIdx=0,connected=false,currentRobot=null,currentSerial=null,selectedPlan='yearly';
+const USER=JSON.parse(localStorage.getItem('zivo_user')||'{}');
+function saveUser(){localStorage.setItem('zivo_user',JSON.stringify(USER));}
+function isPro(){return USER.sub==='forever'||USER.sub==='monthly'||USER.sub==='yearly';}
+function isTrialActive(){if(!USER.firstConnected)return false;return(Date.now()-USER.firstConnected)/(1000*60*60*24)<7;}
+function hasProAccess(){return isPro()||isTrialActive();}
+function trialDaysLeft(){if(!USER.firstConnected)return 0;return Math.max(0,Math.ceil(7-(Date.now()-USER.firstConnected)/(1000*60*60*24)));}
 
 function setConnected(val){
   connected=val;
-  const dot=document.getElementById('status-dot');
-  const txt=document.getElementById('status-text');
-  const face=document.getElementById('zivo-face');
+  const dot=document.getElementById('status-dot'),txt=document.getElementById('status-text'),face=document.getElementById('zivo-face');
   if(val){
-    dot.style.cssText='background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite;width:10px;height:10px;border-radius:50%';
+    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite';
     txt.style.color='var(--success)';txt.textContent=T[lang].online;
     document.getElementById('offline-banner').style.display='none';
     document.getElementById('pages-wrapper').style.display='block';
     document.getElementById('page-home').style.display='block';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.querySelector('.nav-item').classList.add('active');
-    face.style.borderColor='var(--blue)';
-    face.style.boxShadow='0 0 30px var(--blue-glow),inset 0 0 30px rgba(0,180,255,0.05)';
+    face.style.borderColor='var(--blue)';face.style.boxShadow='0 0 28px var(--blue-glow),inset 0 0 28px rgba(0,180,255,0.05)';
+    if(!USER.firstConnected){USER.firstConnected=Date.now();saveUser();}
+    updateTrialBanner();
   }else{
-    dot.style.cssText='background:var(--gray);box-shadow:none;animation:none;width:10px;height:10px;border-radius:50%';
+    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--gray);box-shadow:none;animation:none';
     txt.style.color='var(--gray)';txt.textContent=T[lang].offline;
     document.getElementById('offline-banner').style.display='block';
     document.getElementById('pages-wrapper').style.display='none';
-    document.getElementById('page-settings').style.display='none';
+    ['page-settings','page-profile','page-calc'].forEach(id=>document.getElementById(id).style.display='none');
     face.style.borderColor='var(--gray)';face.style.boxShadow='none';
   }
 }
 
 function tryConnect(){
   const input=document.getElementById('serial-input').value.trim().toUpperCase();
-  const err=document.getElementById('serial-error');
-  const btn=document.getElementById('connect-btn');
+  const err=document.getElementById('serial-error'),btn=document.getElementById('connect-btn');
   if(!input){err.style.display='block';return;}
   btn.textContent='...';btn.style.opacity='0.6';err.style.display='none';
   setTimeout(()=>{
     if(input in REGISTERED_ROBOTS){
       currentRobot=REGISTERED_ROBOTS[input];currentSerial=input;
       localStorage.setItem('zivo_last_serial',input);
-      setConnected(true);
-      addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));
+      setConnected(true);addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));
     }else{
-      btn.textContent=T[lang].connect_btn;btn.style.opacity='1';
-      err.style.display='block';
+      btn.textContent=T[lang].connect_btn;btn.style.opacity='1';err.style.display='block';
       const inp=document.getElementById('serial-input');
-      inp.style.borderColor='var(--danger)';
-      setTimeout(()=>inp.style.borderColor='rgba(0,180,255,0.3)',2000);
+      inp.style.borderColor='var(--danger)';setTimeout(()=>inp.style.borderColor='rgba(0,180,255,0.3)',2000);
     }
   },1200);
 }
 
+function updateTrialBanner(){
+  const b=document.getElementById('trial-banner');
+  if(isTrialActive()&&!isPro()){b.style.display='flex';document.getElementById('trial-days-left').textContent=trialDaysLeft();}
+  else b.style.display='none';
+}
+
+function saveProfile(){USER.name=document.getElementById('user-name-input').value;saveUser();updateProfileUI();}
+function saveBotName(){USER.botName=document.getElementById('bot-name-input').value||'ZIVO';saveUser();document.getElementById('bot-display-name').textContent=USER.botName||'ZIVO';}
+
+function toggleSmartMode(){
+  if(!hasProAccess()){openSubModal();return;}
+  USER.smartMode=!USER.smartMode;
+  document.getElementById('smart-toggle').classList.toggle('on',USER.smartMode);
+  saveUser();sendCmd(USER.smartMode?'smart_on':'smart_off');
+}
+
+function updateProfileUI(){
+  document.getElementById('profile-name-display').textContent=USER.name||'User';
+  document.getElementById('user-name-input').value=USER.name||'';
+  document.getElementById('bot-name-input').value=USER.botName||'';
+  document.getElementById('bot-display-name').textContent=USER.botName||'ZIVO';
+  const badge=document.getElementById('sub-badge-display');
+  if(isPro()){badge.className='sub-badge pro';badge.textContent='PRO';}
+  else if(isTrialActive()){badge.className='sub-badge trial';badge.textContent='TRIAL '+trialDaysLeft()+'d';}
+  else{badge.className='sub-badge free';badge.textContent='FREE';}
+  document.getElementById('smart-toggle').classList.toggle('on',!!USER.smartMode);
+  document.getElementById('smart-mode-toggle-row').style.opacity=hasProAccess()?'1':'0.5';
+  const si=document.getElementById('sub-current-info');
+  if(isPro())si.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--gold)">⭐ PRO Active</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+(USER.sub==='forever'?'Lifetime':'Renews automatically')+'</div>';
+  else if(isTrialActive())si.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--success)">🎁 Free Trial</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+trialDaysLeft()+' days remaining</div>';
+  else si.innerHTML='<div style="font-size:13px;font-weight:700;">Free Plan</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Upgrade to unlock all features</div>';
+  renderVoices();
+  const pro=hasProAccess();
+  document.getElementById('ai-solve-btn').style.display=pro?'block':'none';
+  document.getElementById('ai-locked-calc').style.display=pro?'none':'block';
+}
+
+function renderVoices(){
+  const list=document.getElementById('voice-list');list.innerHTML='';
+  const pro=hasProAccess();
+  VOICES.forEach(v=>{
+    const isActive=(USER.voice||'default')===v.id,isLocked=!v.free&&!pro;
+    const div=document.createElement('div');
+    div.className='voice-card'+(isActive?' active':'')+(isLocked?' locked':'');
+    div.innerHTML=`<div class="voice-avatar" style="background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,180,255,0.2))">${v.emoji}</div><div><div class="voice-name">${v.name}</div><div class="voice-desc">${T[lang][v.desc_key]||''}</div></div>${isLocked?'<div class="lock-icon" style="display:flex">🔒</div>':`<div class="voice-play" onclick="event.stopPropagation();playVoicePreview('${v.id}')">▶</div>`}`;
+    div.onclick=isLocked?()=>openSubModal():()=>selectVoice(v.id);
+    list.appendChild(div);
+  });
+  document.getElementById('voice-locked-msg').style.display=pro?'none':'block';
+}
+
+function selectVoice(id){USER.voice=id;saveUser();sendCmd('set_voice:'+id);renderVoices();addLog('info','Voice: '+id);}
+function playVoicePreview(id){addLog('info','Preview: '+id);}
+
+function openSubModal(){
+  document.getElementById('sub-modal').classList.add('open');selectPlan(selectedPlan);
+  document.getElementById('modal-trial-info').style.display=isTrialActive()?'block':'none';
+}
+function closeSubModal(){document.getElementById('sub-modal').classList.remove('open');}
+function selectPlan(plan){
+  selectedPlan=plan;
+  ['monthly','yearly','forever'].forEach(p=>document.getElementById('plan-'+p).classList.toggle('active',p===plan));
+  document.getElementById('sub-btn').className=plan==='forever'?'btn-primary gold':'btn-primary';
+}
+function subscribePlan(){
+  USER.sub=selectedPlan;USER.subStart=Date.now();saveUser();closeSubModal();updateProfileUI();
+  addLog('ok','Subscribed: '+selectedPlan);
+  const b=document.getElementById('sub-badge-display');b.className='sub-badge pro';b.textContent='PRO';
+}
+
+let calcExpr='';
+function calcInput(val){
+  calcExpr+=val;document.getElementById('calc-expr').textContent=calcExpr;
+  try{const res=new Function('return '+calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt('))();if(isFinite(res))document.getElementById('calc-result').textContent=+res.toFixed(10);}catch(e){}
+}
+function calcClear(){calcExpr='';document.getElementById('calc-expr').textContent='';document.getElementById('calc-result').textContent='0';document.getElementById('calc-solution').style.display='none';}
+function calcBackspace(){calcExpr=calcExpr.slice(0,-1);document.getElementById('calc-expr').textContent=calcExpr;}
+function calcEquals(){
+  try{const res=new Function('return '+calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt('))();document.getElementById('calc-result').textContent=+res.toFixed(10);calcExpr=String(+res.toFixed(10));}
+  catch(e){document.getElementById('calc-result').textContent='ERR';}
+}
+async function aiSolve(){
+  if(!hasProAccess()){openSubModal();return;}
+  const expr=calcExpr||document.getElementById('calc-result').textContent;
+  if(!expr||expr==='0')return;
+  const btn=document.getElementById('ai-solve-btn'),sol=document.getElementById('calc-solution');
+  btn.textContent='⏳ '+T[lang].ai_solving;btn.disabled=true;
+  sol.style.display='block';sol.textContent='...';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Solve step by step (be concise): '+expr}]})});
+    const data=await resp.json();sol.textContent=data.content?.[0]?.text||'No answer';
+  }catch(e){sol.textContent='= '+document.getElementById('calc-result').textContent;}
+  btn.innerHTML='🧠 '+T[lang].ai_solve;btn.disabled=false;
+}
+
 function addLog(type,text){
-  const list=document.getElementById('log-list');
-  const now=new Date();
+  const list=document.getElementById('log-list'),now=new Date();
   const time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  const el=document.createElement('div');
-  el.className='log-entry';
+  const el=document.createElement('div');el.className='log-entry';
   el.innerHTML='<span class="log-time">'+time+'</span><span class="log-text '+type+'">'+text+'</span>';
   list.insertBefore(el,list.firstChild);
   while(list.children.length>20)list.removeChild(list.lastChild);
 }
-
-async function sendCmd(cmd){
-  if(!connected||!currentSerial)return;
-  try{await fetch('http://zivo.local:8080/command',{method:'POST',headers:{'Content-Type':'application/json','X-Serial':currentSerial},body:JSON.stringify({cmd}),signal:AbortSignal.timeout(2000)});}catch(e){}
-}
-
+async function sendCmd(cmd){if(!connected||!currentSerial)return;try{await fetch('http://zivo.local:8080/command',{method:'POST',headers:{'Content-Type':'application/json','X-Serial':currentSerial},body:JSON.stringify({cmd}),signal:AbortSignal.timeout(2000)});}catch(e){}}
 async function pollRobot(){
   if(!connected||!currentSerial)return;
   try{
     const resp=await fetch('http://zivo.local:8080/status',{headers:{'X-Serial':currentSerial},signal:AbortSignal.timeout(2000)});
-    if(!resp.ok)return;
-    const data=await resp.json();
+    if(!resp.ok)return;const data=await resp.json();
     const batt=data.battery??0;
-    document.getElementById('batt-text').textContent=batt+'%';
-    document.getElementById('batt-fill').style.width=batt+'%';
-    document.getElementById('batt-text').style.color=batt<20?'var(--danger)':batt<50?'#ffaa00':'var(--success)';
+    document.getElementById('batt-text').textContent=batt+'%';document.getElementById('batt-fill').style.width=batt+'%';
+    document.getElementById('batt-text').style.color=batt<20?'var(--danger)':batt<50?'var(--warn)':'var(--success)';
     document.getElementById('temp-val').textContent=(data.temp??'--')+'°';
     if(data.uptime){const h=Math.floor(data.uptime/3600),m=Math.floor((data.uptime%3600)/60);document.getElementById('uptime-val').textContent=T[lang].upfmt(h,m);}
   }catch(e){}
@@ -410,34 +589,35 @@ function applyLang(l){
   document.body.style.direction=l==='he'?'rtl':'ltr';
   document.getElementById('status-text').textContent=connected?t.online:t.offline;
   document.getElementById('connect-btn').textContent=t.connect_btn;
+  document.getElementById('ai-solve-btn').innerHTML='🧠 '+t.ai_solve;
+  renderVoices();
 }
-
-function selectLang(btn,l){
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');applyLang(l);
-}
-
+function selectLang(btn,l){document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyLang(l);}
 function switchPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  if(name==='settings'){document.getElementById('page-settings').style.display='block';}
+  if(name==='settings')document.getElementById('page-settings').style.display='block';
+  else if(name==='profile'){document.getElementById('page-profile').style.display='block';updateProfileUI();}
+  else if(name==='calc'){document.getElementById('page-calc').style.display='block';updateProfileUI();}
   else if(connected){document.getElementById('pages-wrapper').style.display='block';document.getElementById('page-'+name).style.display='block';}
 }
 
+document.getElementById('sub-modal').addEventListener('click',function(e){if(e.target===this)closeSubModal();});
+
 const lastSerial=localStorage.getItem('zivo_last_serial');
-if(lastSerial)document.getElementById('serial-input').value=lastSerial;
+if(lastSerial&&lastSerial in REGISTERED_ROBOTS){
+  currentRobot=REGISTERED_ROBOTS[lastSerial];currentSerial=lastSerial;
+  setTimeout(()=>{setConnected(true);addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));},500);
+}else if(lastSerial){document.getElementById('serial-input').value=lastSerial;}
 
 setInterval(pollRobot,3000);
 setInterval(()=>{moodIdx=(moodIdx+1)%4;document.getElementById('mood-text').textContent=T[lang].moods[moodIdx];},4000);
-
-applyLang('en');
-setConnected(false);
-
+applyLang('en');setConnected(connected);updateProfileUI();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
-</html><!DOCTYPE html>
+                                                         </html><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -450,83 +630,146 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050a14;--bg2:#0a1628;--blue:#00b4ff;--blue2:#0066cc;--blue-glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--success:#00ffaa;--card:rgba(10,22,40,0.8)}
+:root{--bg:#050a14;--blue:#00b4ff;--blue2:#0066cc;--blue-glow:rgba(0,180,255,0.3);--white:#e8f4ff;--gray:#3a5a7a;--danger:#ff4466;--success:#00ffaa;--warn:#ffaa00;--card:rgba(10,22,40,0.8);--gold:#ffd700}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,180,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .app{position:relative;z-index:1;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.header{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
-.logo{font-size:28px;font-weight:900;letter-spacing:4px;color:var(--white);text-shadow:0 0 20px var(--blue),0 0 40px var(--blue2)}
+.header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,180,255,0.1)}
+.logo{font-size:26px;font-weight:900;letter-spacing:4px;color:var(--white);text-shadow:0 0 20px var(--blue)}
 .logo span{color:var(--blue)}
-.status-dot{width:10px;height:10px;border-radius:50%}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
-.header-right{display:flex;align-items:center;gap:10px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.header-right{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.status-dot{width:9px;height:9px;border-radius:50%}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .page{display:none;flex:1;padding:0 16px 100px}
-.zivo-face-container{display:flex;flex-direction:column;align-items:center;padding:24px 0}
-.zivo-face{width:160px;height:160px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:32px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all 0.5s}
+.face-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px}
+.zivo-face{width:140px;height:140px;background:linear-gradient(135deg,#0d1f3a,#1a3a5c);border-radius:28px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .5s}
 .zivo-face::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.1),transparent);animation:scan 3s infinite}
 @keyframes scan{0%{left:-100%}100%{left:200%}}
-.eyes{display:flex;gap:28px;position:relative;z-index:1}
-.eye{width:32px;height:32px;background:var(--blue);border-radius:8px;box-shadow:0 0 20px var(--blue);animation:blink 4s infinite;position:relative;overflow:hidden}
-.eye::after{content:'';position:absolute;top:4px;left:4px;width:10px;height:10px;background:rgba(255,255,255,0.6);border-radius:3px}
-@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(0.1)}}
-.zivo-name{margin-top:14px;font-size:22px;font-weight:900;letter-spacing:6px;color:var(--blue);text-shadow:0 0 16px var(--blue-glow)}
-.zivo-mood{margin-top:4px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px}
-.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
-.stat-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:14px 10px;text-align:center;backdrop-filter:blur(10px)}
-.stat-value{font-size:20px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
-.stat-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.battery-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(10px)}
-.battery-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.battery-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
-.battery-percent{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--success)}
-.battery-bar{height:8px;background:rgba(0,180,255,0.1);border-radius:4px;overflow:hidden}
-.battery-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue2),var(--blue));border-radius:4px;box-shadow:0 0 8px var(--blue-glow);transition:width 0.5s}
-.section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:20px 0 12px}
-.dpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:200px;margin:0 auto 24px}
-.dpad-btn{height:56px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all 0.15s;user-select:none}
-.dpad-btn:active{background:var(--blue);box-shadow:0 0 20px var(--blue-glow);transform:scale(0.95)}
-.dpad-center{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:12px;font-weight:700;color:var(--blue);letter-spacing:1px}
+.eyes{display:flex;gap:24px;z-index:1}
+.eye{width:28px;height:28px;background:var(--blue);border-radius:7px;box-shadow:0 0 16px var(--blue);animation:blink 4s infinite;position:relative;overflow:hidden}
+.eye::after{content:'';position:absolute;top:4px;left:4px;width:8px;height:8px;background:rgba(255,255,255,.6);border-radius:2px}
+@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.zivo-name{margin-top:10px;font-size:20px;font-weight:900;letter-spacing:6px;color:var(--blue)}
+.zivo-mood{font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--gray);letter-spacing:2px;margin-top:2px}
+.card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;margin-bottom:10px;backdrop-filter:blur(10px)}
+.section-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:18px 0 10px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.stat-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:12px 8px;text-align:center}
+.stat-value{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace}
+.stat-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.batt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.batt-pct{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--success)}
+.batt-bar{height:7px;background:rgba(0,180,255,0.1);border-radius:4px;overflow:hidden}
+.batt-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue2),var(--blue));border-radius:4px;transition:width .5s}
+.log-entry{display:flex;gap:8px;padding:9px 12px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:11px;margin-bottom:7px;align-items:flex-start}
+.log-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:1px}
+.log-text{font-size:12px;line-height:1.4}
+.log-text.info{color:var(--blue)}.log-text.warn{color:var(--warn)}.log-text.ok{color:var(--success)}
+.dpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:190px;margin:0 auto 20px}
+.dpad-btn{height:52px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;user-select:none}
+.dpad-btn:active{background:var(--blue);box-shadow:0 0 16px var(--blue-glow);transform:scale(.95)}
+.dpad-center{background:rgba(0,180,255,0.1);border-color:var(--blue);font-size:11px;font-weight:700;color:var(--blue)}
 .dpad-empty{background:transparent;border:none}
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.action-btn{padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;text-align:center;cursor:pointer;transition:all 0.2s}
-.action-btn:active{transform:scale(0.97);border-color:var(--blue)}
-.action-icon{font-size:24px;margin-bottom:6px}
-.action-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
-.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.lang-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s}
-.lang-btn.active{border-color:var(--blue);background:rgba(0,180,255,0.1);box-shadow:0 0 12px var(--blue-glow)}
-.lang-flag{font-size:26px}
-.lang-name{font-size:11px;color:var(--gray);margin-top:4px;letter-spacing:1px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;margin-bottom:10px}
-.toggle-label{font-size:14px;font-weight:600}
-.toggle-desc{font-size:11px;color:var(--gray);margin-top:2px}
-.toggle{width:48px;height:26px;background:var(--gray);border-radius:13px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
-.toggle.on{background:var(--blue);box-shadow:0 0 10px var(--blue-glow)}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;transition:transform 0.2s}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.action-btn{padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:14px;text-align:center;cursor:pointer;transition:all .2s}
+.action-btn:active{transform:scale(.97);border-color:var(--blue)}
+.action-icon{font-size:22px;margin-bottom:5px}
+.action-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.lang-btn{padding:12px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s}
+.lang-btn.active{border-color:var(--blue);background:rgba(0,180,255,0.1)}
+.lang-flag{font-size:24px}
+.lang-name{font-size:10px;color:var(--gray);margin-top:3px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;margin-bottom:8px}
+.toggle-label{font-size:13px;font-weight:600}
+.toggle-desc{font-size:10px;color:var(--gray);margin-top:2px}
+.toggle{width:46px;height:24px;background:var(--gray);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--blue);box-shadow:0 0 8px var(--blue-glow)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s}
 .toggle.on::after{transform:translateX(22px)}
-.boundary-map{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:20px;position:relative;overflow:hidden;margin-bottom:16px}
-.boundary-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:30px 30px}
-.boundary-zone{position:absolute;inset:30px;border:2px dashed var(--blue);border-radius:12px;box-shadow:0 0 20px var(--blue-glow),inset 0 0 20px rgba(0,180,255,0.05)}
-.zivo-dot{position:absolute;width:20px;height:20px;background:var(--blue);border-radius:6px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 16px var(--blue);animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-6px)}}
-.corner-handle{position:absolute;width:14px;height:14px;background:var(--blue);border-radius:3px;box-shadow:0 0 8px var(--blue)}
-.boundary-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.info-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:14px;padding:14px}
-.info-card-label{font-size:10px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
-.info-card-value{font-size:18px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:4px}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.95);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:10px 0 20px;backdrop-filter:blur(20px);z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:6px 0;transition:all 0.2s}
-.nav-icon{font-size:22px;filter:grayscale(1) opacity(0.4);transition:all 0.2s}
-.nav-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.boundary-map{width:100%;aspect-ratio:1;background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px}
+.boundary-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,0.05) 1px,transparent 1px);background-size:28px 28px}
+.boundary-zone{position:absolute;inset:28px;border:2px dashed var(--blue);border-radius:10px;box-shadow:0 0 16px var(--blue-glow)}
+.zivo-dot{position:absolute;width:18px;height:18px;background:var(--blue);border-radius:5px;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--blue);animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-5px)}}
+.corner-handle{position:absolute;width:12px;height:12px;background:var(--blue);border-radius:3px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info-card{background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;padding:12px}
+.info-card-label{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+.info-card-value{font-size:16px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;margin-top:3px}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(5,10,20,0.97);border-top:1px solid rgba(0,180,255,0.15);display:flex;padding:8px 0 18px;backdrop-filter:blur(20px);z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;transition:all .2s}
+.nav-icon{font-size:20px;filter:grayscale(1) opacity(.4);transition:all .2s}
+.nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
 .nav-item.active .nav-icon{filter:none}
 .nav-item.active .nav-label{color:var(--blue)}
-.log-entry{display:flex;gap:10px;padding:10px 14px;background:var(--card);border:1px solid rgba(0,180,255,0.1);border-radius:12px;margin-bottom:8px;align-items:flex-start}
-.log-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray);white-space:nowrap;padding-top:2px}
-.log-text{font-size:13px;line-height:1.4}
-.log-text.info{color:var(--blue)}
-.log-text.warn{color:#ffaa00}
-.log-text.ok{color:var(--success)}
+#offline-banner{text-align:center;padding:14px 20px;color:var(--gray)}
+.profile-header{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:16px;margin-bottom:10px}
+.avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.profile-name{font-size:18px;font-weight:700}
+.profile-sub{font-size:11px;color:var(--gray);margin-top:2px}
+.sub-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;margin-top:4px}
+.sub-badge.free{background:rgba(58,90,122,0.4);color:var(--gray);border:1px solid var(--gray)}
+.sub-badge.pro{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid var(--gold)}
+.sub-badge.trial{background:rgba(0,255,170,0.15);color:var(--success);border:1px solid var(--success)}
+.input-row{margin-bottom:10px}
+.input-label{font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:5px}
+.zivo-input{width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.25);border-radius:10px;padding:11px 13px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none}
+.zivo-input:focus{border-color:var(--blue)}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.plan-card{background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.plan-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.plan-card.gold{border-color:var(--gold);background:rgba(255,215,0,0.05)}
+.plan-card.gold.active{background:rgba(255,215,0,0.1)}
+.plan-name{font-size:13px;font-weight:700;letter-spacing:1px}
+.plan-price{font-size:22px;font-weight:900;color:var(--blue);font-family:'Share Tech Mono',monospace;margin:6px 0 2px}
+.plan-card.gold .plan-price{color:var(--gold)}
+.plan-period{font-size:10px;color:var(--gray)}
+.plan-save{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--success);color:#000;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap}
+.plan-forever{grid-column:1/-1}
+.feature-list{margin:6px 0 0}
+.feature-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,180,255,0.07)}
+.feature-item:last-child{border:none}
+.feature-item .fi-icon{font-size:14px;width:20px;text-align:center}
+.feature-locked{opacity:.4}
+.btn-primary{width:100%;padding:14px;background:var(--blue);border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:2px;color:#000;font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:4px}
+.btn-primary:active{opacity:.8;transform:scale(.98)}
+.btn-primary.gold{background:var(--gold);color:#000}
+.btn-outline{width:100%;padding:13px;background:transparent;border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s;margin-top:6px}
+.trial-banner{background:linear-gradient(135deg,rgba(0,255,170,0.1),rgba(0,180,255,0.1));border:1px solid var(--success);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.trial-days{font-size:28px;font-weight:900;color:var(--success);font-family:'Share Tech Mono',monospace;min-width:40px}
+.voice-grid{display:grid;gap:10px;margin-bottom:14px}
+.voice-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:2px solid rgba(0,180,255,0.15);border-radius:14px;cursor:pointer;transition:all .2s}
+.voice-card.active{border-color:var(--blue);background:rgba(0,180,255,0.08)}
+.voice-card.locked{opacity:.5;cursor:default}
+.voice-card.locked .lock-icon{display:flex}
+.lock-icon{display:none;margin-left:auto;font-size:14px;color:var(--gold)}
+.voice-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.voice-name{font-size:14px;font-weight:700}
+.voice-desc{font-size:11px;color:var(--gray);margin-top:1px}
+.voice-play{margin-left:auto;width:32px;height:32px;border-radius:8px;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0}
+.smart-hero{background:linear-gradient(135deg,rgba(0,180,255,0.1),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+.smart-hero-icon{font-size:36px;margin-bottom:8px}
+.smart-hero-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.smart-hero-desc{font-size:11px;color:var(--gray);line-height:1.5}
+.calc-display{background:rgba(0,0,0,0.4);border:1px solid rgba(0,180,255,0.2);border-radius:14px;padding:16px;margin-bottom:12px;min-height:80px;display:flex;flex-direction:column;justify-content:flex-end}
+.calc-expr{font-size:12px;color:var(--gray);font-family:'Share Tech Mono',monospace;min-height:18px;word-break:break-all}
+.calc-result{font-size:28px;font-weight:700;color:var(--blue);font-family:'Share Tech Mono',monospace;text-align:right;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-btn{height:54px;background:var(--card);border:1px solid rgba(0,180,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;color:var(--white)}
+.calc-btn:active{transform:scale(.93)}
+.calc-btn.op{color:var(--blue);border-color:rgba(0,180,255,0.3)}
+.calc-btn.eq{background:var(--blue);color:#000;border-color:var(--blue)}
+.calc-btn.clear{color:var(--danger);border-color:rgba(255,68,102,0.3)}
+.calc-btn.wide{grid-column:span 2}
+.calc-ai-btn{width:100%;margin-top:10px;padding:13px;background:linear-gradient(135deg,rgba(0,180,255,0.15),rgba(0,102,204,0.15));border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue);font-family:'Exo 2',sans-serif;transition:all .2s}
+.calc-solution{background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.2);border-radius:12px;padding:14px;margin-top:10px;font-size:13px;line-height:1.6;display:none}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#0a1628;border:1px solid rgba(0,180,255,0.2);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}
+.modal-close{position:absolute;top:16px;right:20px;font-size:22px;cursor:pointer;color:var(--gray)}
 </style>
 </head>
 <body>
@@ -539,44 +782,47 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
   </div>
 
-  <div class="zivo-face-container">
+  <div class="face-wrap">
     <div class="zivo-face" id="zivo-face">
       <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
     </div>
-    <div class="zivo-name">ZIVO</div>
+    <div class="zivo-name" id="bot-display-name">ZIVO</div>
     <div class="zivo-mood" id="mood-text"></div>
   </div>
 
-  <div id="offline-banner" style="text-align:center;padding:16px 20px;color:var(--gray);">
-    <div style="font-size:40px;margin-bottom:10px;">📡</div>
+  <div id="offline-banner">
+    <div style="font-size:36px;margin-bottom:8px;">📡</div>
     <div style="font-size:13px;font-weight:600;letter-spacing:2px;margin-bottom:4px;" data-t="not_connected"></div>
-    <div style="font-size:11px;opacity:0.6;margin-bottom:20px;" data-t="not_connected_desc"></div>
-    <div style="background:var(--card);border:1px solid rgba(0,180,255,0.2);border-radius:16px;padding:18px;text-align:left;">
-      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:8px;" data-t="serial_label"></div>
-      <input id="serial-input" type="text" maxlength="12"
-        style="width:100%;background:rgba(0,180,255,0.05);border:1px solid rgba(0,180,255,0.3);border-radius:10px;padding:12px 14px;color:var(--white);font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:3px;outline:none;text-transform:uppercase;"
-        placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
-      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:8px;display:none;" data-t="serial_wrong"></div>
-      <button onclick="tryConnect()" id="connect-btn"
-        style="width:100%;margin-top:14px;padding:13px;background:rgba(0,180,255,0.1);border:1px solid var(--blue);border-radius:12px;cursor:pointer;font-size:12px;letter-spacing:2px;color:var(--blue);font-family:'Exo 2',sans-serif;font-weight:700;"
-        data-t="connect_btn"></button>
+    <div style="font-size:11px;opacity:.6;margin-bottom:18px;" data-t="not_connected_desc"></div>
+    <div class="card" style="text-align:left;">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gray);margin-bottom:6px;" data-t="serial_label"></div>
+      <input id="serial-input" type="text" maxlength="12" class="zivo-input" style="letter-spacing:3px;font-family:'Share Tech Mono',monospace;font-size:15px;text-transform:uppercase;" placeholder="ZIVO-XXXXXX" oninput="this.value=this.value.toUpperCase()"/>
+      <div id="serial-error" style="font-size:11px;color:var(--danger);margin-top:6px;display:none;" data-t="serial_wrong"></div>
+      <button onclick="tryConnect()" id="connect-btn" class="btn-primary" style="margin-top:12px;" data-t="connect_btn"></button>
     </div>
-    <div style="margin-top:14px;font-size:11px;opacity:0.5;" data-t="serial_hint"></div>
+    <div style="margin-top:12px;font-size:11px;opacity:.4;" data-t="serial_hint"></div>
   </div>
 
   <div id="pages-wrapper" style="display:none">
     <div id="page-home" class="page" style="display:block">
+      <div id="trial-banner" class="trial-banner" style="display:none">
+        <div class="trial-days" id="trial-days-left">7</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;" data-t="trial_active"></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;" data-t="trial_desc"></div>
+        </div>
+      </div>
       <div class="stats-row">
         <div class="stat-card"><div class="stat-value" id="temp-val">--</div><div class="stat-label" data-t="temp"></div></div>
         <div class="stat-card"><div class="stat-value" id="uptime-val">--</div><div class="stat-label" data-t="uptime"></div></div>
         <div class="stat-card"><div class="stat-value">✓</div><div class="stat-label">Wi-Fi</div></div>
       </div>
-      <div class="battery-card">
-        <div class="battery-header">
-          <span class="battery-title" data-t="battery"></span>
-          <span class="battery-percent" id="batt-text">--%</span>
+      <div class="card">
+        <div class="batt-header">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);" data-t="battery"></span>
+          <span class="batt-pct" id="batt-text">--%</span>
         </div>
-        <div class="battery-bar"><div class="battery-fill" id="batt-fill"></div></div>
+        <div class="batt-bar"><div class="batt-fill" id="batt-fill"></div></div>
       </div>
       <div class="section-title" data-t="log"></div>
       <div id="log-list"></div>
@@ -608,14 +854,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="section-title" data-t="zonemap"></div>
       <div class="boundary-map">
         <div class="boundary-zone">
-          <div class="corner-handle" style="top:-7px;left:-7px"></div>
-          <div class="corner-handle" style="top:-7px;right:-7px"></div>
-          <div class="corner-handle" style="bottom:-7px;left:-7px"></div>
-          <div class="corner-handle" style="bottom:-7px;right:-7px"></div>
+          <div class="corner-handle" style="top:-6px;left:-6px"></div>
+          <div class="corner-handle" style="top:-6px;right:-6px"></div>
+          <div class="corner-handle" style="bottom:-6px;left:-6px"></div>
+          <div class="corner-handle" style="bottom:-6px;right:-6px"></div>
         </div>
         <div class="zivo-dot"></div>
       </div>
-      <div class="boundary-info">
+      <div class="info-grid">
         <div class="info-card"><div class="info-card-label" data-t="zonewidth"></div><div class="info-card-value">80cm</div></div>
         <div class="info-card"><div class="info-card-label" data-t="zonedepth"></div><div class="info-card-value">60cm</div></div>
         <div class="info-card"><div class="info-card-label" data-t="edgealerts"></div><div class="info-card-value" style="color:var(--success)" data-t="on"></div></div>
@@ -634,18 +880,131 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="lang-btn" onclick="selectLang(this,'uk')"><div class="lang-flag">🇺🇦</div><div class="lang-name">Українська</div></div>
     </div>
     <div class="section-title" data-t="features"></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-    <div class="toggle-row"><div class="toggle-info"><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="voiceact"></div><div class="toggle-desc" data-t="voiceact_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="edgeprot"></div><div class="toggle-desc" data-t="edgeprot_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="autocharge"></div><div class="toggle-desc" data-t="autocharge_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="explore"></div><div class="toggle-desc" data-t="explore_desc"></div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    <div class="toggle-row"><div><div class="toggle-label" data-t="notifs"></div><div class="toggle-desc" data-t="notifs_desc"></div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+
+  <div id="page-profile" class="page" style="display:none">
+    <div class="profile-header">
+      <div class="avatar" id="profile-avatar">🤖</div>
+      <div>
+        <div class="profile-name" id="profile-name-display">User</div>
+        <div class="profile-sub" data-t="member_since"></div>
+        <div id="sub-badge-display" class="sub-badge free">FREE</div>
+      </div>
+    </div>
+    <div class="section-title" data-t="your_info"></div>
+    <div class="card">
+      <div class="input-row">
+        <div class="input-label" data-t="your_name"></div>
+        <input id="user-name-input" class="zivo-input" type="text" placeholder="Your name" oninput="saveProfile()"/>
+      </div>
+      <div class="input-row" style="margin-bottom:0">
+        <div class="input-label" data-t="bot_custom_name"></div>
+        <input id="bot-name-input" class="zivo-input" type="text" placeholder="ZIVO" oninput="saveBotName()"/>
+      </div>
+    </div>
+    <div class="section-title" data-t="smart_mode"></div>
+    <div class="smart-hero">
+      <div class="smart-hero-icon">🧠</div>
+      <div class="smart-hero-title" data-t="smart_mode_title"></div>
+      <div class="smart-hero-desc" data-t="smart_mode_desc"></div>
+    </div>
+    <div class="toggle-row" id="smart-mode-toggle-row">
+      <div><div class="toggle-label" data-t="smart_mode_label"></div><div class="toggle-desc" data-t="smart_mode_sub"></div></div>
+      <div class="toggle" id="smart-toggle" onclick="toggleSmartMode()"></div>
+    </div>
+    <div class="section-title" data-t="voice_section"></div>
+    <div class="voice-grid" id="voice-list"></div>
+    <div id="voice-locked-msg" style="display:none;text-align:center;padding:10px;font-size:11px;color:var(--gold);" data-t="voice_locked_msg"></div>
+    <div class="section-title" data-t="subscription"></div>
+    <div id="sub-current-info" class="card" style="margin-bottom:10px;"></div>
+    <button class="btn-outline" onclick="openSubModal()" data-t="manage_sub"></button>
+  </div>
+
+  <div id="page-calc" class="page" style="display:none">
+    <div class="section-title" data-t="calculator"></div>
+    <div class="calc-display">
+      <div class="calc-expr" id="calc-expr"></div>
+      <div class="calc-result" id="calc-result">0</div>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-btn clear" onclick="calcClear()">C</div>
+      <div class="calc-btn op" onclick="calcInput('(')">(</div>
+      <div class="calc-btn op" onclick="calcInput(')')">)</div>
+      <div class="calc-btn op" onclick="calcInput('/')">÷</div>
+      <div class="calc-btn" onclick="calcInput('7')">7</div>
+      <div class="calc-btn" onclick="calcInput('8')">8</div>
+      <div class="calc-btn" onclick="calcInput('9')">9</div>
+      <div class="calc-btn op" onclick="calcInput('*')">×</div>
+      <div class="calc-btn" onclick="calcInput('4')">4</div>
+      <div class="calc-btn" onclick="calcInput('5')">5</div>
+      <div class="calc-btn" onclick="calcInput('6')">6</div>
+      <div class="calc-btn op" onclick="calcInput('-')">−</div>
+      <div class="calc-btn" onclick="calcInput('1')">1</div>
+      <div class="calc-btn" onclick="calcInput('2')">2</div>
+      <div class="calc-btn" onclick="calcInput('3')">3</div>
+      <div class="calc-btn op" onclick="calcInput('+')">+</div>
+      <div class="calc-btn" onclick="calcInput('0')">0</div>
+      <div class="calc-btn" onclick="calcInput('.')">.</div>
+      <div class="calc-btn op" onclick="calcInput('^')">xⁿ</div>
+      <div class="calc-btn eq" onclick="calcEquals()">=</div>
+      <div class="calc-btn op wide" onclick="calcInput('sqrt(')">√</div>
+      <div class="calc-btn op" onclick="calcInput('Math.PI')">π</div>
+      <div class="calc-btn op" onclick="calcBackspace()">⌫</div>
+    </div>
+    <button class="calc-ai-btn" id="ai-solve-btn" onclick="aiSolve()">🧠 <span data-t="ai_solve"></span></button>
+    <div id="ai-locked-calc" style="display:none;text-align:center;padding:12px;font-size:11px;color:var(--gold);cursor:pointer;" onclick="openSubModal()" data-t="calc_locked"></div>
+    <div class="calc-solution" id="calc-solution"></div>
   </div>
 
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchPage('home',this)"><div class="nav-icon">🤖</div><div class="nav-label">ZIVO</div></div>
     <div class="nav-item" onclick="switchPage('control',this)"><div class="nav-icon">🕹️</div><div class="nav-label" data-t="nav_control"></div></div>
     <div class="nav-item" onclick="switchPage('boundary',this)"><div class="nav-icon">📍</div><div class="nav-label" data-t="nav_zone"></div></div>
+    <div class="nav-item" onclick="switchPage('calc',this)"><div class="nav-icon">🧮</div><div class="nav-label" data-t="nav_calc"></div></div>
+    <div class="nav-item" onclick="switchPage('profile',this)"><div class="nav-icon">👤</div><div class="nav-label" data-t="nav_profile"></div></div>
     <div class="nav-item" onclick="switchPage('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label" data-t="nav_settings"></div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sub-modal">
+  <div class="modal" style="position:relative">
+    <div class="modal-close" onclick="closeSubModal()">✕</div>
+    <div class="modal-title" data-t="choose_plan"></div>
+    <div id="modal-trial-info" style="display:none;background:rgba(0,255,170,0.08);border:1px solid var(--success);border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;text-align:center;color:var(--success);" data-t="trial_modal_info"></div>
+    <div class="plan-grid">
+      <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
+        <div class="plan-name" data-t="plan_monthly"></div>
+        <div class="plan-price" id="price-monthly">—</div>
+        <div class="plan-period" data-t="per_month"></div>
+      </div>
+      <div class="plan-card" id="plan-yearly" onclick="selectPlan('yearly')">
+        <div class="plan-save" data-t="save_40"></div>
+        <div class="plan-name" data-t="plan_yearly"></div>
+        <div class="plan-price" id="price-yearly">—</div>
+        <div class="plan-period" data-t="per_month_billed"></div>
+      </div>
+      <div class="plan-card gold plan-forever" id="plan-forever" onclick="selectPlan('forever')">
+        <div class="plan-name" data-t="plan_forever"></div>
+        <div class="plan-price" style="color:var(--gold)" id="price-forever">—</div>
+        <div class="plan-period" data-t="one_time"></div>
+      </div>
+    </div>
+    <div class="section-title" data-t="whats_included"></div>
+    <div class="feature-list">
+      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_basic"></span></div>
+      <div class="feature-item"><span class="fi-icon">✅</span><span data-t="feat_control"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_voices"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_smart"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_calc"></span></div>
+      <div class="feature-item"><span class="fi-icon">🔒</span><span class="feature-locked" data-t="feat_custom_name"></span></div>
+    </div>
+    <button class="btn-primary" id="sub-btn" onclick="subscribePlan()" data-t="subscribe_btn"></button>
+    <button class="btn-outline" onclick="closeSubModal()" style="margin-top:8px;" data-t="maybe_later"></button>
   </div>
 </div>
 
@@ -654,189 +1013,189 @@ const REGISTERED_ROBOTS = {
   'ZIVO-ADMINMW': { name: 'ZIVO #1', owner: 'Admin' },
 };
 
+const VOICES = [
+  { id:'default', emoji:'🤖', name:'ZIVO',  desc_key:'voice_default_desc', free:true  },
+  { id:'sage',    emoji:'🧙', name:'Sage',  desc_key:'voice_sage_desc',    free:false },
+  { id:'nova',    emoji:'⚡', name:'Nova',  desc_key:'voice_nova_desc',    free:false },
+  { id:'echo',    emoji:'🌊', name:'Echo',  desc_key:'voice_echo_desc',    free:false },
+  { id:'spark',   emoji:'🔥', name:'Spark', desc_key:'voice_spark_desc',   free:false },
+  { id:'atlas',   emoji:'🌍', name:'Atlas', desc_key:'voice_atlas_desc',   free:false },
+  { id:'luna',    emoji:'🌙', name:'Luna',  desc_key:'voice_luna_desc',    free:false },
+  { id:'titan',   emoji:'⚙️', name:'Titan', desc_key:'voice_titan_desc',   free:false },
+  { id:'pixel',   emoji:'👾', name:'Pixel', desc_key:'voice_pixel_desc',   free:false },
+  { id:'zen',     emoji:'🍃', name:'Zen',   desc_key:'voice_zen_desc',     free:false },
+];
+
 const T = {
-  ru: {
-    online:'В СЕТИ',temp:'ТЕМП',uptime:'ВРЕМЯ',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'ДВИЖЕНИЕ',actions:'ДЕЙСТВИЯ',
-    wakeup:'РАЗБУДИТЬ',sleep:'СПАТЬ',charge:'НА ЗАРЯДКУ',random:'ТАНЦЕВАТЬ',
-    zonemap:'КАРТА ЗОНЫ',zonewidth:'ШИРИНА',zonedepth:'ГЛУБИНА',
-    edgealerts:'ЗАЩИТА КРАЯ',on:'ВКЛ',falls:'ПАДЕНИЙ',
-    language:'ЯЗЫК',features:'ФУНКЦИИ',
-    voiceact:'Голосовая активация',voiceact_desc:'Активация фразой "Привет ZIVO"',
-    edgeprot:'Защита от падения',edgeprot_desc:'Останавливаться у края стола',
-    autocharge:'Авто зарядка',autocharge_desc:'Ехать на базу при низком заряде',
-    explore:'Случайные прогулки',explore_desc:'ZIVO ездит самостоятельно',
-    notifs:'Уведомления',notifs_desc:'Заряд и защита края',
-    nav_control:'УПРАВЛЕНИЕ',nav_zone:'ЗОНА',nav_settings:'НАСТРОЙКИ',
-    moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],
-    log_connected:'Подключён к {name}',
-    upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',
-    offline:'НЕ ПОДКЛЮЧЁН',not_connected:'ZIVO не подключён',
-    not_connected_desc:'Введи серийный номер',connect_btn:'ПОДКЛЮЧИТЬ',
-    serial_label:'СЕРИЙНЫЙ НОМЕР',serial_wrong:'Неверный серийный номер.',
-    serial_hint:'Серийный номер на наклейке на дне корпуса'
-  },
-  en: {
-    online:'ONLINE',temp:'TEMP',uptime:'UPTIME',battery:'BATTERY',log:'LOG',
-    movement:'MOVEMENT',actions:'ACTIONS',
-    wakeup:'WAKE UP',sleep:'SLEEP',charge:'GO CHARGE',random:'DANCE',
-    zonemap:'SAFE ZONE MAP',zonewidth:'WIDTH',zonedepth:'DEPTH',
-    edgealerts:'EDGE ALERTS',on:'ON',falls:'FALLS',
-    language:'LANGUAGE',features:'FEATURES',
-    voiceact:'Voice Activation',voiceact_desc:'Wake up with "Hey ZIVO"',
-    edgeprot:'Edge Protection',edgeprot_desc:'Stop at table edges',
-    autocharge:'Auto Charging',autocharge_desc:'Return to base when low',
-    explore:'Random Explore',explore_desc:'ZIVO moves on its own',
-    notifs:'Notifications',notifs_desc:'Battery and edge alerts',
-    nav_control:'CONTROL',nav_zone:'ZONE',nav_settings:'SETTINGS',
-    moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],
-    log_connected:'Connected to {name}',
-    upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',
-    offline:'DISCONNECTED',not_connected:'ZIVO is not connected',
-    not_connected_desc:'Enter your ZIVO serial number',connect_btn:'CONNECT',
-    serial_label:'SERIAL NUMBER',serial_wrong:'Wrong serial number.',
-    serial_hint:'Serial number is on the sticker on the bottom'
-  },
-  he: {
-    online:'מחובר',temp:'טמפ',uptime:'זמן',battery:'סוללה',log:'יומן',
-    movement:'תנועה',actions:'פעולות',
-    wakeup:'התעורר',sleep:'שינה',charge:'לטעינה',random:'לרקוד',
-    zonemap:'מפת אזור',zonewidth:'רוחב',zonedepth:'עומק',
-    edgealerts:'הגנת קצה',on:'פועל',falls:'נפילות',
-    language:'שפה',features:'תכונות',
-    voiceact:'הפעלה קולית',voiceact_desc:'הפעלה עם "היי ZIVO"',
-    edgeprot:'הגנה מנפילה',edgeprot_desc:'עצור בקצה השולחן',
-    autocharge:'טעינה אוטומטית',autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',
-    explore:'סיור אקראי',explore_desc:'ZIVO נוסע לבד',
-    notifs:'התראות',notifs_desc:'סוללה והגנת קצה',
-    nav_control:'שליטה',nav_zone:'אזור',nav_settings:'הגדרות',
-    moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],
-    log_connected:'מחובר ל-{name}',
-    upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',
-    offline:'מנותק',not_connected:'ZIVO לא מחובר',
-    not_connected_desc:'הזן את המספר הסידורי',connect_btn:'התחבר',
-    serial_label:'מספר סידורי',serial_wrong:'מספר סידורי שגוי.',
-    serial_hint:'המספר הסידורי נמצא בתחתית ZIVO'
-  },
-  zh: {
-    online:'在线',temp:'温度',uptime:'运行',battery:'电池',log:'日志',
-    movement:'移动',actions:'操作',
-    wakeup:'唤醒',sleep:'睡眠',charge:'去充电',random:'跳舞',
-    zonemap:'安全区域',zonewidth:'宽度',zonedepth:'深度',
-    edgealerts:'边缘保护',on:'开启',falls:'跌落',
-    language:'语言',features:'功能',
-    voiceact:'语音激活',voiceact_desc:'说"嘿 ZIVO"唤醒',
-    edgeprot:'防跌落',edgeprot_desc:'在桌子边缘停下',
-    autocharge:'自动充电',autocharge_desc:'电量低时返回充电',
-    explore:'随机探索',explore_desc:'ZIVO 自主移动',
-    notifs:'通知',notifs_desc:'电池和边缘警报',
-    nav_control:'控制',nav_zone:'区域',nav_settings:'设置',
-    moods:['准备好了','探索中','开心','等待命令'],
-    log_connected:'已连接到 {name}',
-    upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',
-    offline:'未连接',not_connected:'ZIVO 未连接',
-    not_connected_desc:'输入序列号',connect_btn:'连接',
-    serial_label:'序列号',serial_wrong:'序列号错误。',
-    serial_hint:'序列号在 ZIVO 底部的贴纸上'
-  },
-  uk: {
-    online:'В МЕРЕЖІ',temp:'ТЕМП',uptime:'ЧАС',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',
-    movement:'РУХ',actions:'ДІЇ',
-    wakeup:'РОЗБУДИТИ',sleep:'СПАТИ',charge:'НА ЗАРЯДКУ',random:'ТАНЦЮВАТИ',
-    zonemap:'КАРТА ЗОНИ',zonewidth:'ШИРИНА',zonedepth:'ГЛИБИНА',
-    edgealerts:'ЗАХИСТ КРАЮ',on:'УВІМКН',falls:'ПАДІНЬ',
-    language:'МОВА',features:'ФУНКЦІЇ',
-    voiceact:'Голосова активація',voiceact_desc:'Активація фразою "Привіт ZIVO"',
-    edgeprot:'Захист від падіння',edgeprot_desc:'Зупинятись біля краю столу',
-    autocharge:'Авто зарядка',autocharge_desc:'Їхати на базу при низькому заряді',
-    explore:'Випадкові прогулянки',explore_desc:'ZIVO їздить самостійно',
-    notifs:'Сповіщення',notifs_desc:'Заряд і захист краю',
-    nav_control:'КЕРУВАННЯ',nav_zone:'ЗОНА',nav_settings:'НАЛАШТУВАННЯ',
-    moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],
-    log_connected:'Підключено до {name}',
-    upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',
-    offline:'НЕ ПІДКЛЮЧЕНО',not_connected:'ZIVO не підключено',
-    not_connected_desc:'Введи серійний номер',connect_btn:'ПІДКЛЮЧИТИ',
-    serial_label:'СЕРІЙНИЙ НОМЕР',serial_wrong:'Невірний серійний номер.',
-    serial_hint:'Серійний номер на наклейці на дні корпусу'
-  }
+  ru:{online:'В СЕТИ',temp:'ТЕМП',uptime:'ВРЕМЯ',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',movement:'ДВИЖЕНИЕ',actions:'ДЕЙСТВИЯ',wakeup:'РАЗБУДИТЬ',sleep:'СПАТЬ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦ',zonemap:'КАРТА ЗОНЫ',zonewidth:'ШИРИНА',zonedepth:'ГЛУБИНА',edgealerts:'ЗАЩИТА КРАЯ',on:'ВКЛ',falls:'ПАДЕНИЙ',language:'ЯЗЫК',features:'ФУНКЦИИ',voiceact:'Голосовая активация',voiceact_desc:'Активация фразой "Привет ZIVO"',edgeprot:'Защита от падения',edgeprot_desc:'Останавливаться у края стола',autocharge:'Авто зарядка',autocharge_desc:'Ехать на базу при низком заряде',explore:'Случайные прогулки',explore_desc:'ZIVO ездит самостоятельно',notifs:'Уведомления',notifs_desc:'Заряд и защита края',nav_control:'УПРАВЛЕНИЕ',nav_zone:'ЗОНА',nav_settings:'НАСТРОЙКИ',nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФИЛЬ',moods:['ГОТОВ • СЛУШАЮ','ИССЛЕДУЮ','СЧАСТЛИВ','ЖДУ КОМАНДЫ'],log_connected:'Подключён к {name}',upfmt:(h,m)=>h+'ч'+String(m).padStart(2,'0')+'м',offline:'НЕ ПОДКЛЮЧЁН',not_connected:'ZIVO не подключён',not_connected_desc:'Введи серийный номер',connect_btn:'ПОДКЛЮЧИТЬ',serial_label:'СЕРИЙНЫЙ НОМЕР',serial_wrong:'Неверный серийный номер.',serial_hint:'Серийный номер на наклейке на дне корпуса',member_since:'Участник ZIVO',your_info:'ИНФОРМАЦИЯ',your_name:'ТВОЁ ИМЯ',bot_custom_name:'ИМЯ БОТА (умный режим)',smart_mode:'УМНЫЙ РЕЖИМ',smart_mode_title:'Умный режим',smart_mode_desc:'Бот отвечает на своё имя которое ты выбрал. Только платная версия.',smart_mode_label:'Включить умный режим',smart_mode_sub:'Бот реагирует на своё имя',voice_section:'ГОЛОС БОТА',voice_default_desc:'Стандартный голос ZIVO',voice_sage_desc:'Мудрый и спокойный',voice_nova_desc:'Энергичный и молодой',voice_echo_desc:'Глубокий и объёмный',voice_spark_desc:'Весёлый и игривый',voice_atlas_desc:'Мощный и авторитетный',voice_luna_desc:'Мягкий и лунный',voice_titan_desc:'Роботизированный и точный',voice_pixel_desc:'Цифровой и технический',voice_zen_desc:'Спокойный и медитативный',voice_locked_msg:'🔒 Дополнительные голоса доступны в Pro версии',subscription:'ПОДПИСКА',manage_sub:'УПРАВЛЕНИЕ ПОДПИСКОЙ',trial_active:'Пробный период активен!',trial_desc:'Все функции бесплатно',choose_plan:'ВЫБЕРИ ПЛАН',plan_monthly:'Месяц',plan_yearly:'Год',plan_forever:'Навсегда',per_month:'/месяц',per_month_billed:'в месяц (год)',one_time:'одноразовый платёж',save_40:'СКИДКА 40%',whats_included:'ЧТО ВКЛЮЧЕНО',feat_basic:'Управление роботом',feat_control:'Базовые команды',feat_voices:'10 голосов на выбор',feat_smart:'Умный режим + своё имя',feat_calc:'Умный калькулятор с ИИ',feat_custom_name:'Кастомное имя бота',subscribe_btn:'ПОДКЛЮЧИТЬ PRO',maybe_later:'Позже',trial_modal_info:'У тебя активен пробный период — все функции уже открыты!',calculator:'КАЛЬКУЛЯТОР',ai_solve:'Решить сложное уравнение (ИИ)',calc_locked:'🔒 Умный калькулятор доступен в Pro. Нажми чтобы открыть.',ai_solving:'Решаю...'},
+  en:{online:'ONLINE',temp:'TEMP',uptime:'UPTIME',battery:'BATTERY',log:'LOG',movement:'MOVEMENT',actions:'ACTIONS',wakeup:'WAKE UP',sleep:'SLEEP',charge:'GO CHARGE',random:'DANCE',zonemap:'SAFE ZONE MAP',zonewidth:'WIDTH',zonedepth:'DEPTH',edgealerts:'EDGE ALERTS',on:'ON',falls:'FALLS',language:'LANGUAGE',features:'FEATURES',voiceact:'Voice Activation',voiceact_desc:'Wake up with "Hey ZIVO"',edgeprot:'Edge Protection',edgeprot_desc:'Stop at table edges',autocharge:'Auto Charging',autocharge_desc:'Return to base when low',explore:'Random Explore',explore_desc:'ZIVO moves on its own',notifs:'Notifications',notifs_desc:'Battery and edge alerts',nav_control:'CONTROL',nav_zone:'ZONE',nav_settings:'SETTINGS',nav_calc:'CALC',nav_profile:'PROFILE',moods:['READY • LISTENING','EXPLORING','HAPPY','IDLE • WAITING'],log_connected:'Connected to {name}',upfmt:(h,m)=>h+'h'+String(m).padStart(2,'0')+'m',offline:'DISCONNECTED',not_connected:'ZIVO is not connected',not_connected_desc:'Enter your ZIVO serial number',connect_btn:'CONNECT',serial_label:'SERIAL NUMBER',serial_wrong:'Wrong serial number.',serial_hint:'Serial number is on the sticker on the bottom',member_since:'ZIVO Member',your_info:'YOUR INFO',your_name:'YOUR NAME',bot_custom_name:'BOT NAME (smart mode)',smart_mode:'SMART MODE',smart_mode_title:'Smart Mode',smart_mode_desc:'Your bot responds to a custom name you choose. Pro only.',smart_mode_label:'Enable Smart Mode',smart_mode_sub:'Bot responds to its name',voice_section:'BOT VOICE',voice_default_desc:'Default ZIVO voice',voice_sage_desc:'Wise and calm',voice_nova_desc:'Energetic and young',voice_echo_desc:'Deep and rich',voice_spark_desc:'Fun and playful',voice_atlas_desc:'Powerful and authoritative',voice_luna_desc:'Soft and dreamy',voice_titan_desc:'Robotic and precise',voice_pixel_desc:'Digital and techy',voice_zen_desc:'Calm and meditative',voice_locked_msg:'🔒 Extra voices available in Pro',subscription:'SUBSCRIPTION',manage_sub:'MANAGE SUBSCRIPTION',trial_active:'Free trial is active!',trial_desc:'All features unlocked',choose_plan:'CHOOSE YOUR PLAN',plan_monthly:'Monthly',plan_yearly:'Yearly',plan_forever:'Forever',per_month:'/month',per_month_billed:'/mo billed yearly',one_time:'one-time payment',save_40:'SAVE 40%',whats_included:"WHAT'S INCLUDED",feat_basic:'Robot control',feat_control:'Basic commands',feat_voices:'10 voices to choose',feat_smart:'Smart mode + custom name',feat_calc:'Smart AI calculator',feat_custom_name:'Custom bot name',subscribe_btn:'GET PRO',maybe_later:'Maybe later',trial_modal_info:'Your free trial is active — all features are unlocked!',calculator:'CALCULATOR',ai_solve:'Solve complex equation (AI)',calc_locked:'🔒 Smart calculator available in Pro. Tap to unlock.',ai_solving:'Solving...'},
+  he:{online:'מחובר',temp:'טמפ',uptime:'זמן',battery:'סוללה',log:'יומן',movement:'תנועה',actions:'פעולות',wakeup:'התעורר',sleep:'שינה',charge:'לטעינה',random:'לרקוד',zonemap:'מפת אזור',zonewidth:'רוחב',zonedepth:'עומק',edgealerts:'הגנת קצה',on:'פועל',falls:'נפילות',language:'שפה',features:'תכונות',voiceact:'הפעלה קולית',voiceact_desc:'הפעלה עם "היי ZIVO"',edgeprot:'הגנה מנפילה',edgeprot_desc:'עצור בקצה השולחן',autocharge:'טעינה אוטומטית',autocharge_desc:'חזור לבסיס כשהסוללה נמוכה',explore:'סיור אקראי',explore_desc:'ZIVO נוסע לבד',notifs:'התראות',notifs_desc:'סוללה והגנת קצה',nav_control:'שליטה',nav_zone:'אזור',nav_settings:'הגדרות',nav_calc:'מחשבון',nav_profile:'פרופיל',moods:['מוכן • מקשיב','חוקר','שמח','ממתין'],log_connected:'מחובר ל-{name}',upfmt:(h,m)=>h+'ש'+String(m).padStart(2,'0')+'ד',offline:'מנותק',not_connected:'ZIVO לא מחובר',not_connected_desc:'הזן את המספר הסידורי',connect_btn:'התחבר',serial_label:'מספר סידורי',serial_wrong:'מספר סידורי שגוי.',serial_hint:'המספר הסידורי נמצא בתחתית ZIVO',member_since:'חבר ZIVO',your_info:'פרטים',your_name:'שמך',bot_custom_name:'שם הבוט (מצב חכם)',smart_mode:'מצב חכם',smart_mode_title:'מצב חכם',smart_mode_desc:'הבוט מגיב לשם שבחרת. Pro בלבד.',smart_mode_label:'הפעל מצב חכם',smart_mode_sub:'הבוט מגיב לשמו',voice_section:'קול הבוט',voice_default_desc:'קול ZIVO ברירת מחדל',voice_sage_desc:'חכם ורגוע',voice_nova_desc:'אנרגטי וצעיר',voice_echo_desc:'עמוק ועשיר',voice_spark_desc:'כיפי ושובבי',voice_atlas_desc:'חזק וסמכותי',voice_luna_desc:'רך וחלומי',voice_titan_desc:'רובוטי ומדויק',voice_pixel_desc:'דיגיטלי וטכנולוגי',voice_zen_desc:'רגוע ומדיטטיבי',voice_locked_msg:'🔒 קולות נוספים זמינים ב-Pro',subscription:'מנוי',manage_sub:'ניהול מנוי',trial_active:'תקופת ניסיון פעילה!',trial_desc:'כל הפונקציות פתוחות',choose_plan:'בחר תוכנית',plan_monthly:'חודשי',plan_yearly:'שנתי',plan_forever:'לצמיתות',per_month:'/חודש',per_month_billed:'/חודש (שנתי)',one_time:'תשלום חד פעמי',save_40:'חסוך 40%',whats_included:'מה כלול',feat_basic:'שליטה בבוט',feat_control:'פקודות בסיסיות',feat_voices:'10 קולות לבחירה',feat_smart:'מצב חכם + שם מותאם',feat_calc:'מחשבון AI חכם',feat_custom_name:'שם בוט מותאם',subscribe_btn:'הצטרף ל-Pro',maybe_later:'אולי מאוחר יותר',trial_modal_info:'תקופת הניסיון שלך פעילה — כל הפונקציות פתוחות!',calculator:'מחשבון',ai_solve:'פתור משוואה מורכבת (AI)',calc_locked:'🔒 מחשבון חכם זמין ב-Pro. לחץ לפתיחה.',ai_solving:'פותר...'},
+  zh:{online:'在线',temp:'温度',uptime:'运行',battery:'电池',log:'日志',movement:'移动',actions:'操作',wakeup:'唤醒',sleep:'睡眠',charge:'去充电',random:'跳舞',zonemap:'安全区域',zonewidth:'宽度',zonedepth:'深度',edgealerts:'边缘保护',on:'开启',falls:'跌落',language:'语言',features:'功能',voiceact:'语音激活',voiceact_desc:'说"嘿 ZIVO"唤醒',edgeprot:'防跌落',edgeprot_desc:'在桌子边缘停下',autocharge:'自动充电',autocharge_desc:'电量低时返回充电',explore:'随机探索',explore_desc:'ZIVO 自主移动',notifs:'通知',notifs_desc:'电池和边缘警报',nav_control:'控制',nav_zone:'区域',nav_settings:'设置',nav_calc:'计算器',nav_profile:'个人',moods:['准备好了','探索中','开心','等待命令'],log_connected:'已连接到 {name}',upfmt:(h,m)=>h+'时'+String(m).padStart(2,'0')+'分',offline:'未连接',not_connected:'ZIVO 未连接',not_connected_desc:'输入序列号',connect_btn:'连接',serial_label:'序列号',serial_wrong:'序列号错误。',serial_hint:'序列号在 ZIVO 底部的贴纸上',member_since:'ZIVO 会员',your_info:'个人信息',your_name:'你的名字',bot_custom_name:'机器人名称（智能模式）',smart_mode:'智能模式',smart_mode_title:'智能模式',smart_mode_desc:'机器人响应你选择的名字。仅限Pro。',smart_mode_label:'启用智能模式',smart_mode_sub:'机器人响应其名字',voice_section:'机器人声音',voice_default_desc:'默认ZIVO声音',voice_sage_desc:'睿智平静',voice_nova_desc:'充满活力',voice_echo_desc:'深沉丰富',voice_spark_desc:'有趣活泼',voice_atlas_desc:'强大权威',voice_luna_desc:'柔和梦幻',voice_titan_desc:'机器人精准',voice_pixel_desc:'数字科技',voice_zen_desc:'平静冥想',voice_locked_msg:'🔒 更多声音在Pro版本中可用',subscription:'订阅',manage_sub:'管理订阅',trial_active:'试用期激活！',trial_desc:'所有功能免费',choose_plan:'选择方案',plan_monthly:'月度',plan_yearly:'年度',plan_forever:'永久',per_month:'/月',per_month_billed:'/月（年付）',one_time:'一次性付款',save_40:'节省40%',whats_included:'包含内容',feat_basic:'机器人控制',feat_control:'基本命令',feat_voices:'10种声音可选',feat_smart:'智能模式+自定义名称',feat_calc:'AI智能计算器',feat_custom_name:'自定义机器人名称',subscribe_btn:'获取Pro',maybe_later:'稍后',trial_modal_info:'您的试用期已激活 — 所有功能已解锁！',calculator:'计算器',ai_solve:'解复杂方程（AI）',calc_locked:'🔒 智能计算器在Pro版本中可用。点击解锁。',ai_solving:'解算中...'},
+  uk:{online:'В МЕРЕЖІ',temp:'ТЕМП',uptime:'ЧАС',battery:'БАТАРЕЯ',log:'ЖУРНАЛ',movement:'РУХ',actions:'ДІЇ',wakeup:'РОЗБУДИТИ',sleep:'СПАТИ',charge:'НА ЗАРЯДКУ',random:'ТАНЕЦЬ',zonemap:'КАРТА ЗОНИ',zonewidth:'ШИРИНА',zonedepth:'ГЛИБИНА',edgealerts:'ЗАХИСТ КРАЮ',on:'УВІМКН',falls:'ПАДІНЬ',language:'МОВА',features:'ФУНКЦІЇ',voiceact:'Голосова активація',voiceact_desc:'Активація "Привіт ZIVO"',edgeprot:'Захист від падіння',edgeprot_desc:'Зупинятись біля краю столу',autocharge:'Авто зарядка',autocharge_desc:'Їхати на базу при низькому заряді',explore:'Випадкові прогулянки',explore_desc:'ZIVO їздить самостійно',notifs:'Сповіщення',notifs_desc:'Заряд і захист краю',nav_control:'КЕРУВАННЯ',nav_zone:'ЗОНА',nav_settings:'НАЛАШТУВАННЯ',nav_calc:'КАЛЬКУЛЯТОР',nav_profile:'ПРОФІЛЬ',moods:['ГОТОВИЙ • СЛУХАЮ','ДОСЛІДЖУЮ','ЩАСЛИВИЙ','ЧЕКАЮ'],log_connected:'Підключено до {name}',upfmt:(h,m)=>h+'г'+String(m).padStart(2,'0')+'хв',offline:'НЕ ПІДКЛЮЧЕНО',not_connected:'ZIVO не підключено',not_connected_desc:'Введи серійний номер',connect_btn:'ПІДКЛЮЧИТИ',serial_label:'СЕРІЙНИЙ НОМЕР',serial_wrong:'Невірний серійний номер.',serial_hint:'Серійний номер на наклейці на дні корпусу',member_since:'Учасник ZIVO',your_info:'ІНФОРМАЦІЯ',your_name:"ТВОЄ ІМ'Я",bot_custom_name:"ІМ'Я БОТА (розумний режим)",smart_mode:'РОЗУМНИЙ РЕЖИМ',smart_mode_title:'Розумний режим',smart_mode_desc:"Бот відповідає на своє ім'я яке ти обрав. Тільки платна версія.",smart_mode_label:'Увімкнути розумний режим',smart_mode_sub:"Бот реагує на своє ім'я",voice_section:'ГОЛОС БОТА',voice_default_desc:'Стандартний голос ZIVO',voice_sage_desc:'Мудрий і спокійний',voice_nova_desc:'Енергійний і молодий',voice_echo_desc:"Глибокий і об'ємний",voice_spark_desc:'Веселий і грайливий',voice_atlas_desc:'Потужний і авторитетний',voice_luna_desc:'Мягкий і мрійливий',voice_titan_desc:'Роботизований і точний',voice_pixel_desc:'Цифровий і технічний',voice_zen_desc:'Спокійний і медитативний',voice_locked_msg:'🔒 Додаткові голоси доступні в Pro версії',subscription:'ПІДПИСКА',manage_sub:'КЕРУВАННЯ ПІДПИСКОЮ',trial_active:'Пробний період активний!',trial_desc:'Всі функції безкоштовно',choose_plan:'ОБЕРИ ПЛАН',plan_monthly:'Місяць',plan_yearly:'Рік',plan_forever:'Назавжди',per_month:'/місяць',per_month_billed:'на місяць (рік)',one_time:'одноразовий платіж',save_40:'ЗНИЖКА 40%',whats_included:'ЩО ВКЛЮЧЕНО',feat_basic:'Керування роботом',feat_control:'Базові команди',feat_voices:'10 голосів на вибір',feat_smart:"Розумний режим + своє ім'я",feat_calc:'Розумний калькулятор з ІІ',feat_custom_name:"Кастомне ім'я бота",subscribe_btn:'ОТРИМАТИ PRO',maybe_later:'Пізніше',trial_modal_info:'У тебе активний пробний період — всі функції вже відкриті!',calculator:'КАЛЬКУЛЯТОР',ai_solve:'Вирішити складне рівняння (ІІ)',calc_locked:'🔒 Розумний калькулятор доступний у Pro. Натисни щоб відкрити.',ai_solving:'Вирішую...'}
 };
 
-let lang='en',moodIdx=0,connected=false,currentRobot=null,currentSerial=null;
+let lang='en',moodIdx=0,connected=false,currentRobot=null,currentSerial=null,selectedPlan='yearly';
+const USER=JSON.parse(localStorage.getItem('zivo_user')||'{}');
+function saveUser(){localStorage.setItem('zivo_user',JSON.stringify(USER));}
+function isPro(){return USER.sub==='forever'||USER.sub==='monthly'||USER.sub==='yearly';}
+function isTrialActive(){if(!USER.firstConnected)return false;return(Date.now()-USER.firstConnected)/(1000*60*60*24)<7;}
+function hasProAccess(){return isPro()||isTrialActive();}
+function trialDaysLeft(){if(!USER.firstConnected)return 0;return Math.max(0,Math.ceil(7-(Date.now()-USER.firstConnected)/(1000*60*60*24)));}
 
 function setConnected(val){
   connected=val;
-  const dot=document.getElementById('status-dot');
-  const txt=document.getElementById('status-text');
-  const face=document.getElementById('zivo-face');
+  const dot=document.getElementById('status-dot'),txt=document.getElementById('status-text'),face=document.getElementById('zivo-face');
   if(val){
-    dot.style.cssText='background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite;width:10px;height:10px;border-radius:50%';
+    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite';
     txt.style.color='var(--success)';txt.textContent=T[lang].online;
     document.getElementById('offline-banner').style.display='none';
     document.getElementById('pages-wrapper').style.display='block';
     document.getElementById('page-home').style.display='block';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.querySelector('.nav-item').classList.add('active');
-    face.style.borderColor='var(--blue)';
-    face.style.boxShadow='0 0 30px var(--blue-glow),inset 0 0 30px rgba(0,180,255,0.05)';
+    face.style.borderColor='var(--blue)';face.style.boxShadow='0 0 28px var(--blue-glow),inset 0 0 28px rgba(0,180,255,0.05)';
+    if(!USER.firstConnected){USER.firstConnected=Date.now();saveUser();}
+    updateTrialBanner();
   }else{
-    dot.style.cssText='background:var(--gray);box-shadow:none;animation:none;width:10px;height:10px;border-radius:50%';
+    dot.style.cssText='width:9px;height:9px;border-radius:50%;background:var(--gray);box-shadow:none;animation:none';
     txt.style.color='var(--gray)';txt.textContent=T[lang].offline;
     document.getElementById('offline-banner').style.display='block';
     document.getElementById('pages-wrapper').style.display='none';
-    document.getElementById('page-settings').style.display='none';
+    ['page-settings','page-profile','page-calc'].forEach(id=>document.getElementById(id).style.display='none');
     face.style.borderColor='var(--gray)';face.style.boxShadow='none';
   }
 }
 
 function tryConnect(){
   const input=document.getElementById('serial-input').value.trim().toUpperCase();
-  const err=document.getElementById('serial-error');
-  const btn=document.getElementById('connect-btn');
+  const err=document.getElementById('serial-error'),btn=document.getElementById('connect-btn');
   if(!input){err.style.display='block';return;}
   btn.textContent='...';btn.style.opacity='0.6';err.style.display='none';
   setTimeout(()=>{
     if(input in REGISTERED_ROBOTS){
       currentRobot=REGISTERED_ROBOTS[input];currentSerial=input;
       localStorage.setItem('zivo_last_serial',input);
-      setConnected(true);
-      addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));
+      setConnected(true);addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));
     }else{
-      btn.textContent=T[lang].connect_btn;btn.style.opacity='1';
-      err.style.display='block';
+      btn.textContent=T[lang].connect_btn;btn.style.opacity='1';err.style.display='block';
       const inp=document.getElementById('serial-input');
-      inp.style.borderColor='var(--danger)';
-      setTimeout(()=>inp.style.borderColor='rgba(0,180,255,0.3)',2000);
+      inp.style.borderColor='var(--danger)';setTimeout(()=>inp.style.borderColor='rgba(0,180,255,0.3)',2000);
     }
   },1200);
 }
 
+function updateTrialBanner(){
+  const b=document.getElementById('trial-banner');
+  if(isTrialActive()&&!isPro()){b.style.display='flex';document.getElementById('trial-days-left').textContent=trialDaysLeft();}
+  else b.style.display='none';
+}
+
+function saveProfile(){USER.name=document.getElementById('user-name-input').value;saveUser();updateProfileUI();}
+function saveBotName(){USER.botName=document.getElementById('bot-name-input').value||'ZIVO';saveUser();document.getElementById('bot-display-name').textContent=USER.botName||'ZIVO';}
+
+function toggleSmartMode(){
+  if(!hasProAccess()){openSubModal();return;}
+  USER.smartMode=!USER.smartMode;
+  document.getElementById('smart-toggle').classList.toggle('on',USER.smartMode);
+  saveUser();sendCmd(USER.smartMode?'smart_on':'smart_off');
+}
+
+function updateProfileUI(){
+  document.getElementById('profile-name-display').textContent=USER.name||'User';
+  document.getElementById('user-name-input').value=USER.name||'';
+  document.getElementById('bot-name-input').value=USER.botName||'';
+  document.getElementById('bot-display-name').textContent=USER.botName||'ZIVO';
+  const badge=document.getElementById('sub-badge-display');
+  if(isPro()){badge.className='sub-badge pro';badge.textContent='PRO';}
+  else if(isTrialActive()){badge.className='sub-badge trial';badge.textContent='TRIAL '+trialDaysLeft()+'d';}
+  else{badge.className='sub-badge free';badge.textContent='FREE';}
+  document.getElementById('smart-toggle').classList.toggle('on',!!USER.smartMode);
+  document.getElementById('smart-mode-toggle-row').style.opacity=hasProAccess()?'1':'0.5';
+  const si=document.getElementById('sub-current-info');
+  if(isPro())si.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--gold)">⭐ PRO Active</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+(USER.sub==='forever'?'Lifetime':'Renews automatically')+'</div>';
+  else if(isTrialActive())si.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--success)">🎁 Free Trial</div><div style="font-size:11px;color:var(--gray);margin-top:4px">'+trialDaysLeft()+' days remaining</div>';
+  else si.innerHTML='<div style="font-size:13px;font-weight:700;">Free Plan</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Upgrade to unlock all features</div>';
+  renderVoices();
+  const pro=hasProAccess();
+  document.getElementById('ai-solve-btn').style.display=pro?'block':'none';
+  document.getElementById('ai-locked-calc').style.display=pro?'none':'block';
+}
+
+function renderVoices(){
+  const list=document.getElementById('voice-list');list.innerHTML='';
+  const pro=hasProAccess();
+  VOICES.forEach(v=>{
+    const isActive=(USER.voice||'default')===v.id,isLocked=!v.free&&!pro;
+    const div=document.createElement('div');
+    div.className='voice-card'+(isActive?' active':'')+(isLocked?' locked':'');
+    div.innerHTML=`<div class="voice-avatar" style="background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,180,255,0.2))">${v.emoji}</div><div><div class="voice-name">${v.name}</div><div class="voice-desc">${T[lang][v.desc_key]||''}</div></div>${isLocked?'<div class="lock-icon" style="display:flex">🔒</div>':`<div class="voice-play" onclick="event.stopPropagation();playVoicePreview('${v.id}')">▶</div>`}`;
+    div.onclick=isLocked?()=>openSubModal():()=>selectVoice(v.id);
+    list.appendChild(div);
+  });
+  document.getElementById('voice-locked-msg').style.display=pro?'none':'block';
+}
+
+function selectVoice(id){USER.voice=id;saveUser();sendCmd('set_voice:'+id);renderVoices();addLog('info','Voice: '+id);}
+function playVoicePreview(id){addLog('info','Preview: '+id);}
+
+function openSubModal(){
+  document.getElementById('sub-modal').classList.add('open');selectPlan(selectedPlan);
+  document.getElementById('modal-trial-info').style.display=isTrialActive()?'block':'none';
+}
+function closeSubModal(){document.getElementById('sub-modal').classList.remove('open');}
+function selectPlan(plan){
+  selectedPlan=plan;
+  ['monthly','yearly','forever'].forEach(p=>document.getElementById('plan-'+p).classList.toggle('active',p===plan));
+  document.getElementById('sub-btn').className=plan==='forever'?'btn-primary gold':'btn-primary';
+}
+function subscribePlan(){
+  USER.sub=selectedPlan;USER.subStart=Date.now();saveUser();closeSubModal();updateProfileUI();
+  addLog('ok','Subscribed: '+selectedPlan);
+  const b=document.getElementById('sub-badge-display');b.className='sub-badge pro';b.textContent='PRO';
+}
+
+let calcExpr='';
+function calcInput(val){
+  calcExpr+=val;document.getElementById('calc-expr').textContent=calcExpr;
+  try{const res=new Function('return '+calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt('))();if(isFinite(res))document.getElementById('calc-result').textContent=+res.toFixed(10);}catch(e){}
+}
+function calcClear(){calcExpr='';document.getElementById('calc-expr').textContent='';document.getElementById('calc-result').textContent='0';document.getElementById('calc-solution').style.display='none';}
+function calcBackspace(){calcExpr=calcExpr.slice(0,-1);document.getElementById('calc-expr').textContent=calcExpr;}
+function calcEquals(){
+  try{const res=new Function('return '+calcExpr.replace(/\^/g,'**').replace(/sqrt\(/g,'Math.sqrt('))();document.getElementById('calc-result').textContent=+res.toFixed(10);calcExpr=String(+res.toFixed(10));}
+  catch(e){document.getElementById('calc-result').textContent='ERR';}
+}
+async function aiSolve(){
+  if(!hasProAccess()){openSubModal();return;}
+  const expr=calcExpr||document.getElementById('calc-result').textContent;
+  if(!expr||expr==='0')return;
+  const btn=document.getElementById('ai-solve-btn'),sol=document.getElementById('calc-solution');
+  btn.textContent='⏳ '+T[lang].ai_solving;btn.disabled=true;
+  sol.style.display='block';sol.textContent='...';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Solve step by step (be concise): '+expr}]})});
+    const data=await resp.json();sol.textContent=data.content?.[0]?.text||'No answer';
+  }catch(e){sol.textContent='= '+document.getElementById('calc-result').textContent;}
+  btn.innerHTML='🧠 '+T[lang].ai_solve;btn.disabled=false;
+}
+
 function addLog(type,text){
-  const list=document.getElementById('log-list');
-  const now=new Date();
+  const list=document.getElementById('log-list'),now=new Date();
   const time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  const el=document.createElement('div');
-  el.className='log-entry';
+  const el=document.createElement('div');el.className='log-entry';
   el.innerHTML='<span class="log-time">'+time+'</span><span class="log-text '+type+'">'+text+'</span>';
   list.insertBefore(el,list.firstChild);
   while(list.children.length>20)list.removeChild(list.lastChild);
 }
-
-async function sendCmd(cmd){
-  if(!connected||!currentSerial)return;
-  try{await fetch('http://zivo.local:8080/command',{method:'POST',headers:{'Content-Type':'application/json','X-Serial':currentSerial},body:JSON.stringify({cmd}),signal:AbortSignal.timeout(2000)});}catch(e){}
-}
-
+async function sendCmd(cmd){if(!connected||!currentSerial)return;try{await fetch('http://zivo.local:8080/command',{method:'POST',headers:{'Content-Type':'application/json','X-Serial':currentSerial},body:JSON.stringify({cmd}),signal:AbortSignal.timeout(2000)});}catch(e){}}
 async function pollRobot(){
   if(!connected||!currentSerial)return;
   try{
     const resp=await fetch('http://zivo.local:8080/status',{headers:{'X-Serial':currentSerial},signal:AbortSignal.timeout(2000)});
-    if(!resp.ok)return;
-    const data=await resp.json();
+    if(!resp.ok)return;const data=await resp.json();
     const batt=data.battery??0;
-    document.getElementById('batt-text').textContent=batt+'%';
-    document.getElementById('batt-fill').style.width=batt+'%';
-    document.getElementById('batt-text').style.color=batt<20?'var(--danger)':batt<50?'#ffaa00':'var(--success)';
+    document.getElementById('batt-text').textContent=batt+'%';document.getElementById('batt-fill').style.width=batt+'%';
+    document.getElementById('batt-text').style.color=batt<20?'var(--danger)':batt<50?'var(--warn)':'var(--success)';
     document.getElementById('temp-val').textContent=(data.temp??'--')+'°';
     if(data.uptime){const h=Math.floor(data.uptime/3600),m=Math.floor((data.uptime%3600)/60);document.getElementById('uptime-val').textContent=T[lang].upfmt(h,m);}
   }catch(e){}
@@ -849,30 +1208,31 @@ function applyLang(l){
   document.body.style.direction=l==='he'?'rtl':'ltr';
   document.getElementById('status-text').textContent=connected?t.online:t.offline;
   document.getElementById('connect-btn').textContent=t.connect_btn;
+  document.getElementById('ai-solve-btn').innerHTML='🧠 '+t.ai_solve;
+  renderVoices();
 }
-
-function selectLang(btn,l){
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');applyLang(l);
-}
-
+function selectLang(btn,l){document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyLang(l);}
 function switchPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  if(name==='settings'){document.getElementById('page-settings').style.display='block';}
+  if(name==='settings')document.getElementById('page-settings').style.display='block';
+  else if(name==='profile'){document.getElementById('page-profile').style.display='block';updateProfileUI();}
+  else if(name==='calc'){document.getElementById('page-calc').style.display='block';updateProfileUI();}
   else if(connected){document.getElementById('pages-wrapper').style.display='block';document.getElementById('page-'+name).style.display='block';}
 }
 
+document.getElementById('sub-modal').addEventListener('click',function(e){if(e.target===this)closeSubModal();});
+
 const lastSerial=localStorage.getItem('zivo_last_serial');
-if(lastSerial)document.getElementById('serial-input').value=lastSerial;
+if(lastSerial&&lastSerial in REGISTERED_ROBOTS){
+  currentRobot=REGISTERED_ROBOTS[lastSerial];currentSerial=lastSerial;
+  setTimeout(()=>{setConnected(true);addLog('ok',T[lang].log_connected.replace('{name}',currentRobot.name));},500);
+}else if(lastSerial){document.getElementById('serial-input').value=lastSerial;}
 
 setInterval(pollRobot,3000);
 setInterval(()=>{moodIdx=(moodIdx+1)%4;document.getElementById('mood-text').textContent=T[lang].moods[moodIdx];},4000);
-
-applyLang('en');
-setConnected(false);
-
+applyLang('en');setConnected(connected);updateProfileUI();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
