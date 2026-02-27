@@ -433,6 +433,8 @@ var connected = false;
 var currentRobot = null;
 var currentSerial = null;
 var selectedPlan = 'yearly';
+var SESSION_TOKEN = null;
+var pingInterval = null;
 var USER = JSON.parse(localStorage.getItem('zivo_user') || '{}');
 
 // ── ROBOTS ────────────────────────────────────
@@ -773,6 +775,15 @@ function setConnected(val){
     if(!USER.firstConnected){ USER.firstConnected = Date.now(); saveUser(); }
     updateTrialBanner();
   } else {
+    // Send disconnect to robot
+    if(SESSION_TOKEN && SESSION_TOKEN !== 'local' && currentSerial){
+      fetch('http://zivo.local:8080/disconnect', {
+        method:'POST', headers:{'X-Session-Token': SESSION_TOKEN},
+        signal:AbortSignal.timeout(2000)
+      }).catch(function(){});
+    }
+    SESSION_TOKEN = null;
+    if(pingInterval){ clearInterval(pingInterval); pingInterval = null; }
     dot.style.cssText = 'width:9px;height:9px;border-radius:50%;background:var(--gray);box-shadow:none;animation:none';
     stxt.style.color = 'var(--gray)'; stxt.textContent = t('offline');
     document.getElementById('offline-banner').style.display = 'block';
@@ -787,20 +798,90 @@ function tryConnect(){
   var btn = document.getElementById('conn-btn');
   if(!input){ err.style.display='block'; return; }
   btn.textContent = '...'; btn.style.opacity = '0.6'; err.style.display = 'none';
-  setTimeout(function(){
-    if(ROBOTS[input]){
-      currentRobot = ROBOTS[input]; currentSerial = input;
-      localStorage.setItem('zivo_last_serial', input);
-      setConnected(true);
-      addLog('ok', t('log_conn').replace('{name}', currentRobot.name));
-    } else {
-      btn.textContent = t('conn_btn'); btn.style.opacity = '1';
-      err.style.display = 'block';
-      var inp = document.getElementById('serial-inp');
-      inp.style.borderColor = 'var(--danger)';
-      setTimeout(function(){ inp.style.borderColor='rgba(0,180,255,0.3)'; }, 2000);
-    }
-  }, 1200);
+
+  // First verify serial with robot
+  fetch('http://zivo.local:8080/serial/verify?serial='+input, {signal:AbortSignal.timeout(3000)})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d.ok){ throw new Error(d.error || 'Wrong serial'); }
+      if(d.has_session){
+        err.textContent = 'Робот уже подключён к ' + (d.session_user || 'другому устройству');
+        err.style.display = 'block';
+        btn.textContent = t('conn_btn'); btn.style.opacity = '1';
+        return;
+      }
+      // Request connection session
+      return fetch('http://zivo.local:8080/connect', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({serial:input, user: USER.name || 'User'}),
+        signal:AbortSignal.timeout(3000)
+      }).then(function(r){ return r.json(); })
+        .then(function(cd){
+          if(!cd.ok){ throw new Error(cd.error || 'Ошибка подключения'); }
+          SESSION_TOKEN = cd.token;
+          currentSerial = input;
+          localStorage.setItem('zivo_last_serial', input);
+          // Show waiting for confirmation
+          btn.textContent = '⏳ Подтверди на роботе...'; btn.style.opacity = '1';
+          addLog('info', 'Ожидаем подтверждения...');
+          waitForConfirmation(input, cd.timeout || 15);
+        });
+    })
+    .catch(function(e){
+      // Fallback: if robot not reachable, use local ROBOTS list
+      if(ROBOTS[input]){
+        SESSION_TOKEN = 'local';
+        currentRobot = ROBOTS[input]; currentSerial = input;
+        localStorage.setItem('zivo_last_serial', input);
+        setConnected(true);
+        addLog('ok', t('log_conn').replace('{name}', currentRobot.name));
+      } else {
+        err.textContent = t('serial_wrong'); err.style.display = 'block';
+        btn.textContent = t('conn_btn'); btn.style.opacity = '1';
+        var inp = document.getElementById('serial-inp');
+        inp.style.borderColor = 'var(--danger)';
+        setTimeout(function(){ inp.style.borderColor='rgba(0,180,255,0.3)'; }, 2000);
+      }
+    });
+}
+
+function waitForConfirmation(serial, timeout){
+  var btn = document.getElementById('conn-btn');
+  var tries = 0;
+  var maxTries = timeout * 2; // poll every 500ms
+  var poll = setInterval(function(){
+    tries++;
+    fetch('http://zivo.local:8080/session/status?serial='+serial, {signal:AbortSignal.timeout(2000)})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.ok && d.confirmed){
+          clearInterval(poll);
+          currentRobot = {name: 'ZIVO'}; 
+          setConnected(true);
+          startPing();
+          addLog('ok', '✅ Подключение подтверждено!');
+        } else if(tries >= maxTries){
+          clearInterval(poll);
+          SESSION_TOKEN = null;
+          btn.textContent = t('conn_btn'); btn.style.opacity = '1';
+          addLog('warn', 'Подтверждение не получено');
+        }
+      })
+      .catch(function(){ if(tries >= maxTries) clearInterval(poll); });
+  }, 500);
+}
+
+function startPing(){
+  if(pingInterval) clearInterval(pingInterval);
+  pingInterval = setInterval(function(){
+    if(!connected || !SESSION_TOKEN || SESSION_TOKEN === 'local') return;
+    fetch('http://zivo.local:8080/ping', {
+      method:'POST',
+      headers:{'X-Session-Token': SESSION_TOKEN},
+      signal:AbortSignal.timeout(2000)
+    }).catch(function(){});
+  }, 10000);
 }
 
 // ── TRIAL ─────────────────────────────────────
@@ -913,7 +994,7 @@ function addLog(type, text){
 
 function pollRobot(){
   if(!connected || !currentSerial) return;
-  fetch('http://zivo.local:8080/status', { headers:{'X-Serial':currentSerial}, signal:AbortSignal.timeout(2000) })
+  fetch('http://zivo.local:8080/status', { headers:{'X-Serial':currentSerial, 'X-Session-Token': SESSION_TOKEN||''}, signal:AbortSignal.timeout(2000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var batt = d.battery || 0;
@@ -931,7 +1012,7 @@ function pollRobot(){
 function sendCmd(cmd){
   if(!connected || !currentSerial) return;
   fetch('http://zivo.local:8080/command', {
-    method:'POST', headers:{'Content-Type':'application/json','X-Serial':currentSerial},
+    method:'POST', headers:{'Content-Type':'application/json','X-Serial':currentSerial,'X-Session-Token':SESSION_TOKEN||''},
     body:JSON.stringify({cmd:cmd}), signal:AbortSignal.timeout(2000)
   }).catch(function(){});
 }
