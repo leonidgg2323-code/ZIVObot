@@ -223,9 +223,27 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <input id="login-pass" class="inp" type="password" placeholder="••••••">
       </div>
       <div class="auth-err" id="login-err"></div>
+      <button class="btn-out" id="resend-btn" style="display:none;margin-top:8px" onclick="resendFromLogin()">RESEND VERIFICATION EMAIL</button>
     </div>
     <button class="btn" id="login-btn" onclick="doLogin()">SIGN IN</button>
     <button class="auth-switch" onclick="showReg()">No account? <b>CREATE ONE</b></button>
+  </div>
+
+
+  <!-- VERIFY EMAIL -->
+  <div class="auth-screen" id="scr-verify">
+    <div class="auth-icon">📧</div>
+    <div class="auth-title">CHECK YOUR EMAIL</div>
+    <div class="auth-sub" id="verify-sub">We sent a confirmation link to your email</div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:48px;margin-bottom:12px">✉️</div>
+      <div id="verify-email-display" style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px"></div>
+      <div style="font-size:11px;color:var(--gray);line-height:1.6">Click the link in the email to activate your account. Check your spam folder too.</div>
+    </div>
+    <button class="btn" onclick="checkVerified()" style="margin-top:12px" id="verify-check-btn">I CONFIRMED — CONTINUE</button>
+    <button class="btn-out" onclick="resendVerification()" style="margin-top:8px" id="resend-verify-btn">RESEND EMAIL</button>
+    <button class="auth-switch" onclick="doLogout()">← Back to login</button>
+    <div id="verify-msg" style="font-size:11px;margin-top:8px;display:none"></div>
   </div>
 
   <!-- OFFLINE BANNER -->
@@ -674,12 +692,73 @@ function showReg(){
   document.getElementById('pages-wrap').style.display = 'none';
   document.getElementById('pg-settings').style.display = 'none';
   document.getElementById('pg-profile').style.display = 'none';
+  document.getElementById('scr-verify').style.display = 'none';
 }
 function showLogin(){
   document.getElementById('scr-reg').style.display = 'none';
   document.getElementById('scr-login').style.display = 'block';
   document.getElementById('offline-banner').style.display = 'none';
 }
+function showVerifyScreen(){
+  document.getElementById('scr-reg').style.display = 'none';
+  document.getElementById('scr-login').style.display = 'none';
+  document.getElementById('scr-verify').style.display = 'block';
+  document.getElementById('offline-banner').style.display = 'none';
+  // Show email
+  var u = auth.currentUser;
+  if(u) document.getElementById('verify-email-display').textContent = u.email;
+}
+
+function checkVerified(){
+  var btn = document.getElementById('verify-check-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  var u = auth.currentUser;
+  if(!u){ showLogin(); return; }
+  u.reload().then(function(){
+    if(auth.currentUser.emailVerified){
+      showOffline();
+      applyLang(lang);
+    } else {
+      var msg = document.getElementById('verify-msg');
+      msg.textContent = 'Email not verified yet. Please click the link in your email.';
+      msg.style.color = 'var(--danger)';
+      msg.style.display = 'block';
+      btn.textContent = 'I CONFIRMED — CONTINUE'; btn.disabled = false;
+    }
+  }).catch(function(){
+    btn.textContent = 'I CONFIRMED — CONTINUE'; btn.disabled = false;
+  });
+}
+
+function resendVerification(){
+  var u = auth.currentUser;
+  if(!u){ showLogin(); return; }
+  var btn = document.getElementById('resend-verify-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  u.sendEmailVerification().then(function(){
+    var msg = document.getElementById('verify-msg');
+    msg.textContent = 'Email sent! Check your inbox.';
+    msg.style.color = 'var(--ok)';
+    msg.style.display = 'block';
+    btn.textContent = 'RESEND EMAIL'; btn.disabled = false;
+  }).catch(function(e){
+    var msg = document.getElementById('verify-msg');
+    msg.textContent = e.message;
+    msg.style.color = 'var(--danger)';
+    msg.style.display = 'block';
+    btn.textContent = 'RESEND EMAIL'; btn.disabled = false;
+  });
+}
+
+function resendFromLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-pass').value;
+  if(!email||!pass){ return; }
+  auth.signInWithEmailAndPassword(email, pass).then(function(){
+    showVerifyScreen();
+  }).catch(function(){});
+}
+
 function showOffline(){
   document.getElementById('scr-reg').style.display = 'none';
   document.getElementById('scr-login').style.display = 'none';
@@ -707,8 +786,15 @@ function doRegister(){
       Object.assign(USER, data);
       USER.uid = auth.currentUser.uid;
       saveUser();
-      showOffline();
-      applyLang(lang);
+      // Send verification email
+      auth.currentUser.sendEmailVerification()
+        .then(function(){
+          showVerifyScreen();
+        })
+        .catch(function(e){
+          log.warn && console.warn('Email send error:', e);
+          showVerifyScreen();
+        });
     })
     .catch(function(e){
       err.textContent = e.code === 'auth/email-already-in-use' ? 'Email already registered' : e.message;
@@ -734,6 +820,14 @@ function doLogin(){
         Object.assign(USER, snap.data());
         USER.uid = auth.currentUser.uid;
         saveUser();
+      }
+      // Check email verified
+      if(!auth.currentUser.emailVerified){
+        auth.signOut();
+        err.textContent = 'Please verify your email first. Check your inbox.';
+        err.style.display = 'block';
+        document.getElementById('resend-btn').style.display = 'block';
+        return;
       }
       showOffline();
       applyLang(lang);
@@ -1127,6 +1221,10 @@ auth.onAuthStateChanged(function(user){
         if(snap.exists){ Object.assign(USER, snap.data()); }
         USER.uid = user.uid;
         saveUser();
+        if(!user.emailVerified){
+          showVerifyScreen();
+          return;
+        }
         showOffline();
         applyLang(lang);
         updateProfileUI();
